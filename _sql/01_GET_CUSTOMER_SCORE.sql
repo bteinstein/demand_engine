@@ -5,7 +5,7 @@ USE VconnectMasterDWR;
 ----- 6 Months ---> Date Size: 3,148,422 || ETA: 2mins Secs
 DROP TABLE IF EXISTS #OrderCreated;
 SELECT --- TOP 10
-	CreatedDate, BusinessID as Stock_Point_ID, CustomerID, -- Stock_point_Name, 
+	CreatedDate, DeliveredDate, BusinessID as Stock_Point_ID, CustomerID, -- Stock_point_Name, 
 	orderid, itemid,  SKUCode, Quantity, Price, Category_ID, 
 	OrderStatusID, OrderStatus, CityID,  townid, mode1, IsSelfPickUP --- Category_Name, 
 INTO #OrderCreated
@@ -13,6 +13,26 @@ FROM tblorderSales WITH (NOLOCK)
 WHERE Central_BusinessID = 76 
 	  AND orderstatusID NOT IN (215, 216) -- NOT CANCELLED OR RTO
 	  AND CAST(CreatedDate AS DATE) >= DATEADD(MONTH, -6, CAST(GETDATE() AS DATE))
+
+
+--Select distinct orderstatusid from tblorderSales WHERE Central_BusinessID = 76 AND CAST(CreatedDate AS DATE) >= DATEADD(MONTH, -6, CAST(GETDATE() AS DATE))
+--Select top 100 * from #OrderCreated where OrderStatusID IN (210,212,213)
+
+--210
+--212
+--213
+--214
+--215
+--216
+--225
+
+
+
+SELECT TOP 10 
+	--MAX(CreatedDate, DeliveredDate) AS MAX_DATE, 
+	*
+FROM #OrderCreated
+WHERE DeliveredDate IS NULL
 
 
 --SELECT EOMONTH(DATEADD(MONTH, -6, CAST(GETDATE() AS DATE)))
@@ -35,8 +55,15 @@ SELECT
 	SUM(Quantity) total_qty,
 	SUM(Price) total_revenue,
 	MIN(Createddate) first_order_date,
-	MAX(Createddate) last_order_date,
-	DATEDIFF(DAY, MAX(Createddate), CAST(GETDATE() AS DATE)) AS days_since_last_order
+	CASE  
+		WHEN MAX(DeliveredDate) > MAX(Createddate) 
+		THEN MAX(DeliveredDate)
+		ELSE MAX(Createddate) last_order_date,
+	CASE  
+		WHEN MAX(Createddate) < MAX(DeliveredDate) 
+		THEN DATEDIFF(DAY, MAX(Createddate), CAST(GETDATE() AS DATE))  
+	ELSE DATEDIFF(DAY, MAX(DeliveredDate), CAST(GETDATE() AS DATE)) 
+	END AS days_since_last_order
 INTO #spCustAggregates
 FROM #OrderCreated 
 GROUP BY Stock_Point_ID, CustomerID
@@ -232,8 +259,19 @@ INTO poc_stockpoint_customer_score
 FROM #spCustScoresFinal
 
 SELECT 
-	TOP 1000 *
+	TOP 1000 *	
 	--MIN(composite_customer_score * 100) Minn, 
 	--MAX(composite_customer_score  * 100) Max
 FROM poc_stockpoint_customer_score ORDER BY StockPointID, composite_customer_score DESC
  
+
+--SELECT max(days_since_last_order) FROM poc_stockpoint_customer_score
+
+--select 182/30
+
+SELECT TOP 10 * FROM #OrderCreated WHERE CustomerID = 4529739 ORDER BY CreatedDate DESC
+SELECT TOP 3 * FROM tblorderSales WHERE CustomerID = 4529739 ORDER BY CreatedDate DESC
+SELECT TOP 3 * FROM tblmanudashsales WHERE CustomerID = 4529739 and CENTRAL_BUSINESSID = 76 ORDER BY DeliveryDate DESC
+
+eliveredDate
+2025-01-10 09:25:31.897
