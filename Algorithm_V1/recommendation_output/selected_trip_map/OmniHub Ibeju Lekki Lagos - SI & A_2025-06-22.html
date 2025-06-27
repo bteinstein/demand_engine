@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_e8ee120e402ba29faa12d4df25321878 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 2 clusters | 23 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+    <div id="cluster-legend" style="position: fixed; 
+                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                background-color: rgba(255, 255, 255, 0.95); 
+                border: 2px solid #ccc; z-index: 999; 
+                font-size: 11px; padding: 12px; border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                backdrop-filter: blur(5px);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <strong style="color: #333;">Cluster Legend</strong>
+        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+    </div>
+    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+        2 clusters | Sorted by size | Showing top 15
+    </div>
+    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 1 
+                <br><span style="color: #666; font-size: 9px;">18 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">5 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_e8ee120e402ba29faa12d4df25321878" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_e8ee120e402ba29faa12d4df25321878 = L.map(
+                "map_e8ee120e402ba29faa12d4df25321878",
+                {
+                    center: [6.46637985, 3.71312175],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_e8ee120e402ba29faa12d4df25321878);
+
+            
+
+        
+    
+            var tile_layer_ccfdd7c0ce50f0c0a6586c46e5e5b16a = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_ccfdd7c0ce50f0c0a6586c46e5e5b16a.addTo(map_e8ee120e402ba29faa12d4df25321878);
+        
+    
+            var tile_layer_524ad8d4d422be40da0a8945f99fae85 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_524ad8d4d422be40da0a8945f99fae85.addTo(map_e8ee120e402ba29faa12d4df25321878);
+        
+    
+            var tile_layer_c833d619fa6f777e5819bd9f1d3df958 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_c833d619fa6f777e5819bd9f1d3df958.addTo(map_e8ee120e402ba29faa12d4df25321878);
+        
+    
+            var tile_layer_88952ec5a2596be9d7cfb2817cc64af3 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_88952ec5a2596be9d7cfb2817cc64af3.addTo(map_e8ee120e402ba29faa12d4df25321878);
+        
+    
+            var tile_layer_e35b04c067085a24997fd95278181562 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e35b04c067085a24997fd95278181562.addTo(map_e8ee120e402ba29faa12d4df25321878);
+        
+    
+            var tile_layer_37395a90bad0c52add0770a29371e793 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_37395a90bad0c52add0770a29371e793.addTo(map_e8ee120e402ba29faa12d4df25321878);
+        
+    
+            var feature_group_8986afdcc42a29730005e97d4b957ad6 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_0e75c834226ae2bd44d6d0501cff8636 = L.circleMarker(
+                [6.4754343, 3.7326118],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_0324b6784953f509d37158bd6c56169e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_59fb030dbd652aa28e2adea84993b99b = $(`<div id="html_59fb030dbd652aa28e2adea84993b99b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1806058&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Lakowe - School Gate&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4754, 3.7326&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Lakowe - School Gate&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_0324b6784953f509d37158bd6c56169e.setContent(html_59fb030dbd652aa28e2adea84993b99b);
+            
+        
+
+        circle_marker_0e75c834226ae2bd44d6d0501cff8636.bindPopup(popup_0324b6784953f509d37158bd6c56169e)
+        ;
+
+        
+    
+    
+            circle_marker_0e75c834226ae2bd44d6d0501cff8636.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Lakowe - School Gate (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a8847a5020b4e1becd2a481d971908da = L.circleMarker(
+                [6.4689314, 3.7210708],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_f16c5019a5f7e309885f4abc745edb04 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_19c9ecd735e66f67068994f810d10874 = $(`<div id="html_19c9ecd735e66f67068994f810d10874" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1854084&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Eputu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4689, 3.7211&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Eputu&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_f16c5019a5f7e309885f4abc745edb04.setContent(html_19c9ecd735e66f67068994f810d10874);
+            
+        
+
+        circle_marker_a8847a5020b4e1becd2a481d971908da.bindPopup(popup_f16c5019a5f7e309885f4abc745edb04)
+        ;
+
+        
+    
+    
+            circle_marker_a8847a5020b4e1becd2a481d971908da.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Eputu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_092120b5e617ec913784bfb8b4e24d5f = L.circleMarker(
+                [6.472607099999999, 3.7203205],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_8d7cf184eeb576e0b2f053a5ed7ae64f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e680b02b04cfaf6a2d21aeb916cb9e00 = $(`<div id="html_e680b02b04cfaf6a2d21aeb916cb9e00" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1854315&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Eputu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4726, 3.7203&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Eputu&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_8d7cf184eeb576e0b2f053a5ed7ae64f.setContent(html_e680b02b04cfaf6a2d21aeb916cb9e00);
+            
+        
+
+        circle_marker_092120b5e617ec913784bfb8b4e24d5f.bindPopup(popup_8d7cf184eeb576e0b2f053a5ed7ae64f)
+        ;
+
+        
+    
+    
+            circle_marker_092120b5e617ec913784bfb8b4e24d5f.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Eputu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_00361ab311b737938352bdb4ef1ab332 = L.circleMarker(
+                [6.471006, 3.713431999999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_7fcf2cf3f1ab97a00fe7cc73c40c26c7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_03016fcd825d780ee0344043bade707e = $(`<div id="html_03016fcd825d780ee0344043bade707e" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1897224&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Mayfair Gardens&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4710, 3.7134&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Mayfair Gardens&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_7fcf2cf3f1ab97a00fe7cc73c40c26c7.setContent(html_03016fcd825d780ee0344043bade707e);
+            
+        
+
+        circle_marker_00361ab311b737938352bdb4ef1ab332.bindPopup(popup_7fcf2cf3f1ab97a00fe7cc73c40c26c7)
+        ;
+
+        
+    
+    
+            circle_marker_00361ab311b737938352bdb4ef1ab332.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Mayfair Gardens (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_672fe3d6fb6c9583994f096e749e04b7 = L.circleMarker(
+                [6.4753317, 3.7174699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_a25fe00451facf5f2c99bd8b7e8788f4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2dfc3fd4511c08b2983f7ad95a62ab01 = $(`<div id="html_2dfc3fd4511c08b2983f7ad95a62ab01" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1999973&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Eputu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4753, 3.7175&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Eputu&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_a25fe00451facf5f2c99bd8b7e8788f4.setContent(html_2dfc3fd4511c08b2983f7ad95a62ab01);
+            
+        
+
+        circle_marker_672fe3d6fb6c9583994f096e749e04b7.bindPopup(popup_a25fe00451facf5f2c99bd8b7e8788f4)
+        ;
+
+        
+    
+    
+            circle_marker_672fe3d6fb6c9583994f096e749e04b7.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Eputu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a8be24a7029ca23211ab979b36b4d5fa = L.circleMarker(
+                [6.4642122, 3.7324617],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_72132187e251caea54128b71a013a04d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1032ab6e920f14723826ff39c748ebdf = $(`<div id="html_1032ab6e920f14723826ff39c748ebdf" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 2363759&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Lakowe - Adeba Road&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4642, 3.7325&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Lakowe - Adeba Road&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_72132187e251caea54128b71a013a04d.setContent(html_1032ab6e920f14723826ff39c748ebdf);
+            
+        
+
+        circle_marker_a8be24a7029ca23211ab979b36b4d5fa.bindPopup(popup_72132187e251caea54128b71a013a04d)
+        ;
+
+        
+    
+    
+            circle_marker_a8be24a7029ca23211ab979b36b4d5fa.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Lakowe - Adeba Road (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1856aa5293101aeff9492dd83758efa7 = L.circleMarker(
+                [6.471006, 3.713431999999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_b790b7790b865a93eea6f3a75f030714 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cfe61bc49be764e1350e754295288fd7 = $(`<div id="html_cfe61bc49be764e1350e754295288fd7" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4407256&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4710, 3.7134&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_b790b7790b865a93eea6f3a75f030714.setContent(html_cfe61bc49be764e1350e754295288fd7);
+            
+        
+
+        circle_marker_1856aa5293101aeff9492dd83758efa7.bindPopup(popup_b790b7790b865a93eea6f3a75f030714)
+        ;
+
+        
+    
+    
+            circle_marker_1856aa5293101aeff9492dd83758efa7.bindTooltip(
+                `<div>
+                     Ibeju Lekki |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dbda56f315f17e35e92ef6f92d24a418 = L.circleMarker(
+                [6.4641562, 3.7323135],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_90c8bd8361bd2ca4a7a8b779ff5f2735 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0a56761d17dc491da41d9568c9b3f8f1 = $(`<div id="html_0a56761d17dc491da41d9568c9b3f8f1" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3077492&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Lakowe - Adeba Road&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4642, 3.7323&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Lakowe - Adeba Road&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_90c8bd8361bd2ca4a7a8b779ff5f2735.setContent(html_0a56761d17dc491da41d9568c9b3f8f1);
+            
+        
+
+        circle_marker_dbda56f315f17e35e92ef6f92d24a418.bindPopup(popup_90c8bd8361bd2ca4a7a8b779ff5f2735)
+        ;
+
+        
+    
+    
+            circle_marker_dbda56f315f17e35e92ef6f92d24a418.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Lakowe - Adeba Road (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1774bbcdc3c1737182c7483875e6bc03 = L.circleMarker(
+                [6.465152, 3.7321623],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_b90fbb7974d91ed783305a958a4edca1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_28ff1ce410163e15e35d9ff091757960 = $(`<div id="html_28ff1ce410163e15e35d9ff091757960" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4100969&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OmniShelf LCDA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4652, 3.7322&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OmniShelf LCDA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_b90fbb7974d91ed783305a958a4edca1.setContent(html_28ff1ce410163e15e35d9ff091757960);
+            
+        
+
+        circle_marker_1774bbcdc3c1737182c7483875e6bc03.bindPopup(popup_b90fbb7974d91ed783305a958a4edca1)
+        ;
+
+        
+    
+    
+            circle_marker_1774bbcdc3c1737182c7483875e6bc03.bindTooltip(
+                `<div>
+                     Ibeju Lekki | OmniShelf LCDA (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cfd3f042f3dbcfa56023ac85ce135f41 = L.circleMarker(
+                [6.4641562, 3.7323135],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_5f1c62c5de6dc53ed8f2259e1e18f8fd = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_dc5b68f85c432d2a544100d80b9fdf60 = $(`<div id="html_dc5b68f85c432d2a544100d80b9fdf60" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5300398&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Lakowe - Kajola&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4642, 3.7323&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Lakowe - Kajola&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_5f1c62c5de6dc53ed8f2259e1e18f8fd.setContent(html_dc5b68f85c432d2a544100d80b9fdf60);
+            
+        
+
+        circle_marker_cfd3f042f3dbcfa56023ac85ce135f41.bindPopup(popup_5f1c62c5de6dc53ed8f2259e1e18f8fd)
+        ;
+
+        
+    
+    
+            circle_marker_cfd3f042f3dbcfa56023ac85ce135f41.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Lakowe - Kajola (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c9813c1a7e560d3f6afafdfb96e92d3b = L.circleMarker(
+                [6.4641357, 3.732302599999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_fbfd8c20f551743b5bb91ff48b9b5bb6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_25b326a2b2345c55d255a6171d8ee9a4 = $(`<div id="html_25b326a2b2345c55d255a6171d8ee9a4" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5300889&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Mayfair Gardens&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4641, 3.7323&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Mayfair Gardens&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_fbfd8c20f551743b5bb91ff48b9b5bb6.setContent(html_25b326a2b2345c55d255a6171d8ee9a4);
+            
+        
+
+        circle_marker_c9813c1a7e560d3f6afafdfb96e92d3b.bindPopup(popup_fbfd8c20f551743b5bb91ff48b9b5bb6)
+        ;
+
+        
+    
+    
+            circle_marker_c9813c1a7e560d3f6afafdfb96e92d3b.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Mayfair Gardens (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4e0e0bd0c6cbba9dda8304f8125b8a7d = L.circleMarker(
+                [6.4754299, 3.7193936],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_d73aff083e98fab3eba7c92018b6a1d1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_938f1fa5defacf27a3b21be7f5b3b10d = $(`<div id="html_938f1fa5defacf27a3b21be7f5b3b10d" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5203444&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Eputu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4754, 3.7194&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Eputu&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_d73aff083e98fab3eba7c92018b6a1d1.setContent(html_938f1fa5defacf27a3b21be7f5b3b10d);
+            
+        
+
+        circle_marker_4e0e0bd0c6cbba9dda8304f8125b8a7d.bindPopup(popup_d73aff083e98fab3eba7c92018b6a1d1)
+        ;
+
+        
+    
+    
+            circle_marker_4e0e0bd0c6cbba9dda8304f8125b8a7d.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Eputu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_819fa19f2c5ed023f98e3508007be434 = L.circleMarker(
+                [6.465152, 3.7321623],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_4946907f830e8ebbaa8d6e2a64ec7ca4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_86e87cd655f4e6505c2e1873b63918ac = $(`<div id="html_86e87cd655f4e6505c2e1873b63918ac" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5205330&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4652, 3.7322&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_4946907f830e8ebbaa8d6e2a64ec7ca4.setContent(html_86e87cd655f4e6505c2e1873b63918ac);
+            
+        
+
+        circle_marker_819fa19f2c5ed023f98e3508007be434.bindPopup(popup_4946907f830e8ebbaa8d6e2a64ec7ca4)
+        ;
+
+        
+    
+    
+            circle_marker_819fa19f2c5ed023f98e3508007be434.bindTooltip(
+                `<div>
+                     Ibeju Lekki |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cd9efc56f5edc5c56b8471e6bc12d13a = L.circleMarker(
+                [6.4757239, 3.7182462],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_bf785e114be13900702d6307efd09a92 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_204788866a480afea7b15d88193d01a6 = $(`<div id="html_204788866a480afea7b15d88193d01a6" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5206077&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4757, 3.7182&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_bf785e114be13900702d6307efd09a92.setContent(html_204788866a480afea7b15d88193d01a6);
+            
+        
+
+        circle_marker_cd9efc56f5edc5c56b8471e6bc12d13a.bindPopup(popup_bf785e114be13900702d6307efd09a92)
+        ;
+
+        
+    
+    
+            circle_marker_cd9efc56f5edc5c56b8471e6bc12d13a.bindTooltip(
+                `<div>
+                     Ibeju Lekki |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dc2f2f271fa52a6e1351116db18de4fc = L.circleMarker(
+                [6.4649211, 3.7243109],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_16112b9ed51217423debb0c746cfc3c2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_44ea6a798b06c4afee4c0190e4731c2e = $(`<div id="html_44ea6a798b06c4afee4c0190e4731c2e" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5228991&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Oribanwa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4649, 3.7243&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Oribanwa&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_16112b9ed51217423debb0c746cfc3c2.setContent(html_44ea6a798b06c4afee4c0190e4731c2e);
+            
+        
+
+        circle_marker_dc2f2f271fa52a6e1351116db18de4fc.bindPopup(popup_16112b9ed51217423debb0c746cfc3c2)
+        ;
+
+        
+    
+    
+            circle_marker_dc2f2f271fa52a6e1351116db18de4fc.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Oribanwa (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_65f4a80a0ef47a586a9a5d9bd32977d3 = L.circleMarker(
+                [6.4754299, 3.7193936],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_69b19c19e316d9d892f00231e209f0e0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3d10723e5d58800155c93dbcc135566b = $(`<div id="html_3d10723e5d58800155c93dbcc135566b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5239364&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Eputu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4754, 3.7194&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Eputu&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_69b19c19e316d9d892f00231e209f0e0.setContent(html_3d10723e5d58800155c93dbcc135566b);
+            
+        
+
+        circle_marker_65f4a80a0ef47a586a9a5d9bd32977d3.bindPopup(popup_69b19c19e316d9d892f00231e209f0e0)
+        ;
+
+        
+    
+    
+            circle_marker_65f4a80a0ef47a586a9a5d9bd32977d3.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Eputu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4799e51648564260c7bf5829124a5bcd = L.circleMarker(
+                [6.4751158, 3.7294623],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_143fd29a66b975b577adda0689413ef3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_07894a8e53b3fa9d1ef2c1bb7174ef8c = $(`<div id="html_07894a8e53b3fa9d1ef2c1bb7174ef8c" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5406886&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Lakowe - School Gate&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4751, 3.7295&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Lakowe - School Gate&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_143fd29a66b975b577adda0689413ef3.setContent(html_07894a8e53b3fa9d1ef2c1bb7174ef8c);
+            
+        
+
+        circle_marker_4799e51648564260c7bf5829124a5bcd.bindPopup(popup_143fd29a66b975b577adda0689413ef3)
+        ;
+
+        
+    
+    
+            circle_marker_4799e51648564260c7bf5829124a5bcd.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Lakowe - School Gate (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_090cb59187ea25d154f8a6bd37dfda2e = L.circleMarker(
+                [6.4754299, 3.7193936],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8986afdcc42a29730005e97d4b957ad6);
+        
+    
+        var popup_1ca20da2a49707e009361376695a3767 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_82d757b4e530ad68f4f82f30e5ae0c42 = $(`<div id="html_82d757b4e530ad68f4f82f30e5ae0c42" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5354013&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Lakowe - School Gate&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4754, 3.7194&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Lakowe - School Gate&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_1ca20da2a49707e009361376695a3767.setContent(html_82d757b4e530ad68f4f82f30e5ae0c42);
+            
+        
+
+        circle_marker_090cb59187ea25d154f8a6bd37dfda2e.bindPopup(popup_1ca20da2a49707e009361376695a3767)
+        ;
+
+        
+    
+    
+            circle_marker_090cb59187ea25d154f8a6bd37dfda2e.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Lakowe - School Gate (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_8986afdcc42a29730005e97d4b957ad6.addTo(map_e8ee120e402ba29faa12d4df25321878);
+        
+    
+            var feature_group_21b6fd0ebe11efa8d435eea9dc7f12c6 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_c54a73352f0313cfd8cf0dea5bd7d02e = L.circleMarker(
+                [6.4570358, 3.7114047],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_21b6fd0ebe11efa8d435eea9dc7f12c6);
+        
+    
+        var popup_4b2a058ee0998e4563d95fff843ca3e5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5b941c78581326bef4308103a39e4c73 = $(`<div id="html_5b941c78581326bef4308103a39e4c73" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5458411&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Gbetu Iwerekun Road&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4570, 3.7114&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Gbetu Iwerekun Road&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_4b2a058ee0998e4563d95fff843ca3e5.setContent(html_5b941c78581326bef4308103a39e4c73);
+            
+        
+
+        circle_marker_c54a73352f0313cfd8cf0dea5bd7d02e.bindPopup(popup_4b2a058ee0998e4563d95fff843ca3e5)
+        ;
+
+        
+    
+    
+            circle_marker_c54a73352f0313cfd8cf0dea5bd7d02e.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Gbetu Iwerekun Road (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_434557fe6f2e828545efa9fe4f3bb5b4 = L.circleMarker(
+                [6.4689554, 3.6936317],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_21b6fd0ebe11efa8d435eea9dc7f12c6);
+        
+    
+        var popup_3a3bd431839e539a51fcec7775c20f47 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1fc18c1d0f7a26ea0d8303a2985320ae = $(`<div id="html_1fc18c1d0f7a26ea0d8303a2985320ae" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5459198&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Container Bustop&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4690, 3.6936&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Container Bustop&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_3a3bd431839e539a51fcec7775c20f47.setContent(html_1fc18c1d0f7a26ea0d8303a2985320ae);
+            
+        
+
+        circle_marker_434557fe6f2e828545efa9fe4f3bb5b4.bindPopup(popup_3a3bd431839e539a51fcec7775c20f47)
+        ;
+
+        
+    
+    
+            circle_marker_434557fe6f2e828545efa9fe4f3bb5b4.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Container Bustop (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cd8b499e5a0421d16e88ad17edb76dd3 = L.circleMarker(
+                [6.4643354, 3.695494],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_21b6fd0ebe11efa8d435eea9dc7f12c6);
+        
+    
+        var popup_be02f481ea691ff520afa357ee5dc3bb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8f1ee1cfd85c6285b344645460eac050 = $(`<div id="html_8f1ee1cfd85c6285b344645460eac050" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3504043&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Container Bustop&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4643, 3.6955&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Container Bustop&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_be02f481ea691ff520afa357ee5dc3bb.setContent(html_8f1ee1cfd85c6285b344645460eac050);
+            
+        
+
+        circle_marker_cd8b499e5a0421d16e88ad17edb76dd3.bindPopup(popup_be02f481ea691ff520afa357ee5dc3bb)
+        ;
+
+        
+    
+    
+            circle_marker_cd8b499e5a0421d16e88ad17edb76dd3.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Container Bustop (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0cdcea7d987cafe6df14d38a580f0413 = L.circleMarker(
+                [6.4689554, 3.6936317],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_21b6fd0ebe11efa8d435eea9dc7f12c6);
+        
+    
+        var popup_04f177f04405a4c80dbf548b39bd9af5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bd9c9d57848a1d975a8e13a896a93b87 = $(`<div id="html_bd9c9d57848a1d975a8e13a896a93b87" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4002623&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Container Bustop&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4690, 3.6936&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Container Bustop&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_04f177f04405a4c80dbf548b39bd9af5.setContent(html_bd9c9d57848a1d975a8e13a896a93b87);
+            
+        
+
+        circle_marker_0cdcea7d987cafe6df14d38a580f0413.bindPopup(popup_04f177f04405a4c80dbf548b39bd9af5)
+        ;
+
+        
+    
+    
+            circle_marker_0cdcea7d987cafe6df14d38a580f0413.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Container Bustop (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f4a8b749bdd021502a9637a993bd7101 = L.circleMarker(
+                [6.4672737, 3.7006392],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_21b6fd0ebe11efa8d435eea9dc7f12c6);
+        
+    
+        var popup_cdf41dff1d27fd4ab200b48a6e31a57b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f28f5ba29748ebf5a724b2d373269417 = $(`<div id="html_f28f5ba29748ebf5a724b2d373269417" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5236221&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Ogunlana Busstop&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4673, 3.7006&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ibeju Lekki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ibeju Lekki - Awoyaya - Ogunlana Busstop&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_cdf41dff1d27fd4ab200b48a6e31a57b.setContent(html_f28f5ba29748ebf5a724b2d373269417);
+            
+        
+
+        circle_marker_f4a8b749bdd021502a9637a993bd7101.bindPopup(popup_cdf41dff1d27fd4ab200b48a6e31a57b)
+        ;
+
+        
+    
+    
+            circle_marker_f4a8b749bdd021502a9637a993bd7101.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Ogunlana Busstop (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_21b6fd0ebe11efa8d435eea9dc7f12c6.addTo(map_e8ee120e402ba29faa12d4df25321878);
+        
+    
+            var layer_control_3ff5d87f3033411d8426af5f691499ce_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_ccfdd7c0ce50f0c0a6586c46e5e5b16a,
+                    "OpenStreetMap" : tile_layer_524ad8d4d422be40da0a8945f99fae85,
+                    "Terrain" : tile_layer_c833d619fa6f777e5819bd9f1d3df958,
+                    "Toner" : tile_layer_88952ec5a2596be9d7cfb2817cc64af3,
+                    "CartoDB Dark" : tile_layer_e35b04c067085a24997fd95278181562,
+                    "CartoDB Light" : tile_layer_37395a90bad0c52add0770a29371e793,
+                },
+                overlays :  {
+                    "Cluster 1 - Ibeju Lekki - Ibeju Lekki - Lakowe - School Gate+7more (18 points)" : feature_group_8986afdcc42a29730005e97d4b957ad6,
+                    "Cluster 2 - Ibeju Lekki - Ibeju Lekki - Awoyaya - Gbetu Iwerekun Road+2more (5 points)" : feature_group_21b6fd0ebe11efa8d435eea9dc7f12c6,
+                },
+            };
+            let layer_control_3ff5d87f3033411d8426af5f691499ce = L.control.layers(
+                layer_control_3ff5d87f3033411d8426af5f691499ce_layers.base_layers,
+                layer_control_3ff5d87f3033411d8426af5f691499ce_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_e8ee120e402ba29faa12d4df25321878);
+
+        
+    
+            var tile_layer_2df787626f540911421e31f549aa0645 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_4de40ac353fc74f21f484ed054dabca8 = new L.Control.MiniMap(
+                tile_layer_2df787626f540911421e31f549aa0645,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_e8ee120e402ba29faa12d4df25321878.addControl(mini_map_4de40ac353fc74f21f484ed054dabca8);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_e8ee120e402ba29faa12d4df25321878);
+        
+    
+            var measure_control_95dd5c1c476a83ba594f4184cff7e72a = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_e8ee120e402ba29faa12d4df25321878.addControl(measure_control_95dd5c1c476a83ba594f4184cff7e72a);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_6ddd318bc9b06b19542814c6bbc7d8a4 = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_6ddd318bc9b06b19542814c6bbc7d8a4.options["latFormatter"] =
+                undefined;
+            mouse_position_6ddd318bc9b06b19542814c6bbc7d8a4.options["lngFormatter"] =
+                undefined;
+            map_e8ee120e402ba29faa12d4df25321878.addControl(mouse_position_6ddd318bc9b06b19542814c6bbc7d8a4);
+        
+    
+            map_e8ee120e402ba29faa12d4df25321878.fitBounds(
+                [[6.4470358, 3.6836317000000003], [6.4857239, 3.7426117999999997]],
+                {}
+            );
+        
+    
+            var marker_56313140963a069d7814e25898c1eff8 = L.marker(
+                [6.4656195, 3.7052798],
+                {
+  "size": 10,
+}
+            ).addTo(map_e8ee120e402ba29faa12d4df25321878);
+        
+    
+            var icon_1b152a88bf3ec2b460d77bb02abf3043 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_56313140963a069d7814e25898c1eff8.bindTooltip(
+                `<div>
+                     OmniHub Ibeju Lekki Lagos - SI & A
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_56313140963a069d7814e25898c1eff8.setIcon(icon_1b152a88bf3ec2b460d77bb02abf3043);
+            
+    
+            var poly_line_30e4da1653be2bec3a08b36a4fe10060 = L.polyline(
+                [[6.46562, 3.70527], [6.46636, 3.70529], [6.46729, 3.70528], [6.46803, 3.70527], [6.46906, 3.70513], [6.46926, 3.70566], [6.4694, 3.70601], [6.46943, 3.70609], [6.46957, 3.70648], [6.47034, 3.70873], [6.47064, 3.70971], [6.47083, 3.71047], [6.47112, 3.71157], [6.47129, 3.71226], [6.47142, 3.71295], [6.47123, 3.71303], [6.47118, 3.71303], [6.47115, 3.71306], [6.47115, 3.71312], [6.47119, 3.71315], [6.47122, 3.71315], [6.47124, 3.71335], [6.47102, 3.71333], [6.47124, 3.71335], [6.47132, 3.71371], [6.47135, 3.7139], [6.47139, 3.71406], [6.47147, 3.71412], [6.47165, 3.71413], [6.47177, 3.71482], [6.47194, 3.716], [6.47204, 3.71682], [6.47214, 3.71765], [6.47216, 3.71789], [6.4722, 3.71816], [6.47228, 3.71904], [6.47243, 3.72061], [6.47243, 3.72068], [6.47245, 3.72092], [6.47246, 3.72106], [6.47266, 3.72308], [6.47267, 3.72322], [6.4727, 3.72356], [6.47271, 3.72366], [6.47274, 3.7239], [6.47279, 3.72435], [6.4728, 3.7245], [6.47282, 3.72478], [6.47299, 3.72649], [6.47303, 3.72681], [6.47304, 3.72692], [6.47329, 3.72955], [6.47315, 3.72968], [6.47254, 3.72983], [6.4721, 3.72996], [6.47082, 3.73032], [6.47046, 3.73041], [6.46874, 3.73091], [6.46821, 3.73113], [6.46794, 3.73121], [6.46632, 3.73181], [6.46597, 3.73191], [6.46557, 3.73203], [6.46515, 3.73215], [6.46507, 3.73217], [6.4645, 3.73246], [6.46436, 3.73252], [6.46429, 3.73256], [6.46427, 3.73257], [6.46436, 3.73252], [6.4645, 3.73246], [6.4644, 3.73202], [6.46427, 3.73203], [6.46415, 3.73202], [6.46427, 3.73203], [6.4644, 3.73202], [6.4645, 3.73246], [6.46507, 3.73217], [6.46557, 3.73203], [6.46597, 3.73191], [6.46632, 3.73181], [6.46794, 3.73121], [6.46821, 3.73113], [6.46874, 3.73091], [6.47046, 3.73041], [6.47082, 3.73032], [6.4721, 3.72996], [6.47254, 3.72983], [6.47315, 3.72968], [6.47329, 3.72979], [6.47333, 3.72991], [6.47359, 3.73259], [6.47377, 3.73426], [6.4739, 3.73562], [6.47407, 3.73739], [6.4742, 3.73888], [6.47453, 3.7422], [6.47455, 3.74236], [6.47458, 3.74272], [6.47468, 3.7438], [6.47486, 3.74571], [6.47493, 3.74634], [6.47499, 3.747], [6.4753, 3.75009], [6.47543, 3.75147], [6.47548, 3.75205], [6.47558, 3.75309], [6.47563, 3.75358], [6.47578, 3.755], [6.47583, 3.75561], [6.47586, 3.75594], [6.47596, 3.75689], [6.47602, 3.75761], [6.47604, 3.75775], [6.47608, 3.75824], [6.47613, 3.75919], [6.47623, 3.75915], [6.47621, 3.75869], [6.4762, 3.75842], [6.47617, 3.75805], [6.47609, 3.75713], [6.47606, 3.75677], [6.47583, 3.75423], [6.47577, 3.75364], [6.47565, 3.75247], [6.4756, 3.75192], [6.47557, 3.75158], [6.47549, 3.75086], [6.47545, 3.75038], [6.47525, 3.74842], [6.47525, 3.74835], [6.47519, 3.74783], [6.47517, 3.74753], [6.47507, 3.74652], [6.47507, 3.74645], [6.47504, 3.74627], [6.47493, 3.74506], [6.4749, 3.74482], [6.47479, 3.74359], [6.47473, 3.74301], [6.47466, 3.74237], [6.47425, 3.73808], [6.47384, 3.73405], [6.47376, 3.73325], [6.47375, 3.73312], [6.47372, 3.73285], [6.47441, 3.73285], [6.47503, 3.73274], [6.47546, 3.73264], [6.47546, 3.73261], [6.47547, 3.73239], [6.47553, 3.73208], [6.47553, 3.73185], [6.47544, 3.73082], [6.47513, 3.7304], [6.47509, 3.7303], [6.47506, 3.73018], [6.47497, 3.72948], [6.47493, 3.7292], [6.47419, 3.72941], [6.47411, 3.72797], [6.47404, 3.72758], [6.47403, 3.72701], [6.474, 3.7267], [6.47402, 3.72561], [6.47407, 3.72553], [6.4741, 3.72466], [6.47415, 3.72436], [6.47421, 3.72423], [6.47431, 3.72392], [6.47458, 3.7231], [6.47515, 3.72169], [6.47531, 3.72131], [6.47534, 3.72121], [6.47542, 3.72083], [6.47542, 3.72072], [6.47545, 3.72058], [6.47545, 3.72025], [6.47543, 3.71995], [6.47538, 3.71891], [6.47534, 3.71835], [6.47529, 3.71804], [6.47526, 3.71763], [6.47522, 3.71744], [6.47532, 3.71742], [6.47522, 3.71744], [6.47526, 3.71763], [6.47529, 3.71804], [6.47534, 3.71835], [6.47562, 3.71821], [6.47572, 3.71819], [6.47562, 3.71821], [6.47534, 3.71835], [6.47538, 3.71891], [6.4754, 3.7194], [6.47543, 3.71995], [6.47545, 3.72025], [6.47545, 3.72058], [6.47484, 3.72059], [6.4746, 3.72057], [6.4739, 3.72047], [6.47344, 3.72044], [6.4726, 3.72037], [6.4725, 3.72036], [6.47248, 3.72019], [6.47246, 3.71993], [6.47243, 3.71964], [6.47234, 3.71865], [6.47233, 3.71847], [6.4722, 3.71729], [6.47217, 3.71702], [6.47217, 3.71696], [6.4721, 3.71646], [6.47207, 3.71618], [6.47206, 3.71611], [6.47186, 3.71475], [6.47172, 3.71393], [6.4716, 3.71326], [6.47132, 3.71192], [6.47115, 3.71124], [6.47077, 3.70976], [6.47053, 3.70897], [6.47005, 3.7075], [6.46985, 3.70692], [6.46924, 3.70526], [6.46904, 3.70478], [6.46858, 3.70371], [6.46825, 3.70302], [6.46789, 3.70221], [6.46747, 3.70132], [6.46738, 3.70113], [6.46734, 3.70104], [6.46718, 3.70068], [6.46613, 3.69843], [6.46502, 3.69595], [6.46494, 3.69579], [6.46452, 3.69499], [6.46419, 3.69427], [6.46369, 3.69321], [6.46397, 3.69307], [6.46463, 3.69282], [6.46531, 3.69267], [6.46602, 3.69254], [6.46662, 3.69246], [6.46681, 3.69247], [6.467, 3.69255], [6.4672, 3.69256], [6.46729, 3.6926], [6.4674, 3.69268], [6.46771, 3.6929], [6.4678, 3.69299], [6.46791, 3.69314], [6.46819, 3.69337], [6.46843, 3.69355], [6.46889, 3.69376], [6.46843, 3.69355], [6.46819, 3.69337], [6.46791, 3.69314], [6.4678, 3.69299], [6.46771, 3.6929], [6.4674, 3.69268], [6.46729, 3.6926], [6.4672, 3.69256], [6.467, 3.69255], [6.46681, 3.69247], [6.46662, 3.69246], [6.46602, 3.69254], [6.46531, 3.69267], [6.46463, 3.69282], [6.46397, 3.69307], [6.46369, 3.69321], [6.46238, 3.69037], [6.46217, 3.68989], [6.46205, 3.68961], [6.46199, 3.68947], [6.46182, 3.68905], [6.46161, 3.68853], [6.46128, 3.68756], [6.46107, 3.68681], [6.46092, 3.68622], [6.46074, 3.68511], [6.4607, 3.68488], [6.46066, 3.68438], [6.46063, 3.68373], [6.46062, 3.68312], [6.46068, 3.68211], [6.4607, 3.68183], [6.46084, 3.68088], [6.46094, 3.68041], [6.46126, 3.67922], [6.4614, 3.67876], [6.46149, 3.6785], [6.46168, 3.67797], [6.46197, 3.67722], [6.4624, 3.6761], [6.4623, 3.67607], [6.46197, 3.67691], [6.46145, 3.67833], [6.46134, 3.67862], [6.461, 3.6797], [6.46079, 3.68052], [6.46071, 3.68097], [6.46062, 3.68163], [6.46057, 3.68213], [6.46052, 3.68315], [6.46053, 3.68392], [6.46061, 3.68492], [6.46062, 3.68509], [6.46068, 3.68549], [6.46093, 3.68681], [6.4612, 3.68773], [6.46137, 3.68822], [6.46182, 3.68939], [6.46239, 3.6907], [6.46294, 3.69188], [6.4637, 3.6935], [6.46411, 3.69437], [6.46451, 3.69529], [6.46458, 3.69544], [6.46435, 3.69553], [6.46458, 3.69544], [6.4648, 3.69588], [6.46489, 3.69605], [6.46603, 3.69851], [6.46643, 3.6994], [6.46668, 3.69992], [6.4688, 3.70457], [6.46894, 3.70489], [6.46906, 3.70513], [6.46803, 3.70527], [6.46729, 3.70528], [6.46636, 3.70529], [6.46562, 3.70527]],
+                {"bubblingMouseEvents": true, "color": "#1f77b4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#1f77b4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_e8ee120e402ba29faa12d4df25321878);
+        
+</script>
+</html>

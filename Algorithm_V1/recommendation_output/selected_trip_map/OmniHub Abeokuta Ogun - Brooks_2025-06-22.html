@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_bc27d7124cc1562be5a2a7ff179e9e34 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 3 clusters | 36 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+    <div id="cluster-legend" style="position: fixed; 
+                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                background-color: rgba(255, 255, 255, 0.95); 
+                border: 2px solid #ccc; z-index: 999; 
+                font-size: 11px; padding: 12px; border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                backdrop-filter: blur(5px);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <strong style="color: #333;">Cluster Legend</strong>
+        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+    </div>
+    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+        3 clusters | Sorted by size | Showing top 15
+    </div>
+    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 1 
+                <br><span style="color: #666; font-size: 9px;">17 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">10 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 4 
+                <br><span style="color: #666; font-size: 9px;">9 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_bc27d7124cc1562be5a2a7ff179e9e34" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_bc27d7124cc1562be5a2a7ff179e9e34 = L.map(
+                "map_bc27d7124cc1562be5a2a7ff179e9e34",
+                {
+                    center: [7.1669541500000005, 3.3739917999999998],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_bc27d7124cc1562be5a2a7ff179e9e34);
+
+            
+
+        
+    
+            var tile_layer_77997ce1671e6514f11a13efb41b8983 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_77997ce1671e6514f11a13efb41b8983.addTo(map_bc27d7124cc1562be5a2a7ff179e9e34);
+        
+    
+            var tile_layer_4bc37b0c6fe63899807cb9626d6722d2 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_4bc37b0c6fe63899807cb9626d6722d2.addTo(map_bc27d7124cc1562be5a2a7ff179e9e34);
+        
+    
+            var tile_layer_cd048b9ad1ff6b986f4f3ed2dcfa76df = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_cd048b9ad1ff6b986f4f3ed2dcfa76df.addTo(map_bc27d7124cc1562be5a2a7ff179e9e34);
+        
+    
+            var tile_layer_e9da5d930778bf3aa53d44a8613ca276 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e9da5d930778bf3aa53d44a8613ca276.addTo(map_bc27d7124cc1562be5a2a7ff179e9e34);
+        
+    
+            var tile_layer_89c19bbc85a70482ba9f84a3e0b250b8 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_89c19bbc85a70482ba9f84a3e0b250b8.addTo(map_bc27d7124cc1562be5a2a7ff179e9e34);
+        
+    
+            var tile_layer_af278613cf8f9776b325bc1b4d0e9ed9 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_af278613cf8f9776b325bc1b4d0e9ed9.addTo(map_bc27d7124cc1562be5a2a7ff179e9e34);
+        
+    
+            var feature_group_ee23b13804fcc9e438c5b318dbd35272 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_21bc72db7da8974cfc886325731514da = L.circleMarker(
+                [7.1897669, 3.3477076],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_35b3992ef4ae4ae55a8c1c50ed4383f1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f0f98c98359991613d18e0aec40a1a7d = $(`<div id="html_f0f98c98359991613d18e0aec40a1a7d" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5447644&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1898, 3.3477&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_35b3992ef4ae4ae55a8c1c50ed4383f1.setContent(html_f0f98c98359991613d18e0aec40a1a7d);
+            
+        
+
+        circle_marker_21bc72db7da8974cfc886325731514da.bindPopup(popup_35b3992ef4ae4ae55a8c1c50ed4383f1)
+        ;
+
+        
+    
+    
+            circle_marker_21bc72db7da8974cfc886325731514da.bindTooltip(
+                `<div>
+                     Abeokuta North | Elega (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_23ccadec2816ff1e911bcb16f4cd8c9d = L.circleMarker(
+                [7.1897669, 3.3477076],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_b27c42dede0beea9f9662a2b8d1679e3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1e2d971b6d1c23d7658f988421ec926b = $(`<div id="html_1e2d971b6d1c23d7658f988421ec926b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5447702&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1898, 3.3477&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_b27c42dede0beea9f9662a2b8d1679e3.setContent(html_1e2d971b6d1c23d7658f988421ec926b);
+            
+        
+
+        circle_marker_23ccadec2816ff1e911bcb16f4cd8c9d.bindPopup(popup_b27c42dede0beea9f9662a2b8d1679e3)
+        ;
+
+        
+    
+    
+            circle_marker_23ccadec2816ff1e911bcb16f4cd8c9d.bindTooltip(
+                `<div>
+                     Abeokuta North | Elega (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_73090eb400c7e0160b20c0642c8507f3 = L.circleMarker(
+                [7.186944299999999, 3.3391589],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_324275df367787c544ac45eb0cef71fb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ddc0840b904ae68766c889e28053a88d = $(`<div id="html_ddc0840b904ae68766c889e28053a88d" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5447728&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Akomoje&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1869, 3.3392&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Akomoje&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_324275df367787c544ac45eb0cef71fb.setContent(html_ddc0840b904ae68766c889e28053a88d);
+            
+        
+
+        circle_marker_73090eb400c7e0160b20c0642c8507f3.bindPopup(popup_324275df367787c544ac45eb0cef71fb)
+        ;
+
+        
+    
+    
+            circle_marker_73090eb400c7e0160b20c0642c8507f3.bindTooltip(
+                `<div>
+                     Abeokuta North | Akomoje (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1479a49ed14d404f93a975134228dbbb = L.circleMarker(
+                [7.18222094247107, 3.347229981829305],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_8932e1094cce134bf0f09cbf5e050579 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1531b5d46abd2818e5a4f7ac32095268 = $(`<div id="html_1531b5d46abd2818e5a4f7ac32095268" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3833439&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1822, 3.3472&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_8932e1094cce134bf0f09cbf5e050579.setContent(html_1531b5d46abd2818e5a4f7ac32095268);
+            
+        
+
+        circle_marker_1479a49ed14d404f93a975134228dbbb.bindPopup(popup_8932e1094cce134bf0f09cbf5e050579)
+        ;
+
+        
+    
+    
+            circle_marker_1479a49ed14d404f93a975134228dbbb.bindTooltip(
+                `<div>
+                     Abeokuta North | Iberekodo (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0b957043f506cc7584f3834b029a175d = L.circleMarker(
+                [7.1897669, 3.3477076],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_26068d699f1116fb0ce0f332c3dad2f8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3df17936dc018eb8a1d073cfd1dd5ac0 = $(`<div id="html_3df17936dc018eb8a1d073cfd1dd5ac0" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3835088&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1898, 3.3477&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_26068d699f1116fb0ce0f332c3dad2f8.setContent(html_3df17936dc018eb8a1d073cfd1dd5ac0);
+            
+        
+
+        circle_marker_0b957043f506cc7584f3834b029a175d.bindPopup(popup_26068d699f1116fb0ce0f332c3dad2f8)
+        ;
+
+        
+    
+    
+            circle_marker_0b957043f506cc7584f3834b029a175d.bindTooltip(
+                `<div>
+                     Abeokuta North | Elega (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b1b2e0dcad359824b6fa35f05dca2775 = L.circleMarker(
+                [7.1897669, 3.3477076],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_8d83976e9239576c0f2edc0954a5fc7e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9e3dd30abfe6b33f0751ac93bc681655 = $(`<div id="html_9e3dd30abfe6b33f0751ac93bc681655" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3836209&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1898, 3.3477&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_8d83976e9239576c0f2edc0954a5fc7e.setContent(html_9e3dd30abfe6b33f0751ac93bc681655);
+            
+        
+
+        circle_marker_b1b2e0dcad359824b6fa35f05dca2775.bindPopup(popup_8d83976e9239576c0f2edc0954a5fc7e)
+        ;
+
+        
+    
+    
+            circle_marker_b1b2e0dcad359824b6fa35f05dca2775.bindTooltip(
+                `<div>
+                     Abeokuta North | Elega (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2082ce80347c3678302df0bc4a7e7164 = L.circleMarker(
+                [7.181768199999999, 3.3463775],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_2d6685acff9a1f03a388161c2e29edc0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_13e03fb5aa546d9dd5009759c5f1610b = $(`<div id="html_13e03fb5aa546d9dd5009759c5f1610b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3836262&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1818, 3.3464&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_2d6685acff9a1f03a388161c2e29edc0.setContent(html_13e03fb5aa546d9dd5009759c5f1610b);
+            
+        
+
+        circle_marker_2082ce80347c3678302df0bc4a7e7164.bindPopup(popup_2d6685acff9a1f03a388161c2e29edc0)
+        ;
+
+        
+    
+    
+            circle_marker_2082ce80347c3678302df0bc4a7e7164.bindTooltip(
+                `<div>
+                     Abeokuta North | Elega (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0dde729c6844010cab08f6159843c58f = L.circleMarker(
+                [7.181768199999999, 3.3463775],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_0c630bc9ff40bf7f8da7f7aa271767af = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b7ede84798d99373ccfa355d0c639321 = $(`<div id="html_b7ede84798d99373ccfa355d0c639321" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5449493&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1818, 3.3464&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_0c630bc9ff40bf7f8da7f7aa271767af.setContent(html_b7ede84798d99373ccfa355d0c639321);
+            
+        
+
+        circle_marker_0dde729c6844010cab08f6159843c58f.bindPopup(popup_0c630bc9ff40bf7f8da7f7aa271767af)
+        ;
+
+        
+    
+    
+            circle_marker_0dde729c6844010cab08f6159843c58f.bindTooltip(
+                `<div>
+                     Abeokuta North | Elega (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d062ff619254b2862472f359a0295830 = L.circleMarker(
+                [7.178206899999999, 3.3408832],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_75c1a22972c03a800c1b3856d0e05e1d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ccaad71807db38d0c5ccf2b6f20b3454 = $(`<div id="html_ccaad71807db38d0c5ccf2b6f20b3454" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5449907&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Mokola&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1782, 3.3409&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Mokola&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_75c1a22972c03a800c1b3856d0e05e1d.setContent(html_ccaad71807db38d0c5ccf2b6f20b3454);
+            
+        
+
+        circle_marker_d062ff619254b2862472f359a0295830.bindPopup(popup_75c1a22972c03a800c1b3856d0e05e1d)
+        ;
+
+        
+    
+    
+            circle_marker_d062ff619254b2862472f359a0295830.bindTooltip(
+                `<div>
+                     Abeokuta North | Mokola (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0a0233bff3155e22f201e4c26b9e585d = L.circleMarker(
+                [7.175355399999999, 3.3373164],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_10ef3d74c608bc031b8dd49b0c5a30af = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_575ed7b617692f97e5b9993089e62c40 = $(`<div id="html_575ed7b617692f97e5b9993089e62c40" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4638182&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ita - Ika&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1754, 3.3373&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ita - Ika&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_10ef3d74c608bc031b8dd49b0c5a30af.setContent(html_575ed7b617692f97e5b9993089e62c40);
+            
+        
+
+        circle_marker_0a0233bff3155e22f201e4c26b9e585d.bindPopup(popup_10ef3d74c608bc031b8dd49b0c5a30af)
+        ;
+
+        
+    
+    
+            circle_marker_0a0233bff3155e22f201e4c26b9e585d.bindTooltip(
+                `<div>
+                     Abeokuta North | Ita - Ika (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_904ae8d54a76c0f7f466f281f0e73f91 = L.circleMarker(
+                [7.1897669, 3.3477076],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_829d681c84229ac580ba47074668434c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ae356e942f6bdc68c8e52bbf59307ca7 = $(`<div id="html_ae356e942f6bdc68c8e52bbf59307ca7" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5324708&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1898, 3.3477&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_829d681c84229ac580ba47074668434c.setContent(html_ae356e942f6bdc68c8e52bbf59307ca7);
+            
+        
+
+        circle_marker_904ae8d54a76c0f7f466f281f0e73f91.bindPopup(popup_829d681c84229ac580ba47074668434c)
+        ;
+
+        
+    
+    
+            circle_marker_904ae8d54a76c0f7f466f281f0e73f91.bindTooltip(
+                `<div>
+                     Abeokuta North | Elega (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9490533b04b5fa51478714de6298d845 = L.circleMarker(
+                [7.181916999999999, 3.3461722],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_098984880861d6c19100ffba8a9d572b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ab159ebcc6cbd7e4b5c7644ed0a4166b = $(`<div id="html_ab159ebcc6cbd7e4b5c7644ed0a4166b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5339405&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1819, 3.3462&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_098984880861d6c19100ffba8a9d572b.setContent(html_ab159ebcc6cbd7e4b5c7644ed0a4166b);
+            
+        
+
+        circle_marker_9490533b04b5fa51478714de6298d845.bindPopup(popup_098984880861d6c19100ffba8a9d572b)
+        ;
+
+        
+    
+    
+            circle_marker_9490533b04b5fa51478714de6298d845.bindTooltip(
+                `<div>
+                     Abeokuta North | Elega (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0c93ad7499332b8f608f8a43893ee6b4 = L.circleMarker(
+                [7.1791509, 3.352085],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_ae5bcfbe537b65c0e8c45e45460160a0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_54d88025c620774f2aa5e2313e2ef641 = $(`<div id="html_54d88025c620774f2aa5e2313e2ef641" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5188417&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1792, 3.3521&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_ae5bcfbe537b65c0e8c45e45460160a0.setContent(html_54d88025c620774f2aa5e2313e2ef641);
+            
+        
+
+        circle_marker_0c93ad7499332b8f608f8a43893ee6b4.bindPopup(popup_ae5bcfbe537b65c0e8c45e45460160a0)
+        ;
+
+        
+    
+    
+            circle_marker_0c93ad7499332b8f608f8a43893ee6b4.bindTooltip(
+                `<div>
+                     Abeokuta North | Iberekodo (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_117dd52f1bc84bc802cf0af484a7009d = L.circleMarker(
+                [7.1797934, 3.3517906],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_782c945bd950b7fc4f23b51312f8be2b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3550541429c4648030b777266d144ee5 = $(`<div id="html_3550541429c4648030b777266d144ee5" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5199084&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1798, 3.3518&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_782c945bd950b7fc4f23b51312f8be2b.setContent(html_3550541429c4648030b777266d144ee5);
+            
+        
+
+        circle_marker_117dd52f1bc84bc802cf0af484a7009d.bindPopup(popup_782c945bd950b7fc4f23b51312f8be2b)
+        ;
+
+        
+    
+    
+            circle_marker_117dd52f1bc84bc802cf0af484a7009d.bindTooltip(
+                `<div>
+                     Abeokuta North | Iberekodo (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_99455ddee99d6feedf61be96c1910a88 = L.circleMarker(
+                [7.1815222, 3.3402139],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_dd2cbed4a22499f8738035bfaf607332 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_824afc865642d50a98522bce4d8399af = $(`<div id="html_824afc865642d50a98522bce4d8399af" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5232413&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1815, 3.3402&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_dd2cbed4a22499f8738035bfaf607332.setContent(html_824afc865642d50a98522bce4d8399af);
+            
+        
+
+        circle_marker_99455ddee99d6feedf61be96c1910a88.bindPopup(popup_dd2cbed4a22499f8738035bfaf607332)
+        ;
+
+        
+    
+    
+            circle_marker_99455ddee99d6feedf61be96c1910a88.bindTooltip(
+                `<div>
+                     Abeokuta North | Iberekodo (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4496a0eb05e2107233adcbcb3d7c68bc = L.circleMarker(
+                [7.1817681999999, 3.3463775],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_5d576c729b4ae4be70aa28bb9a9fba1f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_85928767eafd7fbe1eece7898476557b = $(`<div id="html_85928767eafd7fbe1eece7898476557b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5306061&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1818, 3.3464&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Elega&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_5d576c729b4ae4be70aa28bb9a9fba1f.setContent(html_85928767eafd7fbe1eece7898476557b);
+            
+        
+
+        circle_marker_4496a0eb05e2107233adcbcb3d7c68bc.bindPopup(popup_5d576c729b4ae4be70aa28bb9a9fba1f)
+        ;
+
+        
+    
+    
+            circle_marker_4496a0eb05e2107233adcbcb3d7c68bc.bindTooltip(
+                `<div>
+                     Abeokuta North | Elega (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b4588cc3e1abbf6676926a2a2adf3a7e = L.circleMarker(
+                [7.1779257, 3.3406597],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ee23b13804fcc9e438c5b318dbd35272);
+        
+    
+        var popup_1345ede48ad1dae611de3539ac9c224e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2eef405f0908245f5f1085677ae183d2 = $(`<div id="html_2eef405f0908245f5f1085677ae183d2" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5306065&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1779, 3.3407&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_1345ede48ad1dae611de3539ac9c224e.setContent(html_2eef405f0908245f5f1085677ae183d2);
+            
+        
+
+        circle_marker_b4588cc3e1abbf6676926a2a2adf3a7e.bindPopup(popup_1345ede48ad1dae611de3539ac9c224e)
+        ;
+
+        
+    
+    
+            circle_marker_b4588cc3e1abbf6676926a2a2adf3a7e.bindTooltip(
+                `<div>
+                     Abeokuta North | Iberekodo (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_ee23b13804fcc9e438c5b318dbd35272.addTo(map_bc27d7124cc1562be5a2a7ff179e9e34);
+        
+    
+            var feature_group_380140fd7ddf9454028b4e9cc734d166 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_a24118628db29bcf6159fc8eb40a488b = L.circleMarker(
+                [7.179026299999999, 3.4045775],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_380140fd7ddf9454028b4e9cc734d166);
+        
+    
+        var popup_602c9ce37d48c268a7619f64168ed50f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3156922f85cbca26c7cd35a210ac957e = $(`<div id="html_3156922f85cbca26c7cd35a210ac957e" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5448147&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Adatan&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1790, 3.4046&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Adatan&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_602c9ce37d48c268a7619f64168ed50f.setContent(html_3156922f85cbca26c7cd35a210ac957e);
+            
+        
+
+        circle_marker_a24118628db29bcf6159fc8eb40a488b.bindPopup(popup_602c9ce37d48c268a7619f64168ed50f)
+        ;
+
+        
+    
+    
+            circle_marker_a24118628db29bcf6159fc8eb40a488b.bindTooltip(
+                `<div>
+                     Abeokuta South | Adatan (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cb8eaf25dbadf769eca7f21e12b773f8 = L.circleMarker(
+                [7.1798741, 3.4112604],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_380140fd7ddf9454028b4e9cc734d166);
+        
+    
+        var popup_1143cb31b0cfa4055398f7b6f1df3b7a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ccfa64975194aa2da8e9599d5bb113f2 = $(`<div id="html_ccfa64975194aa2da8e9599d5bb113f2" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5320873&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Aregbe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1799, 3.4113&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Aregbe&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_1143cb31b0cfa4055398f7b6f1df3b7a.setContent(html_ccfa64975194aa2da8e9599d5bb113f2);
+            
+        
+
+        circle_marker_cb8eaf25dbadf769eca7f21e12b773f8.bindPopup(popup_1143cb31b0cfa4055398f7b6f1df3b7a)
+        ;
+
+        
+    
+    
+            circle_marker_cb8eaf25dbadf769eca7f21e12b773f8.bindTooltip(
+                `<div>
+                     Odeda | Aregbe (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2ba14ca3b598d09db4101630cdb4d8dd = L.circleMarker(
+                [7.1828074999999, 3.4168584],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_380140fd7ddf9454028b4e9cc734d166);
+        
+    
+        var popup_d4b3462d000117df5b271deb3dcc4d25 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b8a252856584497eb0bc98c507cbc583 = $(`<div id="html_b8a252856584497eb0bc98c507cbc583" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5320882&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eleweran&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1828, 3.4169&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eleweran&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_d4b3462d000117df5b271deb3dcc4d25.setContent(html_b8a252856584497eb0bc98c507cbc583);
+            
+        
+
+        circle_marker_2ba14ca3b598d09db4101630cdb4d8dd.bindPopup(popup_d4b3462d000117df5b271deb3dcc4d25)
+        ;
+
+        
+    
+    
+            circle_marker_2ba14ca3b598d09db4101630cdb4d8dd.bindTooltip(
+                `<div>
+                     Odeda | Eleweran (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ce06911cd02db1f58cbc5122f84f902d = L.circleMarker(
+                [7.1792333, 3.41711],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_380140fd7ddf9454028b4e9cc734d166);
+        
+    
+        var popup_29e9b38b06a70484a9f4d2e6e86fb2fa = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5124fc252b10d80b08018445230cadd4 = $(`<div id="html_5124fc252b10d80b08018445230cadd4" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5282336&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eleweran&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1792, 3.4171&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eleweran&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_29e9b38b06a70484a9f4d2e6e86fb2fa.setContent(html_5124fc252b10d80b08018445230cadd4);
+            
+        
+
+        circle_marker_ce06911cd02db1f58cbc5122f84f902d.bindPopup(popup_29e9b38b06a70484a9f4d2e6e86fb2fa)
+        ;
+
+        
+    
+    
+            circle_marker_ce06911cd02db1f58cbc5122f84f902d.bindTooltip(
+                `<div>
+                     Odeda | Eleweran (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f547487cc90bb956cf146317600c910e = L.circleMarker(
+                [7.1799588, 3.4119022],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_380140fd7ddf9454028b4e9cc734d166);
+        
+    
+        var popup_99479005993b83808444f644e20ee965 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_df16df4cc08534135b7bb5b38bbff66d = $(`<div id="html_df16df4cc08534135b7bb5b38bbff66d" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5324404&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Obantoko&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1800, 3.4119&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Obantoko&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_99479005993b83808444f644e20ee965.setContent(html_df16df4cc08534135b7bb5b38bbff66d);
+            
+        
+
+        circle_marker_f547487cc90bb956cf146317600c910e.bindPopup(popup_99479005993b83808444f644e20ee965)
+        ;
+
+        
+    
+    
+            circle_marker_f547487cc90bb956cf146317600c910e.bindTooltip(
+                `<div>
+                     Odeda | Obantoko (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a7dedf6ce7537996ed673038b86f7169 = L.circleMarker(
+                [7.1792733, 3.417135],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_380140fd7ddf9454028b4e9cc734d166);
+        
+    
+        var popup_1ed623efaa3db762bb36cb46698622ea = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_97e96384dbc41e62ab873a1d46e9a008 = $(`<div id="html_97e96384dbc41e62ab873a1d46e9a008" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5306416&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eleweran&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1793, 3.4171&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eleweran&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_1ed623efaa3db762bb36cb46698622ea.setContent(html_97e96384dbc41e62ab873a1d46e9a008);
+            
+        
+
+        circle_marker_a7dedf6ce7537996ed673038b86f7169.bindPopup(popup_1ed623efaa3db762bb36cb46698622ea)
+        ;
+
+        
+    
+    
+            circle_marker_a7dedf6ce7537996ed673038b86f7169.bindTooltip(
+                `<div>
+                     Odeda | Eleweran (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_84bb352146a86e4d36beb198e58af0a0 = L.circleMarker(
+                [7.1828074999999, 3.4168584],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_380140fd7ddf9454028b4e9cc734d166);
+        
+    
+        var popup_9f63acd2d87ea0a75b4b33514d4d9949 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e3552df1aa6f445c2b663cdca052def2 = $(`<div id="html_e3552df1aa6f445c2b663cdca052def2" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5307425&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eleweran&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1828, 3.4169&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eleweran&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_9f63acd2d87ea0a75b4b33514d4d9949.setContent(html_e3552df1aa6f445c2b663cdca052def2);
+            
+        
+
+        circle_marker_84bb352146a86e4d36beb198e58af0a0.bindPopup(popup_9f63acd2d87ea0a75b4b33514d4d9949)
+        ;
+
+        
+    
+    
+            circle_marker_84bb352146a86e4d36beb198e58af0a0.bindTooltip(
+                `<div>
+                     Odeda | Eleweran (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0f8877aa7d4064f516c639df1c0646ce = L.circleMarker(
+                [7.1751654, 3.3827298],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_380140fd7ddf9454028b4e9cc734d166);
+        
+    
+        var popup_e074de801ada79c73f112f5b8cd35a9e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d2dd55e42b36a85d7a565537111e451d = $(`<div id="html_d2dd55e42b36a85d7a565537111e451d" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5309102&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Obantoko&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1752, 3.3827&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Obantoko&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_e074de801ada79c73f112f5b8cd35a9e.setContent(html_d2dd55e42b36a85d7a565537111e451d);
+            
+        
+
+        circle_marker_0f8877aa7d4064f516c639df1c0646ce.bindPopup(popup_e074de801ada79c73f112f5b8cd35a9e)
+        ;
+
+        
+    
+    
+            circle_marker_0f8877aa7d4064f516c639df1c0646ce.bindTooltip(
+                `<div>
+                     Odeda | Obantoko (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_03a373b00f7ccc72e630ffce58aa45ec = L.circleMarker(
+                [7.1828074999999, 3.4168584],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_380140fd7ddf9454028b4e9cc734d166);
+        
+    
+        var popup_9a6f7b6ee9f17271c26ac01812fd9bec = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_55c590a74a5982ed1b7315d44f6027aa = $(`<div id="html_55c590a74a5982ed1b7315d44f6027aa" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5310307&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eleweran&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1828, 3.4169&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eleweran&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_9a6f7b6ee9f17271c26ac01812fd9bec.setContent(html_55c590a74a5982ed1b7315d44f6027aa);
+            
+        
+
+        circle_marker_03a373b00f7ccc72e630ffce58aa45ec.bindPopup(popup_9a6f7b6ee9f17271c26ac01812fd9bec)
+        ;
+
+        
+    
+    
+            circle_marker_03a373b00f7ccc72e630ffce58aa45ec.bindTooltip(
+                `<div>
+                     Odeda | Eleweran (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3d97565dc965cbc03a7461186e05fafe = L.circleMarker(
+                [7.1798741, 3.4112604],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_380140fd7ddf9454028b4e9cc734d166);
+        
+    
+        var popup_3774ae31c10dcae20dc280ebbd1f0f5d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bd3202c8de6348dea4efb9ca11d989e6 = $(`<div id="html_bd3202c8de6348dea4efb9ca11d989e6" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5314952&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Aregbe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1799, 3.4113&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Odeda&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Aregbe&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_3774ae31c10dcae20dc280ebbd1f0f5d.setContent(html_bd3202c8de6348dea4efb9ca11d989e6);
+            
+        
+
+        circle_marker_3d97565dc965cbc03a7461186e05fafe.bindPopup(popup_3774ae31c10dcae20dc280ebbd1f0f5d)
+        ;
+
+        
+    
+    
+            circle_marker_3d97565dc965cbc03a7461186e05fafe.bindTooltip(
+                `<div>
+                     Odeda | Aregbe (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_380140fd7ddf9454028b4e9cc734d166.addTo(map_bc27d7124cc1562be5a2a7ff179e9e34);
+        
+    
+            var feature_group_fc6230e83ceba9e9f103e15221aeb905 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_7678e32ad796b6a595de5a87d47198b6 = L.circleMarker(
+                [7.147502, 3.3619356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fc6230e83ceba9e9f103e15221aeb905);
+        
+    
+        var popup_06f7e51e2bf9a873fef97af774257e9e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8d5bcb9e44e802fbc9c395f9b2baa1c8 = $(`<div id="html_8d5bcb9e44e802fbc9c395f9b2baa1c8" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 4&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5319244&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1475, 3.3619&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_06f7e51e2bf9a873fef97af774257e9e.setContent(html_8d5bcb9e44e802fbc9c395f9b2baa1c8);
+            
+        
+
+        circle_marker_7678e32ad796b6a595de5a87d47198b6.bindPopup(popup_06f7e51e2bf9a873fef97af774257e9e)
+        ;
+
+        
+    
+    
+            circle_marker_7678e32ad796b6a595de5a87d47198b6.bindTooltip(
+                `<div>
+                     Abeokuta North | Iberekodo (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_69e874bd000340fe361ceb15e36e235e = L.circleMarker(
+                [7.147502, 3.3619356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fc6230e83ceba9e9f103e15221aeb905);
+        
+    
+        var popup_2b05c4eeeb7bccc3fcb39000c04ea216 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_93cc3a646efd9b836f81c9e2316672ee = $(`<div id="html_93cc3a646efd9b836f81c9e2316672ee" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 4&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5319695&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1475, 3.3619&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_2b05c4eeeb7bccc3fcb39000c04ea216.setContent(html_93cc3a646efd9b836f81c9e2316672ee);
+            
+        
+
+        circle_marker_69e874bd000340fe361ceb15e36e235e.bindPopup(popup_2b05c4eeeb7bccc3fcb39000c04ea216)
+        ;
+
+        
+    
+    
+            circle_marker_69e874bd000340fe361ceb15e36e235e.bindTooltip(
+                `<div>
+                     Abeokuta North | Iberekodo (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9540a4176c9b4f75ba3016afbd78631a = L.circleMarker(
+                [7.1538448, 3.3317118],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fc6230e83ceba9e9f103e15221aeb905);
+        
+    
+        var popup_3c6aeda48fa583b310d41bec187cde5a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ff7783d769fc9d9565d28d6318f1572b = $(`<div id="html_ff7783d769fc9d9565d28d6318f1572b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 4&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5320653&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Totoro&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1538, 3.3317&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Totoro&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_3c6aeda48fa583b310d41bec187cde5a.setContent(html_ff7783d769fc9d9565d28d6318f1572b);
+            
+        
+
+        circle_marker_9540a4176c9b4f75ba3016afbd78631a.bindPopup(popup_3c6aeda48fa583b310d41bec187cde5a)
+        ;
+
+        
+    
+    
+            circle_marker_9540a4176c9b4f75ba3016afbd78631a.bindTooltip(
+                `<div>
+                     Abeokuta North | Totoro (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2f0543e572d9497837104c69e71b69d0 = L.circleMarker(
+                [7.147502, 3.3619356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fc6230e83ceba9e9f103e15221aeb905);
+        
+    
+        var popup_9114cbcb7e441a5563e5f44e7a14f416 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ab2032dfe24ac5fd6856c1a3009f74c0 = $(`<div id="html_ab2032dfe24ac5fd6856c1a3009f74c0" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 4&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5320663&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1475, 3.3619&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_9114cbcb7e441a5563e5f44e7a14f416.setContent(html_ab2032dfe24ac5fd6856c1a3009f74c0);
+            
+        
+
+        circle_marker_2f0543e572d9497837104c69e71b69d0.bindPopup(popup_9114cbcb7e441a5563e5f44e7a14f416)
+        ;
+
+        
+    
+    
+            circle_marker_2f0543e572d9497837104c69e71b69d0.bindTooltip(
+                `<div>
+                     Abeokuta North | Iberekodo (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4e26599ac9085e2b51620779b7b3282d = L.circleMarker(
+                [7.1441414, 3.3717268],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fc6230e83ceba9e9f103e15221aeb905);
+        
+    
+        var popup_33282c970a005889146df560c8ebfc49 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_94a91150951e0f12066544c6053eedb5 = $(`<div id="html_94a91150951e0f12066544c6053eedb5" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 4&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5322342&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Idi-Aba&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1441, 3.3717&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Idi-Aba&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_33282c970a005889146df560c8ebfc49.setContent(html_94a91150951e0f12066544c6053eedb5);
+            
+        
+
+        circle_marker_4e26599ac9085e2b51620779b7b3282d.bindPopup(popup_33282c970a005889146df560c8ebfc49)
+        ;
+
+        
+    
+    
+            circle_marker_4e26599ac9085e2b51620779b7b3282d.bindTooltip(
+                `<div>
+                     Abeokuta South | Idi-Aba (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f9648f17acc65b3cdce96c01b633bdfe = L.circleMarker(
+                [7.1523473, 3.3308486],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fc6230e83ceba9e9f103e15221aeb905);
+        
+    
+        var popup_b62478452cfcc2e9939fe441c633141d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_265d9db3216c162a183f17a9857b350c = $(`<div id="html_265d9db3216c162a183f17a9857b350c" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 4&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5323192&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Totoro&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1523, 3.3308&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Totoro&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_b62478452cfcc2e9939fe441c633141d.setContent(html_265d9db3216c162a183f17a9857b350c);
+            
+        
+
+        circle_marker_f9648f17acc65b3cdce96c01b633bdfe.bindPopup(popup_b62478452cfcc2e9939fe441c633141d)
+        ;
+
+        
+    
+    
+            circle_marker_f9648f17acc65b3cdce96c01b633bdfe.bindTooltip(
+                `<div>
+                     Abeokuta North | Totoro (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2db7aac5b21745834df3e1b7953ea6e0 = L.circleMarker(
+                [7.1441448, 3.3717084],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fc6230e83ceba9e9f103e15221aeb905);
+        
+    
+        var popup_9b1fd563aadf7eb6d35db4a33dbb25ad = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1eb259e3601b02106cad57eb1cbd7206 = $(`<div id="html_1eb259e3601b02106cad57eb1cbd7206" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 4&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5323215&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Idi-Aba&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1441, 3.3717&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Idi-Aba&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_9b1fd563aadf7eb6d35db4a33dbb25ad.setContent(html_1eb259e3601b02106cad57eb1cbd7206);
+            
+        
+
+        circle_marker_2db7aac5b21745834df3e1b7953ea6e0.bindPopup(popup_9b1fd563aadf7eb6d35db4a33dbb25ad)
+        ;
+
+        
+    
+    
+            circle_marker_2db7aac5b21745834df3e1b7953ea6e0.bindTooltip(
+                `<div>
+                     Abeokuta South | Idi-Aba (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c4a6e5c249c4746fbce100d236f58d13 = L.circleMarker(
+                [7.154707399999999, 3.3642217],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fc6230e83ceba9e9f103e15221aeb905);
+        
+    
+        var popup_43db17e6aacf3ccb61dbfc184a2bc8aa = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_030387f35ab1b1d29a4643ff9571ac61 = $(`<div id="html_030387f35ab1b1d29a4643ff9571ac61" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 4&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5199255&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ajitadun&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1547, 3.3642&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ajitadun&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_43db17e6aacf3ccb61dbfc184a2bc8aa.setContent(html_030387f35ab1b1d29a4643ff9571ac61);
+            
+        
+
+        circle_marker_c4a6e5c249c4746fbce100d236f58d13.bindPopup(popup_43db17e6aacf3ccb61dbfc184a2bc8aa)
+        ;
+
+        
+    
+    
+            circle_marker_c4a6e5c249c4746fbce100d236f58d13.bindTooltip(
+                `<div>
+                     Abeokuta North | Ajitadun (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_104a2a185e746b89d5b36f9132c5aee3 = L.circleMarker(
+                [7.1546153, 3.3641487],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fc6230e83ceba9e9f103e15221aeb905);
+        
+    
+        var popup_1de9070d5681c17e42fe54a94e77fd6d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c5c4cfe08a1b184c7e76e5f4a2a0351a = $(`<div id="html_c5c4cfe08a1b184c7e76e5f4a2a0351a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 4&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5219223&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1546, 3.3641&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Abeokuta North&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Iberekodo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_1de9070d5681c17e42fe54a94e77fd6d.setContent(html_c5c4cfe08a1b184c7e76e5f4a2a0351a);
+            
+        
+
+        circle_marker_104a2a185e746b89d5b36f9132c5aee3.bindPopup(popup_1de9070d5681c17e42fe54a94e77fd6d)
+        ;
+
+        
+    
+    
+            circle_marker_104a2a185e746b89d5b36f9132c5aee3.bindTooltip(
+                `<div>
+                     Abeokuta North | Iberekodo (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_fc6230e83ceba9e9f103e15221aeb905.addTo(map_bc27d7124cc1562be5a2a7ff179e9e34);
+        
+    
+            var layer_control_d9d0ee0f572142a92778fe6ac9a998ce_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_77997ce1671e6514f11a13efb41b8983,
+                    "OpenStreetMap" : tile_layer_4bc37b0c6fe63899807cb9626d6722d2,
+                    "Terrain" : tile_layer_cd048b9ad1ff6b986f4f3ed2dcfa76df,
+                    "Toner" : tile_layer_e9da5d930778bf3aa53d44a8613ca276,
+                    "CartoDB Dark" : tile_layer_89c19bbc85a70482ba9f84a3e0b250b8,
+                    "CartoDB Light" : tile_layer_af278613cf8f9776b325bc1b4d0e9ed9,
+                },
+                overlays :  {
+                    "Cluster 1 - Abeokuta North - Elega+4more (17 points)" : feature_group_ee23b13804fcc9e438c5b318dbd35272,
+                    "Cluster 3 - Abeokuta South+1more - Adatan+3more (10 points)" : feature_group_380140fd7ddf9454028b4e9cc734d166,
+                    "Cluster 4 - Abeokuta North+1more - Iberekodo+3more (9 points)" : feature_group_fc6230e83ceba9e9f103e15221aeb905,
+                },
+            };
+            let layer_control_d9d0ee0f572142a92778fe6ac9a998ce = L.control.layers(
+                layer_control_d9d0ee0f572142a92778fe6ac9a998ce_layers.base_layers,
+                layer_control_d9d0ee0f572142a92778fe6ac9a998ce_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_bc27d7124cc1562be5a2a7ff179e9e34);
+
+        
+    
+            var tile_layer_4c9b6ace3b18fcfc7103ecc9176e06c7 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_70473e4d984b3a1a9bc4a841d07e0b01 = new L.Control.MiniMap(
+                tile_layer_4c9b6ace3b18fcfc7103ecc9176e06c7,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_bc27d7124cc1562be5a2a7ff179e9e34.addControl(mini_map_70473e4d984b3a1a9bc4a841d07e0b01);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_bc27d7124cc1562be5a2a7ff179e9e34);
+        
+    
+            var measure_control_c9ed6ec2efa0f9168c10c048b6bbcfbc = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_bc27d7124cc1562be5a2a7ff179e9e34.addControl(measure_control_c9ed6ec2efa0f9168c10c048b6bbcfbc);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_ac74bea55a143dfee4ff178d4752ffbf = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_ac74bea55a143dfee4ff178d4752ffbf.options["latFormatter"] =
+                undefined;
+            mouse_position_ac74bea55a143dfee4ff178d4752ffbf.options["lngFormatter"] =
+                undefined;
+            map_bc27d7124cc1562be5a2a7ff179e9e34.addControl(mouse_position_ac74bea55a143dfee4ff178d4752ffbf);
+        
+    
+            map_bc27d7124cc1562be5a2a7ff179e9e34.fitBounds(
+                [[7.1341414, 3.3208486], [7.1997669, 3.427135]],
+                {}
+            );
+        
+    
+            var marker_f4feabe6db636aa02727e2839841bc74 = L.marker(
+                [7.1432019, 3.3126787],
+                {
+  "size": 10,
+}
+            ).addTo(map_bc27d7124cc1562be5a2a7ff179e9e34);
+        
+    
+            var icon_25353386702abbfbffc79c54fd62d0a7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_f4feabe6db636aa02727e2839841bc74.bindTooltip(
+                `<div>
+                     OmniHub Abeokuta Ogun - Brooks
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f4feabe6db636aa02727e2839841bc74.setIcon(icon_25353386702abbfbffc79c54fd62d0a7);
+            
+    
+            var poly_line_1ff1d60a5f44c1b936ae30aae9bb9c8f = L.polyline(
+                [[7.1431, 3.3126], [7.14303, 3.3127], [7.14302, 3.31282], [7.14357, 3.31309], [7.14378, 3.31327], [7.14379, 3.31333], [7.14377, 3.31339], [7.14365, 3.31353], [7.14348, 3.31369], [7.14317, 3.3141], [7.14266, 3.31483], [7.14251, 3.31469], [7.14243, 3.31478], [7.14415, 3.31645], [7.1446, 3.31685], [7.14547, 3.31756], [7.14583, 3.31786], [7.14666, 3.31856], [7.14694, 3.31879], [7.14931, 3.32075], [7.15018, 3.32154], [7.15068, 3.32207], [7.15081, 3.32225], [7.15089, 3.3224], [7.15092, 3.32249], [7.15092, 3.32257], [7.1509, 3.32262], [7.15089, 3.32269], [7.15091, 3.32275], [7.15095, 3.3228], [7.15101, 3.32284], [7.15107, 3.32285], [7.15112, 3.32284], [7.15122, 3.32284], [7.15141, 3.32288], [7.1516, 3.32297], [7.15216, 3.32335], [7.15368, 3.32426], [7.15446, 3.32468], [7.15529, 3.32513], [7.15549, 3.32528], [7.15557, 3.32536], [7.15566, 3.32547], [7.15571, 3.32558], [7.15575, 3.32573], [7.15577, 3.32601], [7.15575, 3.32643], [7.15573, 3.32671], [7.15573, 3.32676], [7.15573, 3.32702], [7.1558, 3.32767], [7.15588, 3.32817], [7.15601, 3.32949], [7.15603, 3.32973], [7.156, 3.32977], [7.15599, 3.32981], [7.15602, 3.3299], [7.15605, 3.32993], [7.15618, 3.33205], [7.15616, 3.3322], [7.1561, 3.33227], [7.15596, 3.33232], [7.15562, 3.33236], [7.15547, 3.33236], [7.15534, 3.33234], [7.15518, 3.33228], [7.15499, 3.3322], [7.1544, 3.33182], [7.1543, 3.33177], [7.15377, 3.33157], [7.15351, 3.33146], [7.15322, 3.33132], [7.15291, 3.33115], [7.15237, 3.33081], [7.15228, 3.33075], [7.15202, 3.33061], [7.15139, 3.33031], [7.15135, 3.33043], [7.15176, 3.3306], [7.15221, 3.33085], [7.15277, 3.33119], [7.15338, 3.33151], [7.15366, 3.33164], [7.15384, 3.33171], [7.15426, 3.33187], [7.15482, 3.33224], [7.1551, 3.33236], [7.15537, 3.33244], [7.15557, 3.33247], [7.1561, 3.33245], [7.15613, 3.33249], [7.15621, 3.33253], [7.15634, 3.3337], [7.15642, 3.33418], [7.15658, 3.33489], [7.15666, 3.33531], [7.15695, 3.33839], [7.15713, 3.33926], [7.15722, 3.33969], [7.1572, 3.33983], [7.15689, 3.34071], [7.1568, 3.34106], [7.15675, 3.34135], [7.15671, 3.34229], [7.15669, 3.34253], [7.15653, 3.34316], [7.15645, 3.3434], [7.15634, 3.34366], [7.15558, 3.34516], [7.15519, 3.34599], [7.15485, 3.34651], [7.15433, 3.34702], [7.15413, 3.34726], [7.15403, 3.34742], [7.15374, 3.34794], [7.15347, 3.34853], [7.15267, 3.35015], [7.15209, 3.35142], [7.15153, 3.35237], [7.15119, 3.35298], [7.15089, 3.3536], [7.15083, 3.35375], [7.1508, 3.35383], [7.15076, 3.35394], [7.15036, 3.35472], [7.14986, 3.35563], [7.14959, 3.35617], [7.14943, 3.35661], [7.14921, 3.35736], [7.14919, 3.35743], [7.14918, 3.3575], [7.1488, 3.35877], [7.1487, 3.359], [7.14861, 3.35922], [7.14849, 3.35957], [7.14825, 3.36013], [7.14814, 3.36039], [7.14767, 3.36147], [7.14759, 3.36168], [7.14734, 3.36159], [7.14697, 3.36155], [7.14634, 3.36162], [7.14511, 3.362], [7.14443, 3.3624], [7.1441, 3.36257], [7.14368, 3.36278], [7.14196, 3.36366], [7.14007, 3.36464], [7.13921, 3.3651], [7.13801, 3.3657], [7.13762, 3.36585], [7.13735, 3.36589], [7.13681, 3.36592], [7.13646, 3.36592], [7.13511, 3.366], [7.13502, 3.366], [7.13505, 3.36613], [7.13513, 3.36614], [7.1361, 3.36608], [7.13737, 3.36601], [7.13762, 3.36597], [7.13787, 3.36589], [7.13808, 3.36582], [7.13933, 3.36516], [7.13954, 3.36505], [7.14102, 3.36426], [7.14262, 3.36345], [7.14413, 3.36265], [7.14456, 3.36245], [7.14489, 3.36231], [7.14556, 3.3621], [7.14637, 3.36189], [7.1469, 3.36181], [7.14715, 3.36182], [7.14734, 3.36186], [7.14743, 3.36192], [7.14749, 3.36196], [7.14766, 3.36208], [7.14829, 3.36261], [7.14901, 3.36317], [7.14964, 3.36358], [7.14985, 3.36372], [7.15119, 3.36451], [7.15168, 3.36483], [7.15195, 3.365], [7.15205, 3.36506], [7.1523, 3.3652], [7.15366, 3.36603], [7.15426, 3.3664], [7.15432, 3.3663], [7.15374, 3.36596], [7.15391, 3.36583], [7.15406, 3.36566], [7.15421, 3.36539], [7.15433, 3.36512], [7.15444, 3.36483], [7.15449, 3.36461], [7.15461, 3.36415], [7.1546, 3.36419], [7.15449, 3.36461], [7.15504, 3.36487], [7.15493, 3.36518], [7.1547, 3.36572], [7.15432, 3.3663], [7.15426, 3.3664], [7.15505, 3.36686], [7.15551, 3.36712], [7.15602, 3.36745], [7.1567, 3.36784], [7.15731, 3.36822], [7.15797, 3.36865], [7.15809, 3.36874], [7.15812, 3.36881], [7.15817, 3.36886], [7.15824, 3.36888], [7.15832, 3.36887], [7.15837, 3.36882], [7.1584, 3.36871], [7.15838, 3.36864], [7.15832, 3.36859], [7.15837, 3.36848], [7.15844, 3.36837], [7.15856, 3.36817], [7.1588, 3.36785], [7.15905, 3.36757], [7.15916, 3.36746], [7.15942, 3.36715], [7.15991, 3.3664], [7.16007, 3.36619], [7.16028, 3.36585], [7.16048, 3.36558], [7.16062, 3.36535], [7.1608, 3.36493], [7.16136, 3.36383], [7.16158, 3.36346], [7.16236, 3.36226], [7.16269, 3.36177], [7.16315, 3.36108], [7.16341, 3.36066], [7.16375, 3.3601], [7.16386, 3.35991], [7.16496, 3.35822], [7.16558, 3.35721], [7.16658, 3.35766], [7.16888, 3.3586], [7.1691, 3.35872], [7.16913, 3.35876], [7.16921, 3.35879], [7.16926, 3.35878], [7.16933, 3.35873], [7.16935, 3.35863], [7.16946, 3.35851], [7.1696, 3.35844], [7.17114, 3.35809], [7.17134, 3.35801], [7.17153, 3.35788], [7.17182, 3.35758], [7.17247, 3.35677], [7.17249, 3.35673], [7.17277, 3.35647], [7.17347, 3.356], [7.17394, 3.35573], [7.17595, 3.35447], [7.17735, 3.35359], [7.17795, 3.3532], [7.17851, 3.35273], [7.17965, 3.35164], [7.18087, 3.35049], [7.18101, 3.35035], [7.18125, 3.35007], [7.18141, 3.34982], [7.1815, 3.34964], [7.18163, 3.34923], [7.18167, 3.34898], [7.18168, 3.34867], [7.18164, 3.34834], [7.18159, 3.34787], [7.18186, 3.34784], [7.18208, 3.34778], [7.18243, 3.34744], [7.18249, 3.34739], [7.18266, 3.34717], [7.18287, 3.34688], [7.18375, 3.34717], [7.18416, 3.34723], [7.18467, 3.3474], [7.18476, 3.34745], [7.18513, 3.34776], [7.18543, 3.34799], [7.186, 3.34842], [7.18617, 3.3486], [7.18661, 3.34909], [7.18714, 3.3485], [7.18712, 3.34842], [7.18705, 3.34835], [7.18703, 3.34824], [7.18706, 3.34812], [7.1871, 3.34804], [7.18747, 3.34776], [7.18777, 3.34802], [7.18793, 3.34812], [7.188, 3.34806], [7.18815, 3.34789], [7.18848, 3.34726], [7.18855, 3.34729], [7.18879, 3.34742], [7.18891, 3.3475], [7.18904, 3.34763], [7.18941, 3.34795], [7.18958, 3.34804], [7.18941, 3.34795], [7.18904, 3.34763], [7.18891, 3.3475], [7.18879, 3.34742], [7.18855, 3.34729], [7.18848, 3.34726], [7.18815, 3.34789], [7.188, 3.34806], [7.18793, 3.34812], [7.18777, 3.34802], [7.18747, 3.34776], [7.1871, 3.34804], [7.18706, 3.34812], [7.18703, 3.34824], [7.18705, 3.34835], [7.18712, 3.34842], [7.18714, 3.3485], [7.18661, 3.34909], [7.18617, 3.3486], [7.186, 3.34842], [7.18543, 3.34799], [7.18513, 3.34776], [7.18476, 3.34745], [7.18467, 3.3474], [7.18416, 3.34723], [7.18375, 3.34717], [7.18287, 3.34688], [7.18253, 3.34672], [7.18219, 3.34652], [7.18195, 3.34635], [7.18187, 3.34627], [7.18185, 3.34625], [7.18168, 3.34609], [7.18154, 3.34598], [7.18147, 3.34571], [7.18119, 3.34495], [7.18107, 3.3447], [7.17984, 3.34221], [7.17967, 3.34194], [7.17927, 3.34154], [7.17887, 3.34125], [7.17842, 3.341], [7.17826, 3.34088], [7.17824, 3.34086], [7.17821, 3.34082], [7.17818, 3.34075], [7.17817, 3.34072], [7.1781, 3.34058], [7.17799, 3.34051], [7.17788, 3.34049], [7.1778, 3.34059], [7.17779, 3.34065], [7.17782, 3.34071], [7.17784, 3.34075], [7.17794, 3.34082], [7.17806, 3.34085], [7.17816, 3.34079], [7.17818, 3.34075], [7.17817, 3.34072], [7.1781, 3.34058], [7.17799, 3.34051], [7.17788, 3.34049], [7.1778, 3.34059], [7.17779, 3.34065], [7.1777, 3.34069], [7.17758, 3.34081], [7.17699, 3.34089], [7.17622, 3.34104], [7.17423, 3.34116], [7.17396, 3.34132], [7.1729, 3.3411], [7.17174, 3.34096], [7.17129, 3.34069], [7.17104, 3.3406], [7.17055, 3.3405], [7.16938, 3.34042], [7.16894, 3.3404], [7.16723, 3.34041], [7.16693, 3.34043], [7.1665, 3.34048], [7.16639, 3.34049], [7.16492, 3.34068], [7.16352, 3.34084], [7.16323, 3.3409], [7.16294, 3.341], [7.16231, 3.34133], [7.16096, 3.34201], [7.15993, 3.34244], [7.15977, 3.34249], [7.15962, 3.34253], [7.15944, 3.34253], [7.15928, 3.34253], [7.15898, 3.34247], [7.15863, 3.34236], [7.1573, 3.34205], [7.15721, 3.34201], [7.15709, 3.34193], [7.157, 3.34184], [7.15697, 3.34178], [7.15697, 3.34139], [7.157, 3.34111], [7.1571, 3.34076], [7.1572, 3.34048], [7.15734, 3.34007], [7.1574, 3.33992], [7.15742, 3.33978], [7.15742, 3.33962], [7.15721, 3.33863], [7.15717, 3.33837], [7.15707, 3.33838], [7.15677, 3.33529], [7.15669, 3.33487], [7.15653, 3.33416], [7.15645, 3.33369], [7.15635, 3.33251], [7.15641, 3.33244], [7.15643, 3.33235], [7.15643, 3.33231], [7.15638, 3.33223], [7.15634, 3.3322], [7.15629, 3.33203], [7.15621, 3.33089], [7.15619, 3.33019], [7.15618, 3.32993], [7.15619, 3.32992], [7.15623, 3.32988], [7.15624, 3.3298], [7.15623, 3.32977], [7.15618, 3.32971], [7.15616, 3.32947], [7.15604, 3.32815], [7.156, 3.32784], [7.15587, 3.32742], [7.15581, 3.32716], [7.15586, 3.32611], [7.15584, 3.32577], [7.15576, 3.32548], [7.15568, 3.32538], [7.15557, 3.32527], [7.15529, 3.32505], [7.15228, 3.32332], [7.15189, 3.32308], [7.1512, 3.32254], [7.15115, 3.3225], [7.1505, 3.32171], [7.14967, 3.32083], [7.14932, 3.3205], [7.1473, 3.31881], [7.14698, 3.31854], [7.14618, 3.31788], [7.14606, 3.31773], [7.14604, 3.31769], [7.14601, 3.31765], [7.14564, 3.31732], [7.14557, 3.31729], [7.14555, 3.31729], [7.1452, 3.31709], [7.14432, 3.31636], [7.14373, 3.31586], [7.14266, 3.31483], [7.14251, 3.31469], [7.14217, 3.31436], [7.14272, 3.31351], [7.14285, 3.31326], [7.14302, 3.31282], [7.14303, 3.3127], [7.1431, 3.3126]],
+                {"bubblingMouseEvents": true, "color": "#1f77b4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#1f77b4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_bc27d7124cc1562be5a2a7ff179e9e34);
+        
+</script>
+</html>

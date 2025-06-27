@@ -1,0 +1,2089 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_aefc375c6d9a25640e9742b2663997c6 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 3 clusters | 44 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+    <div id="cluster-legend" style="position: fixed; 
+                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                background-color: rgba(255, 255, 255, 0.95); 
+                border: 2px solid #ccc; z-index: 999; 
+                font-size: 11px; padding: 12px; border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                backdrop-filter: blur(5px);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <strong style="color: #333;">Cluster Legend</strong>
+        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+    </div>
+    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+        3 clusters | Sorted by size | Showing top 15
+    </div>
+    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">26 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 8 
+                <br><span style="color: #666; font-size: 9px;">11 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 9 
+                <br><span style="color: #666; font-size: 9px;">7 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_aefc375c6d9a25640e9742b2663997c6" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_aefc375c6d9a25640e9742b2663997c6 = L.map(
+                "map_aefc375c6d9a25640e9742b2663997c6",
+                {
+                    center: [6.57729725, 3.40216695],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_aefc375c6d9a25640e9742b2663997c6);
+
+            
+
+        
+    
+            var tile_layer_444caebeb72fa9af303ee8f4c48016b4 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_444caebeb72fa9af303ee8f4c48016b4.addTo(map_aefc375c6d9a25640e9742b2663997c6);
+        
+    
+            var tile_layer_f247e262fc19a77273e96cc40dea1be9 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_f247e262fc19a77273e96cc40dea1be9.addTo(map_aefc375c6d9a25640e9742b2663997c6);
+        
+    
+            var tile_layer_a12834c7c7e5e18cea3eed8cf1453b59 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_a12834c7c7e5e18cea3eed8cf1453b59.addTo(map_aefc375c6d9a25640e9742b2663997c6);
+        
+    
+            var tile_layer_4fdd3b026a25b5dcd11e342ed43cfbad = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_4fdd3b026a25b5dcd11e342ed43cfbad.addTo(map_aefc375c6d9a25640e9742b2663997c6);
+        
+    
+            var tile_layer_fc9a623cc0a664d5e10a78e48f5f7feb = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_fc9a623cc0a664d5e10a78e48f5f7feb.addTo(map_aefc375c6d9a25640e9742b2663997c6);
+        
+    
+            var tile_layer_e50bbec632ce5a2d8eb889ced158af55 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e50bbec632ce5a2d8eb889ced158af55.addTo(map_aefc375c6d9a25640e9742b2663997c6);
+        
+    
+            var feature_group_23b2a52aa0e47afe320a968c949f303a = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_a63acdfed83b70272f0afd3ac48b3c98 = L.circleMarker(
+                [6.5441458999999, 3.4010103],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_cf0c480fa96e5aae2816294d8664b440 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d739816ecdb5d6162faf52ead5e39a63 = $(`<div id="html_d739816ecdb5d6162faf52ead5e39a63" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1735932&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5441, 3.4010&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_cf0c480fa96e5aae2816294d8664b440.setContent(html_d739816ecdb5d6162faf52ead5e39a63);
+            
+        
+
+        circle_marker_a63acdfed83b70272f0afd3ac48b3c98.bindPopup(popup_cf0c480fa96e5aae2816294d8664b440)
+        ;
+
+        
+    
+    
+            circle_marker_a63acdfed83b70272f0afd3ac48b3c98.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9ba00bfbd112133a25ebf2279e84e250 = L.circleMarker(
+                [6.5566993, 3.4004783],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_bad0081f8c128d8fe1d50999d0af7e9c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_719b3e8d067d8fd9eca4c373121ef007 = $(`<div id="html_719b3e8d067d8fd9eca4c373121ef007" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1736207&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5567, 3.4005&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_bad0081f8c128d8fe1d50999d0af7e9c.setContent(html_719b3e8d067d8fd9eca4c373121ef007);
+            
+        
+
+        circle_marker_9ba00bfbd112133a25ebf2279e84e250.bindPopup(popup_bad0081f8c128d8fe1d50999d0af7e9c)
+        ;
+
+        
+    
+    
+            circle_marker_9ba00bfbd112133a25ebf2279e84e250.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_40cca8dc09fd67c7dc1f561e860852bb = L.circleMarker(
+                [6.552696, 3.39902],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_ae8be100d84a55e548a86ea0114bfa30 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7632c5c3365b1566d47bea342901798c = $(`<div id="html_7632c5c3365b1566d47bea342901798c" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1802919&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Ketu - Ikosi Road&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5527, 3.3990&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Ketu - Ikosi Road&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_ae8be100d84a55e548a86ea0114bfa30.setContent(html_7632c5c3365b1566d47bea342901798c);
+            
+        
+
+        circle_marker_40cca8dc09fd67c7dc1f561e860852bb.bindPopup(popup_ae8be100d84a55e548a86ea0114bfa30)
+        ;
+
+        
+    
+    
+            circle_marker_40cca8dc09fd67c7dc1f561e860852bb.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Ketu - Ikosi Road (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_707d348517a05ca3629f67629ee8f85c = L.circleMarker(
+                [6.5631489, 3.3901462],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_347d2b77061d186f05a0495b4e897ff4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_46c20f25a58da4fd7a044bef63fb9668 = $(`<div id="html_46c20f25a58da4fd7a044bef63fb9668" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1853055&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5631, 3.3901&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_347d2b77061d186f05a0495b4e897ff4.setContent(html_46c20f25a58da4fd7a044bef63fb9668);
+            
+        
+
+        circle_marker_707d348517a05ca3629f67629ee8f85c.bindPopup(popup_347d2b77061d186f05a0495b4e897ff4)
+        ;
+
+        
+    
+    
+            circle_marker_707d348517a05ca3629f67629ee8f85c.bindTooltip(
+                `<div>
+                     Kosofe |  (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_528819c324b5c74e2937a818077b76f2 = L.circleMarker(
+                [6.5521829999999, 3.3987318],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_ec79b757acff10f8d364a21174e1229e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_80d5ba7cdfdca95a8e31d3cd33276698 = $(`<div id="html_80d5ba7cdfdca95a8e31d3cd33276698" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1979922&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5522, 3.3987&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_ec79b757acff10f8d364a21174e1229e.setContent(html_80d5ba7cdfdca95a8e31d3cd33276698);
+            
+        
+
+        circle_marker_528819c324b5c74e2937a818077b76f2.bindPopup(popup_ec79b757acff10f8d364a21174e1229e)
+        ;
+
+        
+    
+    
+            circle_marker_528819c324b5c74e2937a818077b76f2.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bd87931c902ca539a3822af581f97df6 = L.circleMarker(
+                [6.5482478, 3.4019448],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_f1f9b72b62061775794df288ccf0bf27 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_79f8f5ff46a1189db6ecfa6b9edf6af9 = $(`<div id="html_79f8f5ff46a1189db6ecfa6b9edf6af9" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5180310&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5482, 3.4019&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_f1f9b72b62061775794df288ccf0bf27.setContent(html_79f8f5ff46a1189db6ecfa6b9edf6af9);
+            
+        
+
+        circle_marker_bd87931c902ca539a3822af581f97df6.bindPopup(popup_f1f9b72b62061775794df288ccf0bf27)
+        ;
+
+        
+    
+    
+            circle_marker_bd87931c902ca539a3822af581f97df6.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9cc48b648d7546a7f4cf2b0dde0e8bc9 = L.circleMarker(
+                [6.5477313, 3.4036413],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_a4efe88057a87a3f7d65f252683b4143 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0895dccc1adda07b67311b90648d432c = $(`<div id="html_0895dccc1adda07b67311b90648d432c" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5428812&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5477, 3.4036&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_a4efe88057a87a3f7d65f252683b4143.setContent(html_0895dccc1adda07b67311b90648d432c);
+            
+        
+
+        circle_marker_9cc48b648d7546a7f4cf2b0dde0e8bc9.bindPopup(popup_a4efe88057a87a3f7d65f252683b4143)
+        ;
+
+        
+    
+    
+            circle_marker_9cc48b648d7546a7f4cf2b0dde0e8bc9.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6b6cbc03dd313a333e8324a962238e95 = L.circleMarker(
+                [6.551107, 3.399513],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_32944d056ff42f1e5a38523905994377 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cc9d5ca6be27b4b097059464f726686d = $(`<div id="html_cc9d5ca6be27b4b097059464f726686d" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 2235813&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5511, 3.3995&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_32944d056ff42f1e5a38523905994377.setContent(html_cc9d5ca6be27b4b097059464f726686d);
+            
+        
+
+        circle_marker_6b6cbc03dd313a333e8324a962238e95.bindPopup(popup_32944d056ff42f1e5a38523905994377)
+        ;
+
+        
+    
+    
+            circle_marker_6b6cbc03dd313a333e8324a962238e95.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e1dc7d42f50b3111e074fff2e4216768 = L.circleMarker(
+                [6.5528528, 3.4007842],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_3184b9f5c54ccdb142ba40286aff6ebe = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d05d5432ff2ec0647d0fc160467bff2f = $(`<div id="html_d05d5432ff2ec0647d0fc160467bff2f" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 2236303&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5529, 3.4008&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_3184b9f5c54ccdb142ba40286aff6ebe.setContent(html_d05d5432ff2ec0647d0fc160467bff2f);
+            
+        
+
+        circle_marker_e1dc7d42f50b3111e074fff2e4216768.bindPopup(popup_3184b9f5c54ccdb142ba40286aff6ebe)
+        ;
+
+        
+    
+    
+            circle_marker_e1dc7d42f50b3111e074fff2e4216768.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ba5f35e5d5007a301d49345dc11be085 = L.circleMarker(
+                [6.5459352, 3.4025387],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_d2ed8ebd91e43b555151e9e4fd93355d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_783f147fca59d19704253e8c7e27f25a = $(`<div id="html_783f147fca59d19704253e8c7e27f25a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 2259286&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5459, 3.4025&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_d2ed8ebd91e43b555151e9e4fd93355d.setContent(html_783f147fca59d19704253e8c7e27f25a);
+            
+        
+
+        circle_marker_ba5f35e5d5007a301d49345dc11be085.bindPopup(popup_d2ed8ebd91e43b555151e9e4fd93355d)
+        ;
+
+        
+    
+    
+            circle_marker_ba5f35e5d5007a301d49345dc11be085.bindTooltip(
+                `<div>
+                     Kosofe |  (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_eeb98e064a56755c99ee489d57da04f6 = L.circleMarker(
+                [6.5559609, 3.4003273],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_d1a571df82bb8dddc42a6888e81294af = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_98c72abce6db3b7361a90a8c40a40845 = $(`<div id="html_98c72abce6db3b7361a90a8c40a40845" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 2329112&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5560, 3.4003&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_d1a571df82bb8dddc42a6888e81294af.setContent(html_98c72abce6db3b7361a90a8c40a40845);
+            
+        
+
+        circle_marker_eeb98e064a56755c99ee489d57da04f6.bindPopup(popup_d1a571df82bb8dddc42a6888e81294af)
+        ;
+
+        
+    
+    
+            circle_marker_eeb98e064a56755c99ee489d57da04f6.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d7e111897e818668e980d22ee4610ec8 = L.circleMarker(
+                [6.5524299999999, 3.3977597],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_ae2ca37f28a9be5fedc29d8765370a89 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5c76955e227a3b1da4600d3091a14c0e = $(`<div id="html_5c76955e227a3b1da4600d3091a14c0e" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 2516368&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5524, 3.3978&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_ae2ca37f28a9be5fedc29d8765370a89.setContent(html_5c76955e227a3b1da4600d3091a14c0e);
+            
+        
+
+        circle_marker_d7e111897e818668e980d22ee4610ec8.bindPopup(popup_ae2ca37f28a9be5fedc29d8765370a89)
+        ;
+
+        
+    
+    
+            circle_marker_d7e111897e818668e980d22ee4610ec8.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9437a8405bb86b541c24a55d2a5d27ee = L.circleMarker(
+                [6.5581018, 3.4000784],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_317095aa5be6d7835d3b457a60de3906 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1ba427b177340ebeafe30cedc2061345 = $(`<div id="html_1ba427b177340ebeafe30cedc2061345" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3048441&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5581, 3.4001&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_317095aa5be6d7835d3b457a60de3906.setContent(html_1ba427b177340ebeafe30cedc2061345);
+            
+        
+
+        circle_marker_9437a8405bb86b541c24a55d2a5d27ee.bindPopup(popup_317095aa5be6d7835d3b457a60de3906)
+        ;
+
+        
+    
+    
+            circle_marker_9437a8405bb86b541c24a55d2a5d27ee.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6228f0653b5936c350910bd473329301 = L.circleMarker(
+                [6.553325099999999, 3.400833],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_565ea3bfd1b5d60d71b4c2ebbf7ed3d5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7414f7675f64583b57d0ea9ccfc3472d = $(`<div id="html_7414f7675f64583b57d0ea9ccfc3472d" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3883617&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5533, 3.4008&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_565ea3bfd1b5d60d71b4c2ebbf7ed3d5.setContent(html_7414f7675f64583b57d0ea9ccfc3472d);
+            
+        
+
+        circle_marker_6228f0653b5936c350910bd473329301.bindPopup(popup_565ea3bfd1b5d60d71b4c2ebbf7ed3d5)
+        ;
+
+        
+    
+    
+            circle_marker_6228f0653b5936c350910bd473329301.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5c0f312092fed1f4df1a69a0d2e441a5 = L.circleMarker(
+                [6.5542936, 3.4015107],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_3cd94fed5c7087277d10919186accd96 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e80e832f437b31f2b62cf2740d09d7ef = $(`<div id="html_e80e832f437b31f2b62cf2740d09d7ef" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3822026&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5543, 3.4015&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_3cd94fed5c7087277d10919186accd96.setContent(html_e80e832f437b31f2b62cf2740d09d7ef);
+            
+        
+
+        circle_marker_5c0f312092fed1f4df1a69a0d2e441a5.bindPopup(popup_3cd94fed5c7087277d10919186accd96)
+        ;
+
+        
+    
+    
+            circle_marker_5c0f312092fed1f4df1a69a0d2e441a5.bindTooltip(
+                `<div>
+                     Kosofe |  (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fde756a54c5dc126e073c56f6a40112c = L.circleMarker(
+                [6.5523082, 3.3989496],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_a678f921f2cb5afa823fca727bfc4814 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1e44a2e1fd72243683ed5098729abb59 = $(`<div id="html_1e44a2e1fd72243683ed5098729abb59" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3894799&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5523, 3.3989&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_a678f921f2cb5afa823fca727bfc4814.setContent(html_1e44a2e1fd72243683ed5098729abb59);
+            
+        
+
+        circle_marker_fde756a54c5dc126e073c56f6a40112c.bindPopup(popup_a678f921f2cb5afa823fca727bfc4814)
+        ;
+
+        
+    
+    
+            circle_marker_fde756a54c5dc126e073c56f6a40112c.bindTooltip(
+                `<div>
+                     Kosofe |  (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3739a45dc85ba5de57e284f69f23ad7f = L.circleMarker(
+                [6.5529924, 3.4022905],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_fe5032934e402e092fbb466d2dadbdea = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d2794a5be734413de3cc7bbd3b44ea02 = $(`<div id="html_d2794a5be734413de3cc7bbd3b44ea02" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5285517&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5530, 3.4023&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_fe5032934e402e092fbb466d2dadbdea.setContent(html_d2794a5be734413de3cc7bbd3b44ea02);
+            
+        
+
+        circle_marker_3739a45dc85ba5de57e284f69f23ad7f.bindPopup(popup_fe5032934e402e092fbb466d2dadbdea)
+        ;
+
+        
+    
+    
+            circle_marker_3739a45dc85ba5de57e284f69f23ad7f.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0f4244575414b908d63fad63d83a1ca8 = L.circleMarker(
+                [6.5499775, 3.4007258],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_e243d356f21e16b622fa03fabf63a462 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e28a04b51e6c1975c491a583315577da = $(`<div id="html_e28a04b51e6c1975c491a583315577da" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4145402&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5500, 3.4007&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_e243d356f21e16b622fa03fabf63a462.setContent(html_e28a04b51e6c1975c491a583315577da);
+            
+        
+
+        circle_marker_0f4244575414b908d63fad63d83a1ca8.bindPopup(popup_e243d356f21e16b622fa03fabf63a462)
+        ;
+
+        
+    
+    
+            circle_marker_0f4244575414b908d63fad63d83a1ca8.bindTooltip(
+                `<div>
+                     Kosofe |  (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d20930d4bcfd6051c4f72ad15d7b4321 = L.circleMarker(
+                [6.5515985799117, 3.4001252276444],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_32fb174478ea8f13e47b54c194a54521 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3152a463dcd616957cadf9966369868b = $(`<div id="html_3152a463dcd616957cadf9966369868b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4726573&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5516, 3.4001&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_32fb174478ea8f13e47b54c194a54521.setContent(html_3152a463dcd616957cadf9966369868b);
+            
+        
+
+        circle_marker_d20930d4bcfd6051c4f72ad15d7b4321.bindPopup(popup_32fb174478ea8f13e47b54c194a54521)
+        ;
+
+        
+    
+    
+            circle_marker_d20930d4bcfd6051c4f72ad15d7b4321.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f632a9bf39c2b628192695c64c6f9811 = L.circleMarker(
+                [6.5503051, 3.3964598],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_ea97f07472f5e3c31249cd96292a10e4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cc435214395c4671c27959e3070a6275 = $(`<div id="html_cc435214395c4671c27959e3070a6275" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4756279&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5503, 3.3965&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_ea97f07472f5e3c31249cd96292a10e4.setContent(html_cc435214395c4671c27959e3070a6275);
+            
+        
+
+        circle_marker_f632a9bf39c2b628192695c64c6f9811.bindPopup(popup_ea97f07472f5e3c31249cd96292a10e4)
+        ;
+
+        
+    
+    
+            circle_marker_f632a9bf39c2b628192695c64c6f9811.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_17845b65ce6a1e7453ff282494663a3f = L.circleMarker(
+                [6.5435452, 3.4019829],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_58921e8e7ee6367c4254d0957df066fa = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_90d0d68a6574af464d6e436571dde689 = $(`<div id="html_90d0d68a6574af464d6e436571dde689" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5325768&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5435, 3.4020&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_58921e8e7ee6367c4254d0957df066fa.setContent(html_90d0d68a6574af464d6e436571dde689);
+            
+        
+
+        circle_marker_17845b65ce6a1e7453ff282494663a3f.bindPopup(popup_58921e8e7ee6367c4254d0957df066fa)
+        ;
+
+        
+    
+    
+            circle_marker_17845b65ce6a1e7453ff282494663a3f.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_700b19ab6bc8825e25703b2671c4dfeb = L.circleMarker(
+                [6.5523478, 3.3976021],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_f63d86656cf1918565931274f8a26a6b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_06ab9178ada8f8d3582d3007aa145322 = $(`<div id="html_06ab9178ada8f8d3582d3007aa145322" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5129740&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5523, 3.3976&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_f63d86656cf1918565931274f8a26a6b.setContent(html_06ab9178ada8f8d3582d3007aa145322);
+            
+        
+
+        circle_marker_700b19ab6bc8825e25703b2671c4dfeb.bindPopup(popup_f63d86656cf1918565931274f8a26a6b)
+        ;
+
+        
+    
+    
+            circle_marker_700b19ab6bc8825e25703b2671c4dfeb.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cc9f2e73006cb7f1dbc4bc3aa9565ec5 = L.circleMarker(
+                [6.5405999, 3.4014453],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_e757bf212be8ae8b5f921b716f032b64 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_18bb0828517da8df3c9664e0c5e2cb0a = $(`<div id="html_18bb0828517da8df3c9664e0c5e2cb0a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5303689&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Ketu - Demurin&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5406, 3.4014&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Ketu - Demurin&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_e757bf212be8ae8b5f921b716f032b64.setContent(html_18bb0828517da8df3c9664e0c5e2cb0a);
+            
+        
+
+        circle_marker_cc9f2e73006cb7f1dbc4bc3aa9565ec5.bindPopup(popup_e757bf212be8ae8b5f921b716f032b64)
+        ;
+
+        
+    
+    
+            circle_marker_cc9f2e73006cb7f1dbc4bc3aa9565ec5.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Ketu - Demurin (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f8c7beae28290b95d59a0befde9d597d = L.circleMarker(
+                [6.5444444, 3.401493],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_024733d25e55cb25a4c61ea1d3b60a78 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_159fb29a4177fafeb00ed3b8521be050 = $(`<div id="html_159fb29a4177fafeb00ed3b8521be050" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5303713&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5444, 3.4015&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_024733d25e55cb25a4c61ea1d3b60a78.setContent(html_159fb29a4177fafeb00ed3b8521be050);
+            
+        
+
+        circle_marker_f8c7beae28290b95d59a0befde9d597d.bindPopup(popup_024733d25e55cb25a4c61ea1d3b60a78)
+        ;
+
+        
+    
+    
+            circle_marker_f8c7beae28290b95d59a0befde9d597d.bindTooltip(
+                `<div>
+                     Kosofe |  (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_429eae4b217a9448d928ece99aeb0145 = L.circleMarker(
+                [6.5536486, 3.3991917],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_4361777cbe98308373f4048541c8e743 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2aa302e5fad081b7c13396bc65a4aa6f = $(`<div id="html_2aa302e5fad081b7c13396bc65a4aa6f" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5220336&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5536, 3.3992&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_4361777cbe98308373f4048541c8e743.setContent(html_2aa302e5fad081b7c13396bc65a4aa6f);
+            
+        
+
+        circle_marker_429eae4b217a9448d928ece99aeb0145.bindPopup(popup_4361777cbe98308373f4048541c8e743)
+        ;
+
+        
+    
+    
+            circle_marker_429eae4b217a9448d928ece99aeb0145.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f0b3818b4091ffacb1d5136857da2f15 = L.circleMarker(
+                [6.5591507999999, 3.3978912],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_23b2a52aa0e47afe320a968c949f303a);
+        
+    
+        var popup_bc4515dc392de2cea947083101372d33 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0fe12160e953349163203a9a7985520e = $(`<div id="html_0fe12160e953349163203a9a7985520e" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5305543&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5592, 3.3979&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Oworonshoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_bc4515dc392de2cea947083101372d33.setContent(html_0fe12160e953349163203a9a7985520e);
+            
+        
+
+        circle_marker_f0b3818b4091ffacb1d5136857da2f15.bindPopup(popup_bc4515dc392de2cea947083101372d33)
+        ;
+
+        
+    
+    
+            circle_marker_f0b3818b4091ffacb1d5136857da2f15.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Oworonshoki (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_23b2a52aa0e47afe320a968c949f303a.addTo(map_aefc375c6d9a25640e9742b2663997c6);
+        
+    
+            var feature_group_2d3ff6b83e3edda18338a71cc34b556d = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_7aaed49a5072a810d64eeff8a322d43d = L.circleMarker(
+                [6.6018213, 3.4188787],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2d3ff6b83e3edda18338a71cc34b556d);
+        
+    
+        var popup_14d4ba3837b97b7fe9aaee29051280eb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f67eaf3d62601712ad9c7ced9870724c = $(`<div id="html_f67eaf3d62601712ad9c7ced9870724c" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1810229&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6018, 3.4189&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_14d4ba3837b97b7fe9aaee29051280eb.setContent(html_f67eaf3d62601712ad9c7ced9870724c);
+            
+        
+
+        circle_marker_7aaed49a5072a810d64eeff8a322d43d.bindPopup(popup_14d4ba3837b97b7fe9aaee29051280eb)
+        ;
+
+        
+    
+    
+            circle_marker_7aaed49a5072a810d64eeff8a322d43d.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Mile 12 (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_530ddb32840765c1fa11654039f765ad = L.circleMarker(
+                [6.5984921, 3.4261626],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2d3ff6b83e3edda18338a71cc34b556d);
+        
+    
+        var popup_b7e33549532dae0e9f8d16268610418b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_dad056af2b7213760e381ddb435f2eb0 = $(`<div id="html_dad056af2b7213760e381ddb435f2eb0" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5248012&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5985, 3.4262&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_b7e33549532dae0e9f8d16268610418b.setContent(html_dad056af2b7213760e381ddb435f2eb0);
+            
+        
+
+        circle_marker_530ddb32840765c1fa11654039f765ad.bindPopup(popup_b7e33549532dae0e9f8d16268610418b)
+        ;
+
+        
+    
+    
+            circle_marker_530ddb32840765c1fa11654039f765ad.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Mile 12 (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d689af141ea67c0bb3484469b1d23cc0 = L.circleMarker(
+                [6.6028591, 3.4129105],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2d3ff6b83e3edda18338a71cc34b556d);
+        
+    
+        var popup_a861d63d48c4640b24687fc09761af17 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9e453d9b651d03ac0a728eb17e199dfc = $(`<div id="html_9e453d9b651d03ac0a728eb17e199dfc" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3089926&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6029, 3.4129&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_a861d63d48c4640b24687fc09761af17.setContent(html_9e453d9b651d03ac0a728eb17e199dfc);
+            
+        
+
+        circle_marker_d689af141ea67c0bb3484469b1d23cc0.bindPopup(popup_a861d63d48c4640b24687fc09761af17)
+        ;
+
+        
+    
+    
+            circle_marker_d689af141ea67c0bb3484469b1d23cc0.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Mile 12 (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cec081a650d55dd41fd3dd21b2844900 = L.circleMarker(
+                [6.6002008, 3.4128234],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2d3ff6b83e3edda18338a71cc34b556d);
+        
+    
+        var popup_e02bbee2cc4e8058e7040f8fafa2b6f4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_82e52b599f02e85592c3eccbb5d8fe7c = $(`<div id="html_82e52b599f02e85592c3eccbb5d8fe7c" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5294637&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6002, 3.4128&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_e02bbee2cc4e8058e7040f8fafa2b6f4.setContent(html_82e52b599f02e85592c3eccbb5d8fe7c);
+            
+        
+
+        circle_marker_cec081a650d55dd41fd3dd21b2844900.bindPopup(popup_e02bbee2cc4e8058e7040f8fafa2b6f4)
+        ;
+
+        
+    
+    
+            circle_marker_cec081a650d55dd41fd3dd21b2844900.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Mile 12 (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fb936aebe19be1585b36e909c37807d2 = L.circleMarker(
+                [6.6009629, 3.4201761],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2d3ff6b83e3edda18338a71cc34b556d);
+        
+    
+        var popup_834f7c7f933f644c24856def65b8a567 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_eed6955772169dc18787f90e5eb873a4 = $(`<div id="html_eed6955772169dc18787f90e5eb873a4" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5295446&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6010, 3.4202&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_834f7c7f933f644c24856def65b8a567.setContent(html_eed6955772169dc18787f90e5eb873a4);
+            
+        
+
+        circle_marker_fb936aebe19be1585b36e909c37807d2.bindPopup(popup_834f7c7f933f644c24856def65b8a567)
+        ;
+
+        
+    
+    
+            circle_marker_fb936aebe19be1585b36e909c37807d2.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Mile 12 (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a044e5cb276a54c30a6d6984fccb981b = L.circleMarker(
+                [6.6033557, 3.4140467],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2d3ff6b83e3edda18338a71cc34b556d);
+        
+    
+        var popup_32c6f3ca83d2ce05b7b6b1eadb66c2ec = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a3e6dcfe3d5142a164297fbc1b784b79 = $(`<div id="html_a3e6dcfe3d5142a164297fbc1b784b79" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5298200&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6034, 3.4140&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_32c6f3ca83d2ce05b7b6b1eadb66c2ec.setContent(html_a3e6dcfe3d5142a164297fbc1b784b79);
+            
+        
+
+        circle_marker_a044e5cb276a54c30a6d6984fccb981b.bindPopup(popup_32c6f3ca83d2ce05b7b6b1eadb66c2ec)
+        ;
+
+        
+    
+    
+            circle_marker_a044e5cb276a54c30a6d6984fccb981b.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Mile 12 (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_38635bd4eb44a7a2bc1879687d05fe93 = L.circleMarker(
+                [6.5996432, 3.4172716],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2d3ff6b83e3edda18338a71cc34b556d);
+        
+    
+        var popup_926f101223de657a6f8ececbe7aa0caf = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_69928b3038531d9b5430781694f52964 = $(`<div id="html_69928b3038531d9b5430781694f52964" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5301639&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5996, 3.4173&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_926f101223de657a6f8ececbe7aa0caf.setContent(html_69928b3038531d9b5430781694f52964);
+            
+        
+
+        circle_marker_38635bd4eb44a7a2bc1879687d05fe93.bindPopup(popup_926f101223de657a6f8ececbe7aa0caf)
+        ;
+
+        
+    
+    
+            circle_marker_38635bd4eb44a7a2bc1879687d05fe93.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Mile 12 (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3ab5773ab3be2693062950cbc59257ce = L.circleMarker(
+                [6.6139946, 3.439015],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2d3ff6b83e3edda18338a71cc34b556d);
+        
+    
+        var popup_88bebbb9865e9a25b863792403239293 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_684340d7d63053a81d930ad8f2de89c1 = $(`<div id="html_684340d7d63053a81d930ad8f2de89c1" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5209037&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6140, 3.4390&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_88bebbb9865e9a25b863792403239293.setContent(html_684340d7d63053a81d930ad8f2de89c1);
+            
+        
+
+        circle_marker_3ab5773ab3be2693062950cbc59257ce.bindPopup(popup_88bebbb9865e9a25b863792403239293)
+        ;
+
+        
+    
+    
+            circle_marker_3ab5773ab3be2693062950cbc59257ce.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Mile 12 (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ba47880f2a5346c60c0ced8128cc5418 = L.circleMarker(
+                [6.6005335, 3.4130423],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2d3ff6b83e3edda18338a71cc34b556d);
+        
+    
+        var popup_f79a09a1cb0f10e07435d4f008549301 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7e1433e344ba1813a3e4ab3712761487 = $(`<div id="html_7e1433e344ba1813a3e4ab3712761487" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5375265&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Agiliti&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6005, 3.4130&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Agiliti&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_f79a09a1cb0f10e07435d4f008549301.setContent(html_7e1433e344ba1813a3e4ab3712761487);
+            
+        
+
+        circle_marker_ba47880f2a5346c60c0ced8128cc5418.bindPopup(popup_f79a09a1cb0f10e07435d4f008549301)
+        ;
+
+        
+    
+    
+            circle_marker_ba47880f2a5346c60c0ced8128cc5418.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Agiliti (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a1677c6b74f2045a9de04a9535810c2b = L.circleMarker(
+                [6.609795, 3.4220411],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2d3ff6b83e3edda18338a71cc34b556d);
+        
+    
+        var popup_77a83ca242f6211e3a66565f56dcf4da = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c0e942290b81ae2b18113a4db9702202 = $(`<div id="html_c0e942290b81ae2b18113a4db9702202" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5381354&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6098, 3.4220&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_77a83ca242f6211e3a66565f56dcf4da.setContent(html_c0e942290b81ae2b18113a4db9702202);
+            
+        
+
+        circle_marker_a1677c6b74f2045a9de04a9535810c2b.bindPopup(popup_77a83ca242f6211e3a66565f56dcf4da)
+        ;
+
+        
+    
+    
+            circle_marker_a1677c6b74f2045a9de04a9535810c2b.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Mile 12 (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_451b97b6afd66fcbeb8d98ba413b6a19 = L.circleMarker(
+                [6.609795, 3.4220411],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2d3ff6b83e3edda18338a71cc34b556d);
+        
+    
+        var popup_de503cfd16b8a35462405374f2010e2f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8c6ff2e1c35d4438454743d0bfaccc11 = $(`<div id="html_8c6ff2e1c35d4438454743d0bfaccc11" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5351964&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6098, 3.4220&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Mile 12&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_de503cfd16b8a35462405374f2010e2f.setContent(html_8c6ff2e1c35d4438454743d0bfaccc11);
+            
+        
+
+        circle_marker_451b97b6afd66fcbeb8d98ba413b6a19.bindPopup(popup_de503cfd16b8a35462405374f2010e2f)
+        ;
+
+        
+    
+    
+            circle_marker_451b97b6afd66fcbeb8d98ba413b6a19.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Mile 12 (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_2d3ff6b83e3edda18338a71cc34b556d.addTo(map_aefc375c6d9a25640e9742b2663997c6);
+        
+    
+            var feature_group_2ca35017b90ca6f0efe6b7fadb26affe = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_82c190ef79b71e3c4a3c29658adac501 = L.circleMarker(
+                [6.5703922, 3.3653189],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2ca35017b90ca6f0efe6b7fadb26affe);
+        
+    
+        var popup_79c4841023dc06c62df1f779d5220e36 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ae1e24e4905a46e8175afa66865bb660 = $(`<div id="html_ae1e24e4905a46e8175afa66865bb660" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1797671&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Maryland - Onigbongbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5704, 3.3653&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Maryland - Onigbongbo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_79c4841023dc06c62df1f779d5220e36.setContent(html_ae1e24e4905a46e8175afa66865bb660);
+            
+        
+
+        circle_marker_82c190ef79b71e3c4a3c29658adac501.bindPopup(popup_79c4841023dc06c62df1f779d5220e36)
+        ;
+
+        
+    
+    
+            circle_marker_82c190ef79b71e3c4a3c29658adac501.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Maryland - Onigbongbo (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1823550af00e9ce4a6032e011116a85d = L.circleMarker(
+                [6.5725925, 3.3717996],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2ca35017b90ca6f0efe6b7fadb26affe);
+        
+    
+        var popup_82dada8b61bd63a1f5a776727c8b482c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a0b0a8246105af4093867945f5cc1d0f = $(`<div id="html_a0b0a8246105af4093867945f5cc1d0f" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5290501&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Maryland - Mende&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5726, 3.3718&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Maryland - Mende&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_82dada8b61bd63a1f5a776727c8b482c.setContent(html_a0b0a8246105af4093867945f5cc1d0f);
+            
+        
+
+        circle_marker_1823550af00e9ce4a6032e011116a85d.bindPopup(popup_82dada8b61bd63a1f5a776727c8b482c)
+        ;
+
+        
+    
+    
+            circle_marker_1823550af00e9ce4a6032e011116a85d.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Maryland - Mende (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_93db2bd7c738705007f63869476ffde7 = L.circleMarker(
+                [6.5707179, 3.3775122],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2ca35017b90ca6f0efe6b7fadb26affe);
+        
+    
+        var popup_378bd6330d178c31a1db06e36fdc6a81 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8df5c3567974bf333f8a851dbc25151e = $(`<div id="html_8df5c3567974bf333f8a851dbc25151e" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4195313&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Maryland - Mende&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5707, 3.3775&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Maryland - Mende&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_378bd6330d178c31a1db06e36fdc6a81.setContent(html_8df5c3567974bf333f8a851dbc25151e);
+            
+        
+
+        circle_marker_93db2bd7c738705007f63869476ffde7.bindPopup(popup_378bd6330d178c31a1db06e36fdc6a81)
+        ;
+
+        
+    
+    
+            circle_marker_93db2bd7c738705007f63869476ffde7.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Maryland - Mende (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_759ff791a14e75df7c7f43c3b7b0c6eb = L.circleMarker(
+                [6.572203099999999, 3.3717861],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2ca35017b90ca6f0efe6b7fadb26affe);
+        
+    
+        var popup_35d1bfa41f7df0afc36ae24d49056704 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4d906f8bb60f0895a540424c338f3e69 = $(`<div id="html_4d906f8bb60f0895a540424c338f3e69" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4220055&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Maryland - Mende&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5722, 3.3718&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Maryland - Mende&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_35d1bfa41f7df0afc36ae24d49056704.setContent(html_4d906f8bb60f0895a540424c338f3e69);
+            
+        
+
+        circle_marker_759ff791a14e75df7c7f43c3b7b0c6eb.bindPopup(popup_35d1bfa41f7df0afc36ae24d49056704)
+        ;
+
+        
+    
+    
+            circle_marker_759ff791a14e75df7c7f43c3b7b0c6eb.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Maryland - Mende (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f7f8fa7bab30bb1d9ef0807dafdb1907 = L.circleMarker(
+                [6.5710057, 3.3654454],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2ca35017b90ca6f0efe6b7fadb26affe);
+        
+    
+        var popup_f1d8a62708cc5edefc841776946336cc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_991a24d294265251360dd1cc9f1e00fa = $(`<div id="html_991a24d294265251360dd1cc9f1e00fa" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4336363&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Maryland - Onigbongbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5710, 3.3654&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Maryland - Onigbongbo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_f1d8a62708cc5edefc841776946336cc.setContent(html_991a24d294265251360dd1cc9f1e00fa);
+            
+        
+
+        circle_marker_f7f8fa7bab30bb1d9ef0807dafdb1907.bindPopup(popup_f1d8a62708cc5edefc841776946336cc)
+        ;
+
+        
+    
+    
+            circle_marker_f7f8fa7bab30bb1d9ef0807dafdb1907.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Maryland - Onigbongbo (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4a598b20e4f3f414ca5d9b0a05969347 = L.circleMarker(
+                [6.5703922, 3.3653189],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2ca35017b90ca6f0efe6b7fadb26affe);
+        
+    
+        var popup_c9a955f9b7294c2629455a594a387b0a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9450f484256c1b99ee663c892d6a4874 = $(`<div id="html_9450f484256c1b99ee663c892d6a4874" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4865749&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Maryland - Onigbongbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5704, 3.3653&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Kosofe - Maryland - Onigbongbo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_c9a955f9b7294c2629455a594a387b0a.setContent(html_9450f484256c1b99ee663c892d6a4874);
+            
+        
+
+        circle_marker_4a598b20e4f3f414ca5d9b0a05969347.bindPopup(popup_c9a955f9b7294c2629455a594a387b0a)
+        ;
+
+        
+    
+    
+            circle_marker_4a598b20e4f3f414ca5d9b0a05969347.bindTooltip(
+                `<div>
+                     Kosofe | Kosofe - Maryland - Onigbongbo (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b64ebe6d299513b059011f80ed1fd9d3 = L.circleMarker(
+                [6.5678744, 3.3742546],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2ca35017b90ca6f0efe6b7fadb26affe);
+        
+    
+        var popup_670b3eb8ad50c9428de668e0820cecaa = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3cc24b90efb4f6d22152090a9b38ee92 = $(`<div id="html_3cc24b90efb4f6d22152090a9b38ee92" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4036141&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5679, 3.3743&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Kosofe&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_670b3eb8ad50c9428de668e0820cecaa.setContent(html_3cc24b90efb4f6d22152090a9b38ee92);
+            
+        
+
+        circle_marker_b64ebe6d299513b059011f80ed1fd9d3.bindPopup(popup_670b3eb8ad50c9428de668e0820cecaa)
+        ;
+
+        
+    
+    
+            circle_marker_b64ebe6d299513b059011f80ed1fd9d3.bindTooltip(
+                `<div>
+                     Kosofe |  (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_2ca35017b90ca6f0efe6b7fadb26affe.addTo(map_aefc375c6d9a25640e9742b2663997c6);
+        
+    
+            var layer_control_cd1575e4815af6dd8f7e51f65db98079_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_444caebeb72fa9af303ee8f4c48016b4,
+                    "OpenStreetMap" : tile_layer_f247e262fc19a77273e96cc40dea1be9,
+                    "Terrain" : tile_layer_a12834c7c7e5e18cea3eed8cf1453b59,
+                    "Toner" : tile_layer_4fdd3b026a25b5dcd11e342ed43cfbad,
+                    "CartoDB Dark" : tile_layer_fc9a623cc0a664d5e10a78e48f5f7feb,
+                    "CartoDB Light" : tile_layer_e50bbec632ce5a2d8eb889ced158af55,
+                },
+                overlays :  {
+                    "Cluster 3 - Kosofe - Kosofe - Oworonshoki+3more (26 points)" : feature_group_23b2a52aa0e47afe320a968c949f303a,
+                    "Cluster 8 - Kosofe - Kosofe - Mile 12+1more (11 points)" : feature_group_2d3ff6b83e3edda18338a71cc34b556d,
+                    "Cluster 9 - Kosofe - Kosofe - Maryland - Onigbongbo+2more (7 points)" : feature_group_2ca35017b90ca6f0efe6b7fadb26affe,
+                },
+            };
+            let layer_control_cd1575e4815af6dd8f7e51f65db98079 = L.control.layers(
+                layer_control_cd1575e4815af6dd8f7e51f65db98079_layers.base_layers,
+                layer_control_cd1575e4815af6dd8f7e51f65db98079_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_aefc375c6d9a25640e9742b2663997c6);
+
+        
+    
+            var tile_layer_ae9be6a121a0673fa751c029282d6330 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_504d12ba40f43f4c51a9cc2e3aba3edd = new L.Control.MiniMap(
+                tile_layer_ae9be6a121a0673fa751c029282d6330,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_aefc375c6d9a25640e9742b2663997c6.addControl(mini_map_504d12ba40f43f4c51a9cc2e3aba3edd);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_aefc375c6d9a25640e9742b2663997c6);
+        
+    
+            var measure_control_04c581d36467a90034937599fba5e6b4 = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_aefc375c6d9a25640e9742b2663997c6.addControl(measure_control_04c581d36467a90034937599fba5e6b4);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_8f99bcd659f929d64a2e7a3cbf3308a4 = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_8f99bcd659f929d64a2e7a3cbf3308a4.options["latFormatter"] =
+                undefined;
+            mouse_position_8f99bcd659f929d64a2e7a3cbf3308a4.options["lngFormatter"] =
+                undefined;
+            map_aefc375c6d9a25640e9742b2663997c6.addControl(mouse_position_8f99bcd659f929d64a2e7a3cbf3308a4);
+        
+    
+            map_aefc375c6d9a25640e9742b2663997c6.fitBounds(
+                [[6.5305999, 3.3553189000000003], [6.6239946, 3.4490149999999997]],
+                {}
+            );
+        
+    
+            var marker_69221abcec56eb98cbf313e8191bce3f = L.marker(
+                [6.600105600000001, 3.3897908],
+                {
+  "size": 10,
+}
+            ).addTo(map_aefc375c6d9a25640e9742b2663997c6);
+        
+    
+            var icon_3ecd6008c821b438d8b4222b54da3f3a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_69221abcec56eb98cbf313e8191bce3f.bindTooltip(
+                `<div>
+                     OmniHub Kosofe Lagos - KOLF 
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_69221abcec56eb98cbf313e8191bce3f.setIcon(icon_3ecd6008c821b438d8b4222b54da3f3a);
+            
+    
+            var poly_line_aa143da1026843c7eb80640879394692 = L.polyline(
+                [[6.60025, 3.38973], [6.60029, 3.38982], [6.60046, 3.3897], [6.60096, 3.38913], [6.60107, 3.38899], [6.60111, 3.38895], [6.60112, 3.38892], [6.60301, 3.39029], [6.60374, 3.39083], [6.6042, 3.39116], [6.60455, 3.39142], [6.60501, 3.39176], [6.60625, 3.39266], [6.60669, 3.39299], [6.60737, 3.39347], [6.6075, 3.39358], [6.60764, 3.39372], [6.60778, 3.39391], [6.6079, 3.39411], [6.60801, 3.39444], [6.60816, 3.3953], [6.60816, 3.39554], [6.60814, 3.39581], [6.60812, 3.39594], [6.60801, 3.39635], [6.60789, 3.39661], [6.60712, 3.39777], [6.60691, 3.39808], [6.60668, 3.39837], [6.60634, 3.39889], [6.6063, 3.39891], [6.60626, 3.39895], [6.60624, 3.399], [6.60624, 3.39906], [6.60626, 3.39911], [6.6063, 3.39916], [6.60634, 3.39919], [6.60645, 3.39919], [6.6065, 3.39916], [6.60654, 3.39912], [6.60656, 3.39903], [6.60711, 3.39822], [6.60723, 3.39801], [6.60729, 3.39792], [6.6075, 3.39751], [6.60795, 3.39683], [6.60812, 3.39655], [6.60824, 3.39618], [6.6083, 3.39591], [6.60835, 3.3955], [6.60833, 3.3952], [6.60822, 3.39461], [6.60813, 3.39426], [6.60797, 3.39391], [6.60788, 3.39376], [6.60765, 3.39348], [6.60748, 3.39332], [6.60701, 3.393], [6.60613, 3.39237], [6.60526, 3.39171], [6.60363, 3.39051], [6.59908, 3.38726], [6.59857, 3.38686], [6.59766, 3.38607], [6.59692, 3.3855], [6.592, 3.38194], [6.5891, 3.37978], [6.58273, 3.37516], [6.58251, 3.375], [6.58214, 3.37472], [6.578, 3.37171], [6.5761, 3.37034], [6.57439, 3.36909], [6.57369, 3.36864], [6.57309, 3.3683], [6.57227, 3.36786], [6.57195, 3.36771], [6.57148, 3.36753], [6.57066, 3.36725], [6.5701, 3.36709], [6.56955, 3.36696], [6.5688, 3.36688], [6.56851, 3.36684], [6.56754, 3.36673], [6.5661, 3.36665], [6.56384, 3.36668], [6.56173, 3.36671], [6.56104, 3.36659], [6.55999, 3.36663], [6.55925, 3.36665], [6.55872, 3.36665], [6.55818, 3.36671], [6.55711, 3.36672], [6.55708, 3.36618], [6.55708, 3.36583], [6.55709, 3.36564], [6.55706, 3.36554], [6.55702, 3.36486], [6.55743, 3.36484], [6.55803, 3.36482], [6.55806, 3.36483], [6.55828, 3.36502], [6.55835, 3.36518], [6.55837, 3.36633], [6.55837, 3.36709], [6.55835, 3.36737], [6.55832, 3.36767], [6.55815, 3.36839], [6.55813, 3.36849], [6.55795, 3.3689], [6.55773, 3.36935], [6.55754, 3.36967], [6.55737, 3.36993], [6.55707, 3.37029], [6.55662, 3.37077], [6.5561, 3.37127], [6.55568, 3.37172], [6.55345, 3.37395], [6.54994, 3.37745], [6.54943, 3.37802], [6.54912, 3.37841], [6.54863, 3.37918], [6.54844, 3.37955], [6.54827, 3.37994], [6.54818, 3.38016], [6.54809, 3.38039], [6.54796, 3.38084], [6.54785, 3.38136], [6.54778, 3.3818], [6.54775, 3.38227], [6.54776, 3.38285], [6.54779, 3.38339], [6.54785, 3.38388], [6.54807, 3.38486], [6.54819, 3.38535], [6.54897, 3.38829], [6.54901, 3.38863], [6.54905, 3.38895], [6.54912, 3.38919], [6.54912, 3.38928], [6.54913, 3.38989], [6.5491, 3.39023], [6.54906, 3.39053], [6.54897, 3.39086], [6.54887, 3.39115], [6.5488, 3.39145], [6.54879, 3.39168], [6.54879, 3.39191], [6.54891, 3.39229], [6.54896, 3.39237], [6.54899, 3.39242], [6.54924, 3.39289], [6.54933, 3.39306], [6.54935, 3.39309], [6.54946, 3.3934], [6.54934, 3.39347], [6.54917, 3.39356], [6.54886, 3.39373], [6.54842, 3.39396], [6.54814, 3.39415], [6.54797, 3.39429], [6.54765, 3.39462], [6.54752, 3.39477], [6.54746, 3.39483], [6.54741, 3.39495], [6.54729, 3.39522], [6.54721, 3.39539], [6.54715, 3.39555], [6.54706, 3.39579], [6.547, 3.39602], [6.54697, 3.39622], [6.54695, 3.39661], [6.54699, 3.39709], [6.54709, 3.39753], [6.54723, 3.39791], [6.54742, 3.39828], [6.54766, 3.39869], [6.54781, 3.39901], [6.54787, 3.39919], [6.54793, 3.39941], [6.54796, 3.39982], [6.54792, 3.40022], [6.54784, 3.40064], [6.54784, 3.40074], [6.5479, 3.40079], [6.54836, 3.401], [6.54858, 3.40113], [6.54893, 3.40137], [6.54839, 3.40192], [6.54831, 3.402], [6.548, 3.40236], [6.54767, 3.40281], [6.54741, 3.4031], [6.5472, 3.40294], [6.54681, 3.40269], [6.54667, 3.40263], [6.54647, 3.40257], [6.54595, 3.40246], [6.54592, 3.40253], [6.54595, 3.40246], [6.54647, 3.40257], [6.54667, 3.40263], [6.54681, 3.40269], [6.5472, 3.40294], [6.54741, 3.4031], [6.54767, 3.40329], [6.54787, 3.40341], [6.54798, 3.40348], [6.54848, 3.40368], [6.54885, 3.40379], [6.5489, 3.40379], [6.54893, 3.40375], [6.5491, 3.40313], [6.54924, 3.40264], [6.54948, 3.40175], [6.54962, 3.4014], [6.54992, 3.4007], [6.54995, 3.40062], [6.55011, 3.40011], [6.55018, 3.40001], [6.55034, 3.39989], [6.55056, 3.39981], [6.55084, 3.39971], [6.55108, 3.39962], [6.55114, 3.39954], [6.55126, 3.39937], [6.55154, 3.39891], [6.55169, 3.39857], [6.55166, 3.39841], [6.55222, 3.39837], [6.55235, 3.39833], [6.55234, 3.39815], [6.55231, 3.39796], [6.55223, 3.39763], [6.55227, 3.3978], [6.55231, 3.39796], [6.55234, 3.39815], [6.55235, 3.39833], [6.55237, 3.39866], [6.55231, 3.39893], [6.55255, 3.39905], [6.55278, 3.39913], [6.55289, 3.39922], [6.55348, 3.39937], [6.55347, 3.3992], [6.55348, 3.39937], [6.55289, 3.39922], [6.55278, 3.39913], [6.55267, 3.39909], [6.55255, 3.39905], [6.55232, 3.39893], [6.55231, 3.39893], [6.55213, 3.39883], [6.55169, 3.39857], [6.55154, 3.39891], [6.55126, 3.39937], [6.55108, 3.39962], [6.55111, 3.39971], [6.5514, 3.40016], [6.55149, 3.40024], [6.55157, 3.40032], [6.55184, 3.40047], [6.55254, 3.40085], [6.55266, 3.40088], [6.55284, 3.4009], [6.55319, 3.40092], [6.55318, 3.40119], [6.55315, 3.40152], [6.55382, 3.40146], [6.55429, 3.40142], [6.55382, 3.40146], [6.55315, 3.40152], [6.55311, 3.40161], [6.55297, 3.40229], [6.55311, 3.40161], [6.55315, 3.40152], [6.55318, 3.40119], [6.55319, 3.40092], [6.55332, 3.40092], [6.55362, 3.40093], [6.55409, 3.4009], [6.55446, 3.40086], [6.55468, 3.40081], [6.55468, 3.40024], [6.55469, 3.40013], [6.55597, 3.40023], [6.55671, 3.40028], [6.55715, 3.40031], [6.55742, 3.40031], [6.55773, 3.40021], [6.55788, 3.40012], [6.55808, 3.40003], [6.55817, 3.39998], [6.55852, 3.39991], [6.55873, 3.39986], [6.55885, 3.39982], [6.55942, 3.39945], [6.55921, 3.39925], [6.55923, 3.3992], [6.55926, 3.39911], [6.55927, 3.39907], [6.55921, 3.39902], [6.55911, 3.39899], [6.5591, 3.39896], [6.5591, 3.39892], [6.5592, 3.39883], [6.55935, 3.39871], [6.5596, 3.39842], [6.55985, 3.39824], [6.55972, 3.39808], [6.55939, 3.39774], [6.55934, 3.39773], [6.55916, 3.3979], [6.55934, 3.39773], [6.55939, 3.39774], [6.55972, 3.39808], [6.56021, 3.39756], [6.55951, 3.39688], [6.55924, 3.39655], [6.55892, 3.39594], [6.55989, 3.39574], [6.56117, 3.39565], [6.56158, 3.39565], [6.56213, 3.39571], [6.56268, 3.39578], [6.5628, 3.39564], [6.56341, 3.39576], [6.57106, 3.39729], [6.57161, 3.39739], [6.57194, 3.39747], [6.57284, 3.39758], [6.57309, 3.39759], [6.57342, 3.39761], [6.57392, 3.3976], [6.57453, 3.39754], [6.57496, 3.39748], [6.57526, 3.39741], [6.57625, 3.39708], [6.57679, 3.39684], [6.57726, 3.3966], [6.57765, 3.39635], [6.578, 3.3961], [6.58107, 3.39348], [6.58152, 3.3931], [6.58171, 3.39293], [6.58428, 3.39064], [6.58442, 3.39053], [6.58445, 3.3905], [6.58496, 3.39007], [6.58542, 3.38967], [6.58587, 3.38928], [6.58795, 3.38748], [6.5884, 3.38711], [6.58855, 3.38699], [6.58994, 3.3859], [6.59061, 3.3854], [6.59108, 3.38513], [6.59155, 3.38497], [6.592, 3.38484], [6.59254, 3.38473], [6.59323, 3.38464], [6.59452, 3.38464], [6.59507, 3.38472], [6.59566, 3.38488], [6.59623, 3.38526], [6.59629, 3.3853], [6.59643, 3.38541], [6.5972, 3.386], [6.59758, 3.38627], [6.59775, 3.38639], [6.59848, 3.38701], [6.59901, 3.38742], [6.59978, 3.38797], [6.60112, 3.38892], [6.60111, 3.38895], [6.60107, 3.38899], [6.60096, 3.38913], [6.60046, 3.3897], [6.60029, 3.38982], [6.60025, 3.38973]],
+                {"bubblingMouseEvents": true, "color": "#1f77b4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#1f77b4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_aefc375c6d9a25640e9742b2663997c6);
+        
+    
+            var poly_line_95b49815b4919a7381b42c836f1de587 = L.polyline(
+                [[6.60025, 3.38973], [6.60029, 3.38982], [6.60046, 3.3897], [6.60096, 3.38913], [6.60107, 3.38899], [6.60111, 3.38895], [6.60112, 3.38892], [6.60301, 3.39029], [6.60374, 3.39083], [6.6042, 3.39116], [6.60455, 3.39142], [6.60501, 3.39176], [6.60625, 3.39266], [6.60669, 3.39299], [6.60737, 3.39347], [6.6075, 3.39358], [6.60764, 3.39372], [6.60778, 3.39391], [6.6079, 3.39411], [6.60801, 3.39444], [6.60816, 3.3953], [6.60816, 3.39554], [6.60814, 3.39581], [6.60812, 3.39594], [6.60801, 3.39635], [6.60789, 3.39661], [6.60712, 3.39777], [6.60691, 3.39808], [6.60668, 3.39837], [6.60634, 3.39889], [6.6063, 3.39891], [6.60626, 3.39895], [6.60624, 3.399], [6.60624, 3.39906], [6.60615, 3.3992], [6.60573, 3.39981], [6.60521, 3.40055], [6.60506, 3.40078], [6.6045, 3.40162], [6.60442, 3.40191], [6.60424, 3.40223], [6.60401, 3.40266], [6.6038, 3.40309], [6.60362, 3.4035], [6.60356, 3.40368], [6.60352, 3.40392], [6.6035, 3.40432], [6.60355, 3.40461], [6.60366, 3.40492], [6.60372, 3.40504], [6.60396, 3.4054], [6.6042, 3.40562], [6.60434, 3.40575], [6.60478, 3.40614], [6.60539, 3.40668], [6.60558, 3.40684], [6.60578, 3.40701], [6.60623, 3.40739], [6.60645, 3.40759], [6.60657, 3.4077], [6.60679, 3.40791], [6.60714, 3.40823], [6.60738, 3.40843], [6.60817, 3.40907], [6.60832, 3.4092], [6.6085, 3.40934], [6.60904, 3.40979], [6.6092, 3.40993], [6.60943, 3.41011], [6.60958, 3.41027], [6.60987, 3.41063], [6.61009, 3.41095], [6.61037, 3.41136], [6.61052, 3.41155], [6.61057, 3.41162], [6.61079, 3.41189], [6.61101, 3.41218], [6.61127, 3.41254], [6.61132, 3.41263], [6.61149, 3.413], [6.61155, 3.41321], [6.61171, 3.41408], [6.61173, 3.41428], [6.61176, 3.4148], [6.61194, 3.41589], [6.61197, 3.41604], [6.61209, 3.41674], [6.6121, 3.41689], [6.61209, 3.41712], [6.61201, 3.41758], [6.61196, 3.41774], [6.61189, 3.41795], [6.61175, 3.41824], [6.61154, 3.41857], [6.61132, 3.41898], [6.61116, 3.41927], [6.61079, 3.41995], [6.61049, 3.42056], [6.61039, 3.42076], [6.60973, 3.422], [6.60934, 3.42273], [6.60875, 3.42244], [6.60823, 3.42219], [6.60758, 3.42191], [6.60752, 3.42185], [6.60621, 3.42102], [6.6046, 3.42003], [6.60358, 3.41937], [6.60276, 3.41892], [6.60203, 3.41853], [6.60167, 3.41921], [6.60161, 3.41933], [6.60125, 3.42001], [6.60112, 3.42026], [6.60125, 3.42001], [6.60161, 3.41933], [6.60167, 3.41921], [6.60184, 3.41889], [6.60203, 3.41853], [6.60068, 3.4178], [6.59967, 3.41723], [6.5981, 3.41634], [6.59681, 3.41561], [6.59692, 3.41543], [6.59724, 3.41499], [6.59741, 3.41474], [6.59772, 3.41434], [6.59811, 3.41386], [6.59889, 3.4139], [6.59965, 3.41384], [6.59961, 3.41306], [6.59987, 3.41303], [6.6002, 3.41303], [6.60053, 3.41303], [6.60105, 3.41303], [6.60273, 3.41319], [6.6026, 3.41399], [6.60317, 3.41405], [6.60335, 3.41407], [6.60317, 3.41405], [6.6026, 3.41399], [6.60273, 3.41319], [6.60286, 3.4132], [6.60286, 3.41291], [6.60285, 3.41253], [6.60345, 3.41253], [6.60354, 3.41251], [6.60358, 3.41247], [6.60363, 3.41236], [6.60365, 3.41151], [6.604, 3.41136], [6.60426, 3.41117], [6.60439, 3.41102], [6.6056, 3.40982], [6.60619, 3.4092], [6.60631, 3.40907], [6.60714, 3.40823], [6.60738, 3.40843], [6.60817, 3.40907], [6.60832, 3.4092], [6.6085, 3.40934], [6.60904, 3.40979], [6.6092, 3.40993], [6.60943, 3.41011], [6.60958, 3.41027], [6.60987, 3.41063], [6.61009, 3.41095], [6.61037, 3.41136], [6.61052, 3.41155], [6.61057, 3.41162], [6.61079, 3.41189], [6.61101, 3.41218], [6.61127, 3.41254], [6.61132, 3.41263], [6.61149, 3.413], [6.61155, 3.41321], [6.61171, 3.41408], [6.61173, 3.41428], [6.61176, 3.4148], [6.61194, 3.41589], [6.61197, 3.41604], [6.61209, 3.41674], [6.6121, 3.41689], [6.61209, 3.41712], [6.61201, 3.41758], [6.61196, 3.41774], [6.61189, 3.41795], [6.61175, 3.41824], [6.61154, 3.41857], [6.61132, 3.41898], [6.61116, 3.41927], [6.61112, 3.41938], [6.61112, 3.41944], [6.61114, 3.41948], [6.61119, 3.4195], [6.61124, 3.41951], [6.61129, 3.41949], [6.61134, 3.41945], [6.61139, 3.41938], [6.61177, 3.41864], [6.612, 3.41816], [6.61209, 3.41791], [6.6122, 3.41758], [6.61224, 3.41741], [6.6123, 3.41697], [6.61229, 3.41637], [6.61222, 3.41594], [6.61211, 3.41506], [6.61194, 3.41415], [6.61185, 3.41358], [6.61182, 3.41346], [6.61172, 3.41312], [6.61166, 3.41298], [6.61145, 3.41256], [6.61124, 3.41222], [6.61118, 3.41212], [6.61101, 3.41187], [6.61096, 3.41179], [6.6109, 3.41171], [6.61082, 3.4116], [6.61056, 3.41121], [6.61036, 3.41094], [6.61029, 3.41085], [6.6101, 3.41064], [6.60982, 3.4103], [6.60955, 3.40999], [6.60919, 3.40964], [6.60917, 3.40961], [6.60902, 3.40946], [6.60897, 3.40942], [6.60844, 3.40891], [6.60665, 3.40742], [6.60625, 3.40707], [6.60575, 3.40666], [6.60556, 3.40652], [6.60548, 3.40645], [6.60498, 3.40603], [6.60447, 3.40564], [6.60416, 3.4054], [6.60395, 3.40516], [6.60386, 3.405], [6.6038, 3.40488], [6.60369, 3.40457], [6.60366, 3.4044], [6.60364, 3.40413], [6.60364, 3.40394], [6.60368, 3.40375], [6.60375, 3.40351], [6.60391, 3.40314], [6.60412, 3.40272], [6.60422, 3.40249], [6.60435, 3.40232], [6.6045, 3.40216], [6.60468, 3.40185], [6.60499, 3.4012], [6.60536, 3.40064], [6.60568, 3.40018], [6.60716, 3.39799], [6.6075, 3.39751], [6.60795, 3.39683], [6.60812, 3.39655], [6.60824, 3.39618], [6.6083, 3.39591], [6.60835, 3.3955], [6.60833, 3.3952], [6.60822, 3.39461], [6.60813, 3.39426], [6.60797, 3.39391], [6.60788, 3.39376], [6.60765, 3.39348], [6.60748, 3.39332], [6.60701, 3.393], [6.60613, 3.39237], [6.60526, 3.39171], [6.60363, 3.39051], [6.59908, 3.38726], [6.59857, 3.38686], [6.59766, 3.38607], [6.59692, 3.3855], [6.592, 3.38194], [6.5891, 3.37978], [6.58273, 3.37516], [6.58251, 3.375], [6.58214, 3.37472], [6.578, 3.37171], [6.5761, 3.37034], [6.57577, 3.36995], [6.57548, 3.36974], [6.57528, 3.36958], [6.57494, 3.36933], [6.57477, 3.3692], [6.5744, 3.36894], [6.57402, 3.36869], [6.57351, 3.36839], [6.57297, 3.3681], [6.57244, 3.36784], [6.57226, 3.36775], [6.57202, 3.36763], [6.57178, 3.36754], [6.57168, 3.3675], [6.57139, 3.36737], [6.57115, 3.36729], [6.57018, 3.36699], [6.56991, 3.36693], [6.5693, 3.3668], [6.56951, 3.36585], [6.56965, 3.36533], [6.56971, 3.36521], [6.56978, 3.36512], [6.56985, 3.36505], [6.57035, 3.3652], [6.57029, 3.36558], [6.57076, 3.3657], [6.57029, 3.36558], [6.57033, 3.36531], [6.57035, 3.3652], [6.56985, 3.36505], [6.56978, 3.36512], [6.56971, 3.36521], [6.56965, 3.36533], [6.56951, 3.36585], [6.5693, 3.3668], [6.56815, 3.36665], [6.5674, 3.36657], [6.5665, 3.36651], [6.56596, 3.3665], [6.56444, 3.36654], [6.56399, 3.36655], [6.5632, 3.36656], [6.56213, 3.3666], [6.56104, 3.36659], [6.55999, 3.36663], [6.55925, 3.36665], [6.55872, 3.36665], [6.55818, 3.36671], [6.55711, 3.36672], [6.55708, 3.36618], [6.55708, 3.36583], [6.55709, 3.36564], [6.55706, 3.36554], [6.55702, 3.36486], [6.55743, 3.36484], [6.55803, 3.36482], [6.55806, 3.36483], [6.55828, 3.36502], [6.55835, 3.36518], [6.55837, 3.36633], [6.55837, 3.36709], [6.55835, 3.36737], [6.55832, 3.36767], [6.55815, 3.36839], [6.55813, 3.36849], [6.55795, 3.3689], [6.55773, 3.36935], [6.55754, 3.36967], [6.55737, 3.36993], [6.55707, 3.37029], [6.55662, 3.37077], [6.5561, 3.37127], [6.55568, 3.37172], [6.55345, 3.37395], [6.54994, 3.37745], [6.54943, 3.37802], [6.54912, 3.37841], [6.54863, 3.37918], [6.54844, 3.37955], [6.54827, 3.37994], [6.54818, 3.38016], [6.54809, 3.38039], [6.54796, 3.38084], [6.54785, 3.38136], [6.54778, 3.3818], [6.54775, 3.38227], [6.54776, 3.38285], [6.54779, 3.38339], [6.54785, 3.38388], [6.54807, 3.38486], [6.54819, 3.38535], [6.54897, 3.38829], [6.54901, 3.38863], [6.54905, 3.38895], [6.54912, 3.38919], [6.54912, 3.38928], [6.54913, 3.38989], [6.5491, 3.39023], [6.54906, 3.39053], [6.54897, 3.39086], [6.54887, 3.39115], [6.5488, 3.39145], [6.54879, 3.39168], [6.54879, 3.39191], [6.54891, 3.39229], [6.54896, 3.39237], [6.54899, 3.39242], [6.54924, 3.39289], [6.54933, 3.39306], [6.54935, 3.39309], [6.54946, 3.3934], [6.54934, 3.39347], [6.54917, 3.39356], [6.54886, 3.39373], [6.54842, 3.39396], [6.54814, 3.39415], [6.54797, 3.39429], [6.54765, 3.39462], [6.54752, 3.39477], [6.54746, 3.39483], [6.54741, 3.39495], [6.54729, 3.39522], [6.54721, 3.39539], [6.54715, 3.39555], [6.54706, 3.39579], [6.547, 3.39602], [6.54697, 3.39622], [6.54695, 3.39661], [6.54699, 3.39709], [6.54709, 3.39753], [6.54723, 3.39791], [6.54742, 3.39828], [6.54766, 3.39869], [6.54781, 3.39901], [6.54787, 3.39919], [6.54793, 3.39941], [6.54796, 3.39982], [6.54792, 3.40022], [6.54784, 3.40064], [6.54784, 3.40074], [6.5479, 3.40079], [6.54836, 3.401], [6.54858, 3.40113], [6.54893, 3.40137], [6.54839, 3.40192], [6.548, 3.40236], [6.54767, 3.40281], [6.54741, 3.4031], [6.5472, 3.40294], [6.54681, 3.40269], [6.54667, 3.40263], [6.54647, 3.40257], [6.54595, 3.40246], [6.5456, 3.40243], [6.54529, 3.40244], [6.54501, 3.40252], [6.54482, 3.40268], [6.54456, 3.403], [6.54433, 3.40322], [6.5438, 3.40261], [6.54359, 3.40231], [6.54346, 3.40209], [6.54344, 3.40203], [6.54328, 3.40165], [6.54273, 3.40188], [6.54088, 3.40192], [6.54078, 3.40185], [6.54072, 3.40179], [6.54061, 3.40144], [6.54072, 3.40179], [6.54078, 3.40185], [6.54088, 3.40192], [6.54273, 3.40188], [6.54328, 3.40165], [6.54382, 3.40137], [6.5443, 3.40123], [6.54436, 3.40151], [6.5443, 3.40123], [6.54423, 3.40105], [6.54422, 3.40099], [6.54419, 3.40089], [6.54416, 3.40058], [6.54418, 3.40042], [6.54422, 3.40012], [6.54422, 3.39996], [6.54417, 3.39944], [6.54475, 3.39953], [6.54492, 3.39952], [6.54516, 3.39944], [6.54545, 3.39922], [6.5457, 3.39899], [6.54554, 3.39876], [6.54544, 3.39865], [6.5453, 3.39855], [6.54522, 3.39851], [6.54509, 3.39846], [6.54579, 3.39818], [6.54666, 3.39784], [6.54727, 3.39773], [6.54808, 3.39768], [6.54846, 3.39763], [6.54888, 3.39752], [6.54919, 3.39737], [6.54941, 3.39725], [6.5497, 3.39702], [6.54995, 3.39674], [6.55016, 3.39641], [6.55017, 3.39639], [6.55023, 3.39627], [6.55037, 3.39596], [6.55043, 3.39577], [6.55052, 3.39535], [6.55057, 3.39496], [6.55064, 3.39443], [6.55064, 3.39422], [6.55058, 3.39367], [6.55048, 3.39314], [6.55023, 3.39221], [6.54926, 3.38886], [6.54913, 3.38842], [6.54858, 3.38644], [6.54845, 3.38596], [6.54804, 3.38426], [6.54791, 3.38335], [6.54788, 3.38292], [6.54789, 3.38237], [6.54792, 3.3819], [6.54796, 3.38149], [6.54803, 3.3811], [6.54814, 3.38067], [6.5483, 3.3802], [6.54839, 3.37998], [6.54884, 3.37906], [6.54911, 3.37865], [6.54944, 3.37822], [6.54974, 3.37787], [6.55019, 3.37738], [6.55353, 3.37405], [6.55577, 3.37182], [6.55601, 3.37167], [6.55623, 3.3715], [6.55725, 3.37048], [6.55796, 3.36965], [6.55817, 3.3695], [6.55835, 3.36942], [6.55876, 3.36936], [6.55893, 3.36932], [6.55902, 3.36928], [6.55912, 3.36922], [6.55929, 3.36902], [6.55933, 3.36892], [6.55933, 3.36874], [6.55933, 3.36808], [6.55931, 3.36703], [6.56007, 3.36701], [6.56047, 3.36701], [6.56079, 3.367], [6.56202, 3.36698], [6.56259, 3.36696], [6.5637, 3.36693], [6.564, 3.36691], [6.56428, 3.36691], [6.56435, 3.36691], [6.56502, 3.36689], [6.56545, 3.3669], [6.56589, 3.36689], [6.56616, 3.36691], [6.56647, 3.36692], [6.56767, 3.367], [6.56789, 3.36702], [6.56787, 3.3672], [6.56787, 3.36738], [6.56789, 3.36745], [6.56794, 3.36754], [6.56824, 3.36798], [6.56856, 3.36856], [6.56859, 3.36867], [6.56859, 3.36893], [6.5686, 3.3697], [6.56861, 3.37079], [6.56866, 3.37111], [6.56868, 3.37122], [6.56874, 3.37161], [6.56882, 3.37207], [6.56886, 3.37234], [6.56898, 3.3727], [6.5691, 3.37331], [6.56866, 3.37329], [6.56836, 3.37332], [6.56827, 3.37342], [6.56826, 3.37354], [6.56829, 3.37364], [6.56771, 3.37394], [6.56765, 3.37399], [6.56763, 3.37403], [6.56763, 3.37412], [6.56767, 3.3743], [6.56763, 3.37412], [6.56763, 3.37403], [6.56765, 3.37399], [6.56771, 3.37394], [6.56829, 3.37364], [6.56826, 3.37354], [6.56827, 3.37342], [6.56836, 3.37332], [6.56866, 3.37329], [6.5691, 3.37331], [6.56921, 3.37393], [6.56982, 3.37384], [6.57109, 3.37369], [6.57105, 3.37409], [6.57139, 3.37414], [6.57169, 3.37417], [6.57172, 3.37336], [6.57182, 3.3727], [6.57187, 3.37255], [6.57192, 3.37246], [6.57226, 3.37202], [6.57212, 3.37193], [6.57226, 3.37202], [6.57249, 3.37171], [6.57258, 3.37181], [6.57249, 3.37171], [6.57255, 3.37165], [6.57291, 3.37117], [6.57373, 3.37217], [6.57413, 3.37172], [6.57415, 3.37168], [6.57416, 3.37163], [6.57414, 3.37154], [6.57386, 3.37103], [6.57413, 3.36989], [6.5742, 3.36972], [6.57442, 3.36942], [6.57463, 3.36956], [6.57536, 3.37013], [6.57584, 3.37033], [6.57791, 3.37184], [6.58208, 3.37485], [6.58245, 3.37512], [6.58273, 3.37534], [6.58282, 3.37541], [6.58322, 3.37571], [6.58388, 3.37613], [6.58785, 3.37901], [6.58902, 3.37989], [6.59717, 3.3858], [6.59762, 3.38618], [6.59842, 3.38686], [6.59846, 3.38691], [6.59848, 3.38701], [6.59901, 3.38742], [6.59978, 3.38797], [6.60112, 3.38892], [6.60111, 3.38895], [6.60107, 3.38899], [6.60096, 3.38913], [6.60046, 3.3897], [6.60029, 3.38982], [6.60025, 3.38973]],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#ff7f0e", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_aefc375c6d9a25640e9742b2663997c6);
+        
+</script>
+</html>

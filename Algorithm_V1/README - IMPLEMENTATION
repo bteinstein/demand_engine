@@ -1,0 +1,143 @@
+# Route Optimization Implementation Guide
+
+## Overview
+This system creates optimized delivery routes for push sales recommendations with multiple priority weighting strategies and multi-trip capabilities.
+
+## Key Features
+
+### 1. Multiple Priority Strategies
+- **Balanced**: Equal weight to affinity score, SKU score, and product priority
+- **Affinity Focused**: Prioritizes customers most likely to convert
+- **Product Focused**: Emphasizes Express and Core products
+
+### 2. Constraints Management
+- Maximum 20 customers per route
+- Maximum 200 quantity per route  
+- Geographic proximity optimization
+- Top 10 SKU rank filtering
+
+### 3. Multi-Trip Planning
+- First trip: Optimized selection across all geographic clusters
+- Subsequent trips: Focus on remaining high-priority geographic clusters
+- Automatic route sequencing using nearest neighbor algorithm
+
+## Implementation Steps
+
+### Step 1: Load Your Data
+```python
+# Load your dataframes
+df_customer_sku_recommendation = pd.read_csv('your_sku_recommendations.csv')
+df_customer_dim_with_affinity_score = pd.read_csv('your_customer_data.csv') 
+df_stockpoint_dim = pd.read_csv('your_stockpoint_data.csv')
+
+# Initialize optimizer
+optimizer = RouteOptimizer(max_customers_per_route=20, max_volume_per_route=200)
+
+# Load data into optimizer
+optimizer.load_data(
+    df_customer_sku_recommendation, 
+    df_customer_dim_with_affinity_score, 
+    df_stockpoint_dim
+)
+```
+
+### Step 2: Generate Routes
+```python
+# Generate routes for Stock Point 1647113
+routes = optimizer.generate_multi_trip_routes(
+    stock_point_id=1647113,
+    priority_strategy='balanced',  # or 'affinity_focused', 'product_focused'
+    max_trips=3
+)
+
+# Convert to DataFrame for analysis
+df_routes = pd.DataFrame(routes)
+```
+
+### Step 3: Analyze Results
+```python
+# Summary statistics
+print(f"Total customers: {len(df_routes)}")
+print(f"Total trips: {df_routes['TripNumber'].max()}")
+print(f"Total volume: {df_routes['EstimatedQuantity'].sum()}")
+
+# Trip-wise breakdown
+trip_summary = df_routes.groupby(['PLANID', 'TripNumber']).agg({
+    'CustomerID': 'count',
+    'EstimatedQuantity': 'sum',
+    'CustomerAffinityRank': 'mean'
+}).round(2)
+
+print(trip_summary)
+```
+
+## Output Format
+
+Each route plan contains:
+
+| Column | Description |
+|--------|-------------|
+| PLANID | Format: SP{stock_point_id}_T{trip_number} |
+| TripNumber | Sequential trip number |
+| Sequence | Visit order within trip |
+| CustomerID | Customer identifier |
+| CustomerName | Customer name |
+| Latitude/Longitude | Customer coordinates |
+| EstimatedQuantity | Volume for this customer |
+| CumulativeVolume | Running total volume |
+| CustomerAffinityRank | Customer conversion likelihood rank |
+| CustomerSKUscoreRank | SKU recommendation rank |
+| ProductTags | Product categories (Express, Core, etc.) |
+| Region/LGA | Geographic information |
+
+## Strategy Comparison
+
+### Balanced Strategy (Default)
+- 40% Customer Affinity Score
+- 40% SKU Score  
+- 20% Product Priority
+- **Best for**: General optimization balancing all factors
+
+### Affinity Focused Strategy
+- 60% Customer Affinity Score
+- 30% SKU Score
+- 10% Product Priority  
+- **Best for**: Maximizing conversion rates
+
+### Product Focused Strategy
+- 30% Customer Affinity Score
+- 30% SKU Score
+- 40% Product Priority
+- **Best for**: Pushing specific product categories
+
+## Multi-Trip Logic
+
+1. **Trip 1**: Select best customers across all geographic clusters
+2. **Trip 2+**: Focus on remaining customers in priority geographic clusters
+3. **Route Sequencing**: Nearest neighbor algorithm starting from stock point
+4. **Volume Management**: Cumulative volume tracking with hard limits
+
+## Customization Options
+
+You can easily modify:
+- Maximum customers per route (default: 20)
+- Maximum volume per route (default: 200)
+- Priority weighting factors
+- Number of geographic clusters
+- SKU rank threshold (default: top 10)
+
+## Expected Performance
+
+For Stock Point 1647113, typical results:
+- **Trip 1**: 15-20 high-priority customers across multiple clusters
+- **Trip 2**: 10-15 customers from remaining priority clusters  
+- **Trip 3**: Remaining customers if volume allows
+- **Geographic Efficiency**: Routes minimize backtracking through clustering
+
+## Next Steps
+
+1. Run the system with your data
+2. Compare results across different priority strategies
+3. Analyze trip efficiency and customer coverage
+4. Adjust parameters based on field feedback
+5. Scale to additional stock points
