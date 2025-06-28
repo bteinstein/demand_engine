@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_fbede2d63bbdcf422395297998be1640 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 5 clusters | 16 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+    <div id="cluster-legend" style="position: fixed; 
+                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                background-color: rgba(255, 255, 255, 0.95); 
+                border: 2px solid #ccc; z-index: 999; 
+                font-size: 11px; padding: 12px; border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                backdrop-filter: blur(5px);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <strong style="color: #333;">Cluster Legend</strong>
+        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+    </div>
+    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+        5 clusters | Sorted by size | Showing top 15
+    </div>
+    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 1 
+                <br><span style="color: #666; font-size: 9px;">10 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #d62728; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 4 
+                <br><span style="color: #666; font-size: 9px;">2 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #9467bd; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 5 
+                <br><span style="color: #666; font-size: 9px;">2 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#4</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">1 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#5</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">1 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_fbede2d63bbdcf422395297998be1640" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_fbede2d63bbdcf422395297998be1640 = L.map(
+                "map_fbede2d63bbdcf422395297998be1640",
+                {
+                    center: [5.94366625, 5.9510816],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_fbede2d63bbdcf422395297998be1640);
+
+            
+
+        
+    
+            var tile_layer_44628c3ec1c726e064237fb282897d82 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_44628c3ec1c726e064237fb282897d82.addTo(map_fbede2d63bbdcf422395297998be1640);
+        
+    
+            var tile_layer_3f585498e0a8396c445c0365ded3b1b8 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_3f585498e0a8396c445c0365ded3b1b8.addTo(map_fbede2d63bbdcf422395297998be1640);
+        
+    
+            var tile_layer_8b7b083fbd47e06bca0c687206fcccf4 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_8b7b083fbd47e06bca0c687206fcccf4.addTo(map_fbede2d63bbdcf422395297998be1640);
+        
+    
+            var tile_layer_be4e150cdfbcb879479b16200bcbce7d = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_be4e150cdfbcb879479b16200bcbce7d.addTo(map_fbede2d63bbdcf422395297998be1640);
+        
+    
+            var tile_layer_2b9c6d3cf1de10eb3ec8f534a0fb8270 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_2b9c6d3cf1de10eb3ec8f534a0fb8270.addTo(map_fbede2d63bbdcf422395297998be1640);
+        
+    
+            var tile_layer_d4b81165b505734e7dc0abbfed2a6de0 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_d4b81165b505734e7dc0abbfed2a6de0.addTo(map_fbede2d63bbdcf422395297998be1640);
+        
+    
+            var feature_group_ebfd4157ce53b36d1591021f6e2fe79e = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_9fe40656bf3558ff78f0d48ea68a6d4a = L.circleMarker(
+                [4.7853746, 7.1177262999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ebfd4157ce53b36d1591021f6e2fe79e);
+        
+    
+        var popup_119201aa17e402b0978a9b19b545bffe = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9e0d25b0cd19ed52d073a122f94e9587 = $(`<div id="html_9e0d25b0cd19ed52d073a122f94e9587" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3879643&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Alese&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.7854, 7.1177&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Alese&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_119201aa17e402b0978a9b19b545bffe.setContent(html_9e0d25b0cd19ed52d073a122f94e9587);
+            
+        
+
+        circle_marker_9fe40656bf3558ff78f0d48ea68a6d4a.bindPopup(popup_119201aa17e402b0978a9b19b545bffe)
+        ;
+
+        
+    
+    
+            circle_marker_9fe40656bf3558ff78f0d48ea68a6d4a.bindTooltip(
+                `<div>
+                     Eleme | Alese (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a9936a183c7ca6e1bc03222ec5e8b13c = L.circleMarker(
+                [4.723815699999999, 7.1516182],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ebfd4157ce53b36d1591021f6e2fe79e);
+        
+    
+        var popup_9a22ac7f39528b513f93d29521441274 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4cf9790ee3f54b1b56011fbfabadf6b9 = $(`<div id="html_4cf9790ee3f54b1b56011fbfabadf6b9" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5440293&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Onne&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.7238, 7.1516&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Onne&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_9a22ac7f39528b513f93d29521441274.setContent(html_4cf9790ee3f54b1b56011fbfabadf6b9);
+            
+        
+
+        circle_marker_a9936a183c7ca6e1bc03222ec5e8b13c.bindPopup(popup_9a22ac7f39528b513f93d29521441274)
+        ;
+
+        
+    
+    
+            circle_marker_a9936a183c7ca6e1bc03222ec5e8b13c.bindTooltip(
+                `<div>
+                     Eleme | Onne (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_517f03aa4380264a8592fbd9e77c1ca0 = L.circleMarker(
+                [4.7382506, 7.0867841],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ebfd4157ce53b36d1591021f6e2fe79e);
+        
+    
+        var popup_43e468acd5c2fd0ece0b7e219d315c2b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1a0041eb109d9f4f14322868ceb00b29 = $(`<div id="html_1a0041eb109d9f4f14322868ceb00b29" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5234888&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Okrika&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Okochiri&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.7383, 7.0868&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Okrika&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Okochiri&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_43e468acd5c2fd0ece0b7e219d315c2b.setContent(html_1a0041eb109d9f4f14322868ceb00b29);
+            
+        
+
+        circle_marker_517f03aa4380264a8592fbd9e77c1ca0.bindPopup(popup_43e468acd5c2fd0ece0b7e219d315c2b)
+        ;
+
+        
+    
+    
+            circle_marker_517f03aa4380264a8592fbd9e77c1ca0.bindTooltip(
+                `<div>
+                     Okrika | Okochiri (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f59651295ffb83efd77bc2d27cec740a = L.circleMarker(
+                [4.7993909, 7.1197867],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ebfd4157ce53b36d1591021f6e2fe79e);
+        
+    
+        var popup_e9b46e22ac7dbdd7e29fa9bd94c9bfd5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b18aba60a1f9269fc879d4c5c2784eab = $(`<div id="html_b18aba60a1f9269fc879d4c5c2784eab" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4019565&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Aleto&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.7994, 7.1198&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Aleto&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_e9b46e22ac7dbdd7e29fa9bd94c9bfd5.setContent(html_b18aba60a1f9269fc879d4c5c2784eab);
+            
+        
+
+        circle_marker_f59651295ffb83efd77bc2d27cec740a.bindPopup(popup_e9b46e22ac7dbdd7e29fa9bd94c9bfd5)
+        ;
+
+        
+    
+    
+            circle_marker_f59651295ffb83efd77bc2d27cec740a.bindTooltip(
+                `<div>
+                     Eleme | Aleto (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b651c177d6790998a9d3fb6e40799182 = L.circleMarker(
+                [4.7993909, 7.1197867],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ebfd4157ce53b36d1591021f6e2fe79e);
+        
+    
+        var popup_83df6bde77bbc2e69f3f463f964c13bb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_440a71f2a58347627cd2ff60312d44c5 = $(`<div id="html_440a71f2a58347627cd2ff60312d44c5" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5328578&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; ELEME-ALETO&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.7994, 7.1198&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; ELEME-ALETO&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_83df6bde77bbc2e69f3f463f964c13bb.setContent(html_440a71f2a58347627cd2ff60312d44c5);
+            
+        
+
+        circle_marker_b651c177d6790998a9d3fb6e40799182.bindPopup(popup_83df6bde77bbc2e69f3f463f964c13bb)
+        ;
+
+        
+    
+    
+            circle_marker_b651c177d6790998a9d3fb6e40799182.bindTooltip(
+                `<div>
+                     Eleme | ELEME-ALETO (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7358fc75092b1d07df906f3b288fea4f = L.circleMarker(
+                [4.7993909, 7.1197867],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ebfd4157ce53b36d1591021f6e2fe79e);
+        
+    
+        var popup_a555af9da35b39d89ffe04fc7ecf1781 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1aeb7726db284fa23193df7b3d238745 = $(`<div id="html_1aeb7726db284fa23193df7b3d238745" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5229509&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Aleto&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.7994, 7.1198&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Aleto&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_a555af9da35b39d89ffe04fc7ecf1781.setContent(html_1aeb7726db284fa23193df7b3d238745);
+            
+        
+
+        circle_marker_7358fc75092b1d07df906f3b288fea4f.bindPopup(popup_a555af9da35b39d89ffe04fc7ecf1781)
+        ;
+
+        
+    
+    
+            circle_marker_7358fc75092b1d07df906f3b288fea4f.bindTooltip(
+                `<div>
+                     Eleme | Aleto (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6d49dfa501511c1138ad4a7065f89347 = L.circleMarker(
+                [4.7993909, 7.1197867],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ebfd4157ce53b36d1591021f6e2fe79e);
+        
+    
+        var popup_faa0134b4de5fe85d4aebb84c2b4d5cb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9f71ffe3f8d671b837479eb87c40e2a4 = $(`<div id="html_9f71ffe3f8d671b837479eb87c40e2a4" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5241863&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; ELEME-AGBONCHIA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.7994, 7.1198&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; ELEME-AGBONCHIA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_faa0134b4de5fe85d4aebb84c2b4d5cb.setContent(html_9f71ffe3f8d671b837479eb87c40e2a4);
+            
+        
+
+        circle_marker_6d49dfa501511c1138ad4a7065f89347.bindPopup(popup_faa0134b4de5fe85d4aebb84c2b4d5cb)
+        ;
+
+        
+    
+    
+            circle_marker_6d49dfa501511c1138ad4a7065f89347.bindTooltip(
+                `<div>
+                     Eleme | ELEME-AGBONCHIA (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_160dc296b0f4529e660f2f3d4c719de5 = L.circleMarker(
+                [7.1008188, 4.750545],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ebfd4157ce53b36d1591021f6e2fe79e);
+        
+    
+        var popup_33dc73b3425c6c5a318c8d255fde45e9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_da9d9bb581073633526dc57465770faf = $(`<div id="html_da9d9bb581073633526dc57465770faf" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3859447&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Okrika&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Okirika&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1008, 4.7505&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Okrika&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Okirika&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_33dc73b3425c6c5a318c8d255fde45e9.setContent(html_da9d9bb581073633526dc57465770faf);
+            
+        
+
+        circle_marker_160dc296b0f4529e660f2f3d4c719de5.bindPopup(popup_33dc73b3425c6c5a318c8d255fde45e9)
+        ;
+
+        
+    
+    
+            circle_marker_160dc296b0f4529e660f2f3d4c719de5.bindTooltip(
+                `<div>
+                     Okrika | Okirika (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_95e8bc103f3e4ed306673bf48e8365c4 = L.circleMarker(
+                [4.7406877, 7.0848302],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ebfd4157ce53b36d1591021f6e2fe79e);
+        
+    
+        var popup_0662015564d0cdf958d487e49c11f1c9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_be301115413cbd5716d2ad76a34e6500 = $(`<div id="html_be301115413cbd5716d2ad76a34e6500" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5159930&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Okrika&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Okirika&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.7407, 7.0848&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Okrika&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Okirika&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_0662015564d0cdf958d487e49c11f1c9.setContent(html_be301115413cbd5716d2ad76a34e6500);
+            
+        
+
+        circle_marker_95e8bc103f3e4ed306673bf48e8365c4.bindPopup(popup_0662015564d0cdf958d487e49c11f1c9)
+        ;
+
+        
+    
+    
+            circle_marker_95e8bc103f3e4ed306673bf48e8365c4.bindTooltip(
+                `<div>
+                     Okrika | Okirika (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_92988053ff5456306e7877df2e118895 = L.circleMarker(
+                [4.8192191, 7.0920439],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ebfd4157ce53b36d1591021f6e2fe79e);
+        
+    
+        var popup_e1c71daaa36efaa7086a5b2d202f57de = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fc7f84cc856efd7d1d7dbefa0dba0eec = $(`<div id="html_fc7f84cc856efd7d1d7dbefa0dba0eec" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 1&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5306045&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Akpajo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8192, 7.0920&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Akpajo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_e1c71daaa36efaa7086a5b2d202f57de.setContent(html_fc7f84cc856efd7d1d7dbefa0dba0eec);
+            
+        
+
+        circle_marker_92988053ff5456306e7877df2e118895.bindPopup(popup_e1c71daaa36efaa7086a5b2d202f57de)
+        ;
+
+        
+    
+    
+            circle_marker_92988053ff5456306e7877df2e118895.bindTooltip(
+                `<div>
+                     Eleme | Akpajo (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_ebfd4157ce53b36d1591021f6e2fe79e.addTo(map_fbede2d63bbdcf422395297998be1640);
+        
+    
+            var feature_group_3a8b0e411a81c2b28fd721b9304a8eb4 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_d4ba8bfd3106b8f020e10e2b20d0f915 = L.circleMarker(
+                [7.1197867, 4.7993909],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_3a8b0e411a81c2b28fd721b9304a8eb4);
+        
+    
+        var popup_d28775a479585295405fc1e3e7111c9f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6bf19a496cfb71544f0423d841e6f6cd = $(`<div id="html_6bf19a496cfb71544f0423d841e6f6cd" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #d62728; margin-bottom: 5px;&#39;&gt;Cluster 4&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5307369&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ejama&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1198, 4.7994&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ejama&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_d28775a479585295405fc1e3e7111c9f.setContent(html_6bf19a496cfb71544f0423d841e6f6cd);
+            
+        
+
+        circle_marker_d4ba8bfd3106b8f020e10e2b20d0f915.bindPopup(popup_d28775a479585295405fc1e3e7111c9f)
+        ;
+
+        
+    
+    
+            circle_marker_d4ba8bfd3106b8f020e10e2b20d0f915.bindTooltip(
+                `<div>
+                     Eleme | Ejama (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e918b98373d28f32986e3d83e908713a = L.circleMarker(
+                [7.1197551, 4.7924283],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_3a8b0e411a81c2b28fd721b9304a8eb4);
+        
+    
+        var popup_26ddf2a30d0318f9745d284636765372 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c5390cc4421c08891c64f9afe4931325 = $(`<div id="html_c5390cc4421c08891c64f9afe4931325" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #d62728; margin-bottom: 5px;&#39;&gt;Cluster 4&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3997665&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Aleto&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1198, 4.7924&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Aleto&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_26ddf2a30d0318f9745d284636765372.setContent(html_c5390cc4421c08891c64f9afe4931325);
+            
+        
+
+        circle_marker_e918b98373d28f32986e3d83e908713a.bindPopup(popup_26ddf2a30d0318f9745d284636765372)
+        ;
+
+        
+    
+    
+            circle_marker_e918b98373d28f32986e3d83e908713a.bindTooltip(
+                `<div>
+                     Eleme | Aleto (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_3a8b0e411a81c2b28fd721b9304a8eb4.addTo(map_fbede2d63bbdcf422395297998be1640);
+        
+    
+            var feature_group_8b600c4cfa368e1cfade86825809f95a = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_b6c27fc43b205f8c228c33001d2df483 = L.circleMarker(
+                [4.7814867, 7.0432852],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8b600c4cfa368e1cfade86825809f95a);
+        
+    
+        var popup_593b8c7380565d1a01dd036d4774a355 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d622ed1cfd99e2cf12a9c9d9f3880e9b = $(`<div id="html_d622ed1cfd99e2cf12a9c9d9f3880e9b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #9467bd; margin-bottom: 5px;&#39;&gt;Cluster 5&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3858316&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Okrika&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ogoloma&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.7815, 7.0433&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Okrika&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ogoloma&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_593b8c7380565d1a01dd036d4774a355.setContent(html_d622ed1cfd99e2cf12a9c9d9f3880e9b);
+            
+        
+
+        circle_marker_b6c27fc43b205f8c228c33001d2df483.bindPopup(popup_593b8c7380565d1a01dd036d4774a355)
+        ;
+
+        
+    
+    
+            circle_marker_b6c27fc43b205f8c228c33001d2df483.bindTooltip(
+                `<div>
+                     Okrika | Ogoloma (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d3eb0fff8dd3b3bcfb34ba05ec37491d = L.circleMarker(
+                [4.7648117999999, 7.0189255],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8b600c4cfa368e1cfade86825809f95a);
+        
+    
+        var popup_82a6f4e4f59cdc61b7f8ed0fc305ce79 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_98624b42e1eba7f1d9b332c4bfe9d641 = $(`<div id="html_98624b42e1eba7f1d9b332c4bfe9d641" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #9467bd; margin-bottom: 5px;&#39;&gt;Cluster 5&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5461732&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; ELEME-OGALE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.7648, 7.0189&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; ELEME-OGALE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_82a6f4e4f59cdc61b7f8ed0fc305ce79.setContent(html_98624b42e1eba7f1d9b332c4bfe9d641);
+            
+        
+
+        circle_marker_d3eb0fff8dd3b3bcfb34ba05ec37491d.bindPopup(popup_82a6f4e4f59cdc61b7f8ed0fc305ce79)
+        ;
+
+        
+    
+    
+            circle_marker_d3eb0fff8dd3b3bcfb34ba05ec37491d.bindTooltip(
+                `<div>
+                     Eleme | ELEME-OGALE (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_8b600c4cfa368e1cfade86825809f95a.addTo(map_fbede2d63bbdcf422395297998be1640);
+        
+    
+            var feature_group_61aef5b2cb23f62aa48181f2d9d4c738 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_9d916dfd576ae810d23f10724628a9e8 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_61aef5b2cb23f62aa48181f2d9d4c738);
+        
+    
+        var popup_24aeefd834b6f148cf15b11c1e6aba14 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_686071453a1bafa269e4dc38ff6a11f2 = $(`<div id="html_686071453a1bafa269e4dc38ff6a11f2" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4608050&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Agbnchia&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Agbnchia&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_24aeefd834b6f148cf15b11c1e6aba14.setContent(html_686071453a1bafa269e4dc38ff6a11f2);
+            
+        
+
+        circle_marker_9d916dfd576ae810d23f10724628a9e8.bindPopup(popup_24aeefd834b6f148cf15b11c1e6aba14)
+        ;
+
+        
+    
+    
+            circle_marker_9d916dfd576ae810d23f10724628a9e8.bindTooltip(
+                `<div>
+                     Eleme | Agbnchia (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_61aef5b2cb23f62aa48181f2d9d4c738.addTo(map_fbede2d63bbdcf422395297998be1640);
+        
+    
+            var feature_group_c73fded54e4bbf571c894bf811846613 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_6b30b6afba8492b95588402888544072 = L.circleMarker(
+                [7.1635168, 4.896015],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c73fded54e4bbf571c894bf811846613);
+        
+    
+        var popup_d3914c98dccdcebadba8ed54a7a898f4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_80637296cc99960ee6285f616c8c3113 = $(`<div id="html_80637296cc99960ee6285f616c8c3113" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5301074&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Nichia-Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 7.1635, 4.8960&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eleme&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Nichia-Eleme&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_d3914c98dccdcebadba8ed54a7a898f4.setContent(html_80637296cc99960ee6285f616c8c3113);
+            
+        
+
+        circle_marker_6b30b6afba8492b95588402888544072.bindPopup(popup_d3914c98dccdcebadba8ed54a7a898f4)
+        ;
+
+        
+    
+    
+            circle_marker_6b30b6afba8492b95588402888544072.bindTooltip(
+                `<div>
+                     Eleme | Nichia-Eleme (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_c73fded54e4bbf571c894bf811846613.addTo(map_fbede2d63bbdcf422395297998be1640);
+        
+    
+            var layer_control_ca68e4002f6f50263399880d7186f36d_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_44628c3ec1c726e064237fb282897d82,
+                    "OpenStreetMap" : tile_layer_3f585498e0a8396c445c0365ded3b1b8,
+                    "Terrain" : tile_layer_8b7b083fbd47e06bca0c687206fcccf4,
+                    "Toner" : tile_layer_be4e150cdfbcb879479b16200bcbce7d,
+                    "CartoDB Dark" : tile_layer_2b9c6d3cf1de10eb3ec8f534a0fb8270,
+                    "CartoDB Light" : tile_layer_d4b81165b505734e7dc0abbfed2a6de0,
+                },
+                overlays :  {
+                    "Cluster 1 - Eleme+1more - Alese+7more (10 points)" : feature_group_ebfd4157ce53b36d1591021f6e2fe79e,
+                    "Cluster 4 - Eleme - Ejama+1more (2 points)" : feature_group_3a8b0e411a81c2b28fd721b9304a8eb4,
+                    "Cluster 5 - Okrika+1more - Ogoloma+1more (2 points)" : feature_group_8b600c4cfa368e1cfade86825809f95a,
+                    "Cluster 2 - Eleme - Agbnchia (1 points)" : feature_group_61aef5b2cb23f62aa48181f2d9d4c738,
+                    "Cluster 3 - Eleme - Nichia-Eleme (1 points)" : feature_group_c73fded54e4bbf571c894bf811846613,
+                },
+            };
+            let layer_control_ca68e4002f6f50263399880d7186f36d = L.control.layers(
+                layer_control_ca68e4002f6f50263399880d7186f36d_layers.base_layers,
+                layer_control_ca68e4002f6f50263399880d7186f36d_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_fbede2d63bbdcf422395297998be1640);
+
+        
+    
+            var tile_layer_ab7df0d0b2b7c22bd4fe0d97570c7271 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_135693c9caeed90bfa2e4d6e5f2b3b7f = new L.Control.MiniMap(
+                tile_layer_ab7df0d0b2b7c22bd4fe0d97570c7271,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_fbede2d63bbdcf422395297998be1640.addControl(mini_map_135693c9caeed90bfa2e4d6e5f2b3b7f);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_fbede2d63bbdcf422395297998be1640);
+        
+    
+            var measure_control_c608c53a1f865c2a677386485e421dca = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_fbede2d63bbdcf422395297998be1640.addControl(measure_control_c608c53a1f865c2a677386485e421dca);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_106cc8ecd2a04f87fd96fbee3e7e1476 = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_106cc8ecd2a04f87fd96fbee3e7e1476.options["latFormatter"] =
+                undefined;
+            mouse_position_106cc8ecd2a04f87fd96fbee3e7e1476.options["lngFormatter"] =
+                undefined;
+            map_fbede2d63bbdcf422395297998be1640.addControl(mouse_position_106cc8ecd2a04f87fd96fbee3e7e1476);
+        
+    
+            map_fbede2d63bbdcf422395297998be1640.fitBounds(
+                [[4.7138157, 4.740545], [7.1735168, 7.1616181999999995]],
+                {}
+            );
+        
+    
+            var marker_3f3dfcfd44fe736b85da558a2e3d1911 = L.marker(
+                [4.786391, 7.1332456],
+                {
+  "size": 10,
+}
+            ).addTo(map_fbede2d63bbdcf422395297998be1640);
+        
+    
+            var icon_3239402c339b39531039ba22574ea05d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_3f3dfcfd44fe736b85da558a2e3d1911.bindTooltip(
+                `<div>
+                     OmniHub Eleme Rivers - Berclynv
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3f3dfcfd44fe736b85da558a2e3d1911.setIcon(icon_3239402c339b39531039ba22574ea05d);
+            
+</script>
+</html>
