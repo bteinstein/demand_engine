@@ -28,11 +28,11 @@ WHERE Central_BusinessID = 76
 
 
 
-SELECT TOP 10 
-	--MAX(CreatedDate, DeliveredDate) AS MAX_DATE, 
-	*
-FROM #OrderCreated
-WHERE DeliveredDate IS NULL
+--SELECT TOP 10 
+--	--MAX(CreatedDate, DeliveredDate) AS MAX_DATE, 
+--	*
+--FROM #OrderCreated
+--WHERE DeliveredDate IS NULL
 
 
 --SELECT EOMONTH(DATEADD(MONTH, -6, CAST(GETDATE() AS DATE)))
@@ -58,16 +58,19 @@ SELECT
 	CASE  
 		WHEN MAX(DeliveredDate) > MAX(Createddate) 
 		THEN MAX(DeliveredDate)
-		ELSE MAX(Createddate) last_order_date,
+		ELSE MAX(Createddate) 
+	END AS last_order_date,
 	CASE  
-		WHEN MAX(Createddate) < MAX(DeliveredDate) 
-		THEN DATEDIFF(DAY, MAX(Createddate), CAST(GETDATE() AS DATE))  
-	ELSE DATEDIFF(DAY, MAX(DeliveredDate), CAST(GETDATE() AS DATE)) 
+		WHEN MAX(DeliveredDate) > MAX(Createddate) 
+		THEN DATEDIFF(DAY, MAX(DeliveredDate), CAST(GETDATE() AS DATE))  
+	ELSE DATEDIFF(DAY, MAX(Createddate), CAST(GETDATE() AS DATE)) 
 	END AS days_since_last_order
 INTO #spCustAggregates
 FROM #OrderCreated 
 GROUP BY Stock_Point_ID, CustomerID
 
+--StockPointID	CustomerID	active_months_pct	avg_orders_per_active_month	avg_qty_per_month	avg_revenue_per_month	active_month	n_orders	total_qty	total_revenue	first_order_date	last_order_date	days_since_last_order
+--1647141	5235429	0.50	1	72	997633.3333	3	4	218	2992900.00	2025-03-12 12:20:58.233	2025-05-27 10:17:59.840	31
 
 --WHERE   CustomerID IN (
 --		1864803,1864803, 1878283, 2087855, 2502546,
@@ -77,7 +80,7 @@ GROUP BY Stock_Point_ID, CustomerID
 --		5316206,5334167,5344647)
 
 SELECT COUNT(*) FROM #spCustAggregates
-SELECT TOP 10 * FROM #spCustAggregates
+SELECT TOP 10 * FROM #spCustAggregates WHERE CUSTOMERid = 5235429
 
 ------------- 3. CUSTOMER SCORING -----------------
 DROP TABLE IF EXISTS #spCustScoresFinal;
@@ -269,9 +272,9 @@ FROM poc_stockpoint_customer_score ORDER BY StockPointID, composite_customer_sco
 
 --select 182/30
 
-SELECT TOP 10 * FROM #OrderCreated WHERE CustomerID = 4529739 ORDER BY CreatedDate DESC
-SELECT TOP 3 * FROM tblorderSales WHERE CustomerID = 4529739 ORDER BY CreatedDate DESC
-SELECT TOP 3 * FROM tblmanudashsales WHERE CustomerID = 4529739 and CENTRAL_BUSINESSID = 76 ORDER BY DeliveryDate DESC
+--SELECT TOP 10 * FROM poc_stockpoint_customer_score WHERE CustomerID = 4529739  
+--SELECT TOP 10 * FROM #spCustAggregates  WHERE CustomerID = 4529739  
+--SELECT TOP 10 * FROM #OrderCreated WHERE CustomerID = 4529739 ORDER BY CreatedDate DESC
+--SELECT TOP 3 * FROM tblorderSales WHERE CustomerID = 4529739 ORDER BY CreatedDate DESC
+--SELECT TOP 3 * FROM tblmanudashsales WHERE CustomerID = 4529739 and CENTRAL_BUSINESSID = 76 ORDER BY DeliveryDate DESC
 
-eliveredDate
-2025-01-10 09:25:31.897
