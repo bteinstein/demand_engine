@@ -6,6 +6,7 @@ import matplotlib.colors as colors
 import seaborn as sns
 import colorsys
 import pandas as pd
+import branca
 
 
 def generate_distinct_colors(n_colors):
@@ -203,27 +204,34 @@ def create_enhanced_cluster_map(df, lat_col='Latitude', lon_col='Longitude',
         
         # Prepare popup content with proper HTML formatting
         popup_html = "<div style='font-family: Arial, sans-serif; font-size: 12px;'>"
-        
+
         # Add cluster information
         popup_html += f"<div style='font-weight: bold; color: {cluster_color_map[cluster_id]}; margin-bottom: 5px;'>"
         popup_html += f"Cluster {cluster_id}</div>"
-        
+
         # Add custom popup columns if specified
         if popup_cols:
             for col in popup_cols:
                 if col in df.columns and pd.notna(row[col]):
                     popup_html += f"<div style='margin: 2px 0;'><strong>{col}:</strong> {row[col]}</div>"
-        
+
         # Add location information
         popup_html += f"<div style='margin: 2px 0;'><strong>Coordinates:</strong> {row[lat_col]:.4f}, {row[lon_col]:.4f}</div>"
-        
+
         # Add LGA and LCDA if available
         if lga_col in df.columns and pd.notna(row[lga_col]):
             popup_html += f"<div style='margin: 2px 0;'><strong>LGA:</strong> {row[lga_col]}</div>"
         if lcda_col in df.columns and pd.notna(row[lcda_col]):
             popup_html += f"<div style='margin: 2px 0;'><strong>LCDA:</strong> {row[lcda_col]}</div>"
-        
+
         popup_html += "</div>"
+
+        # Create an IFrame
+        popup_iframe = branca.element.IFrame(html=popup_html, width=200, height=200)
+
+        # Create a popup with the IFrame
+        popup = folium.Popup(popup_iframe, parse_html=True)
+
         
         # Prepare tooltip content
         tooltip_content = f"Cluster {cluster_id}"
@@ -235,11 +243,13 @@ def create_enhanced_cluster_map(df, lat_col='Latitude', lon_col='Longitude',
             if tooltip_parts:
                 tooltip_content = f"{' | '.join(tooltip_parts)} (Cluster {cluster_id})"
         
+        
+
         # Create enhanced marker with stroke
         marker = folium.CircleMarker(
             location=[row[lat_col], row[lon_col]],
             radius=radius,
-            popup=folium.Popup(popup_html, max_width=300, parse_html=True),
+            popup=popup,
             tooltip=tooltip_content,
             color='white',  # White stroke for better visibility
             weight=stroke_width,
@@ -446,22 +456,22 @@ def create_enhanced_cluster_map(df, lat_col='Latitude', lon_col='Longitude',
     
     # Create enhanced legend positioned to avoid conflicts
     legend_html = f'''
-    <div id="cluster-legend" style="position: fixed; 
-                bottom: 120px; right: 10px; width: 250px; height: auto; 
-                background-color: rgba(255, 255, 255, 0.95); 
-                border: 2px solid #ccc; z-index: 999; 
-                font-size: 11px; padding: 12px; border-radius: 8px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-                backdrop-filter: blur(5px);">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <strong style="color: #333;">Cluster Legend</strong>
-        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
-    </div>
-    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
-        {n_clusters} clusters | Sorted by size | Showing top 15
-    </div>
-    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
-    '''
+                    <div id="cluster-legend" style="position: fixed; 
+                                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                                background-color: rgba(255, 255, 255, 0.95); 
+                                border: 2px solid #ccc; z-index: 999; 
+                                font-size: 11px; padding: 12px; border-radius: 8px;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                backdrop-filter: blur(5px);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #333;">Cluster Legend</strong>
+                        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+                    </div>
+                    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+                        {n_clusters} clusters | Sorted by size | Showing top 15
+                    </div>
+                    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+                    '''
     
     # Add clusters to legend in sorted order (top 15)
     for i, (cluster_id, stats) in enumerate(sorted_cluster_items[:15]):
