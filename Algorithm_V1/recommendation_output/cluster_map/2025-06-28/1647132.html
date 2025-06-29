@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_d75000cb2f8054463abf7b36f729f741 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 5 clusters | 20 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+                    <div id="cluster-legend" style="position: fixed; 
+                                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                                background-color: rgba(255, 255, 255, 0.95); 
+                                border: 2px solid #ccc; z-index: 999; 
+                                font-size: 11px; padding: 12px; border-radius: 8px;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                backdrop-filter: blur(5px);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #333;">Cluster Legend</strong>
+                        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+                    </div>
+                    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+                        5 clusters | Sorted by size | Showing top 15
+                    </div>
+                    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+                    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 1 
+                <br><span style="color: #666; font-size: 9px;">9 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #9467bd; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 5 
+                <br><span style="color: #666; font-size: 9px;">6 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">2 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #d62728; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#4</strong> Cluster 4 
+                <br><span style="color: #666; font-size: 9px;">2 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#5</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">1 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_d75000cb2f8054463abf7b36f729f741" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_d75000cb2f8054463abf7b36f729f741 = L.map(
+                "map_d75000cb2f8054463abf7b36f729f741",
+                {
+                    center: [7.713127450000001, 3.83188055],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_d75000cb2f8054463abf7b36f729f741);
+
+            
+
+        
+    
+            var tile_layer_a4e47acf00c819dcbccc740e2d4dff0c = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_a4e47acf00c819dcbccc740e2d4dff0c.addTo(map_d75000cb2f8054463abf7b36f729f741);
+        
+    
+            var tile_layer_ea6bd642409151b2adc3e2ea5d17bc23 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_ea6bd642409151b2adc3e2ea5d17bc23.addTo(map_d75000cb2f8054463abf7b36f729f741);
+        
+    
+            var tile_layer_70181069d1cfd47b208daaf38b9ed724 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_70181069d1cfd47b208daaf38b9ed724.addTo(map_d75000cb2f8054463abf7b36f729f741);
+        
+    
+            var tile_layer_97bfc3a274c05e9fb1b051ae78469997 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_97bfc3a274c05e9fb1b051ae78469997.addTo(map_d75000cb2f8054463abf7b36f729f741);
+        
+    
+            var tile_layer_e5c1984a706f8eae0ab6ba6504e86d52 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e5c1984a706f8eae0ab6ba6504e86d52.addTo(map_d75000cb2f8054463abf7b36f729f741);
+        
+    
+            var tile_layer_a87e41610aca4f88b545da0730972b9f = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_a87e41610aca4f88b545da0730972b9f.addTo(map_d75000cb2f8054463abf7b36f729f741);
+        
+    
+            var feature_group_dc701aee4aca3242401671e4a83896e5 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_a1d52cf4d729d2344aadcbe163443d48 = L.circleMarker(
+                [7.4659691, 3.8644619],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_dc701aee4aca3242401671e4a83896e5);
+        
+    
+        var popup_a77ef870cd31c2313031b9df51539214 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_db5bffc84df6634fb62ada0bd208e233 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI0NDgyODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWRvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQXBldGU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNy40NjYwLCAzLjg2NDU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElkbzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFwZXRlPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_a77ef870cd31c2313031b9df51539214.setContent(i_frame_db5bffc84df6634fb62ada0bd208e233);
+            
+        
+
+        circle_marker_a1d52cf4d729d2344aadcbe163443d48.bindPopup(popup_a77ef870cd31c2313031b9df51539214)
+        ;
+
+        
+    
+    
+            circle_marker_a1d52cf4d729d2344aadcbe163443d48.bindTooltip(
+                `<div>
+                     Ido | Apete (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c6997c80a9822bdc3ea04d48cba3d3c0 = L.circleMarker(
+                [7.4296056, 3.891943],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_dc701aee4aca3242401671e4a83896e5);
+        
+    
+        var popup_00ef8592103efcfdda161427e221c266 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_98c4b82208ad9caaeb7b3657bc37d53f = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTEwOTA2MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJhZGFuIE5vcnRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gUG9seSBJYmFkYW48L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNy40Mjk2LCAzLjg5MTk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEliYWRhbiBOb3J0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFBvbHkgSWJhZGFuPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_00ef8592103efcfdda161427e221c266.setContent(i_frame_98c4b82208ad9caaeb7b3657bc37d53f);
+            
+        
+
+        circle_marker_c6997c80a9822bdc3ea04d48cba3d3c0.bindPopup(popup_00ef8592103efcfdda161427e221c266)
+        ;
+
+        
+    
+    
+            circle_marker_c6997c80a9822bdc3ea04d48cba3d3c0.bindTooltip(
+                `<div>
+                     Ibadan North | Poly Ibadan (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b1dbbdc32d8e23f9760f97be408a7f43 = L.circleMarker(
+                [7.4488815, 3.8661061],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_dc701aee4aca3242401671e4a83896e5);
+        
+    
+        var popup_f602941f3b03b21a2e19f8de94c80f78 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_294a6cb35691a464f33b7ab0d6763e72 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI0ODMyNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWRvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQXBldGU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNy40NDg5LCAzLjg2NjE8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElkbzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFwZXRlPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f602941f3b03b21a2e19f8de94c80f78.setContent(i_frame_294a6cb35691a464f33b7ab0d6763e72);
+            
+        
+
+        circle_marker_b1dbbdc32d8e23f9760f97be408a7f43.bindPopup(popup_f602941f3b03b21a2e19f8de94c80f78)
+        ;
+
+        
+    
+    
+            circle_marker_b1dbbdc32d8e23f9760f97be408a7f43.bindTooltip(
+                `<div>
+                     Ido | Apete (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7c9be09225735a131a9ab44307d05925 = L.circleMarker(
+                [8.157380900000001, 3.6146534],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_dc701aee4aca3242401671e4a83896e5);
+        
+    
+        var popup_49c60a4992e1ef00ac92a8194f28c456 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_20b15c6050feee7cbd7ea518e24c05f5 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIyNjk5ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWRvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQXBldGU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gOC4xNTc0LCAzLjYxNDc8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElkbzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFwZXRlPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_49c60a4992e1ef00ac92a8194f28c456.setContent(i_frame_20b15c6050feee7cbd7ea518e24c05f5);
+            
+        
+
+        circle_marker_7c9be09225735a131a9ab44307d05925.bindPopup(popup_49c60a4992e1ef00ac92a8194f28c456)
+        ;
+
+        
+    
+    
+            circle_marker_7c9be09225735a131a9ab44307d05925.bindTooltip(
+                `<div>
+                     Ido | Apete (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_956732eb58eea86bd1ac142b94195db7 = L.circleMarker(
+                [7.410167499999999, 3.9164585],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_dc701aee4aca3242401671e4a83896e5);
+        
+    
+        var popup_6e3b9e583c07e0dd71529fbccb4fc34a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_7320975c19c687a67fd1c274684e145b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI5Nzg3NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJhZGFuIE5vcnRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gUG9seSBJYmFkYW48L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNy40MTAyLCAzLjkxNjU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEliYWRhbiBOb3J0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFBvbHkgSWJhZGFuPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_6e3b9e583c07e0dd71529fbccb4fc34a.setContent(i_frame_7320975c19c687a67fd1c274684e145b);
+            
+        
+
+        circle_marker_956732eb58eea86bd1ac142b94195db7.bindPopup(popup_6e3b9e583c07e0dd71529fbccb4fc34a)
+        ;
+
+        
+    
+    
+            circle_marker_956732eb58eea86bd1ac142b94195db7.bindTooltip(
+                `<div>
+                     Ibadan North | Poly Ibadan (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_067de5dc64495b39643a74ab0597e2ba = L.circleMarker(
+                [7.4172369, 3.8982059],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_dc701aee4aca3242401671e4a83896e5);
+        
+    
+        var popup_d522fb55c9df0424b3cafaf8037bfd4f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_49696d9518c38a34e6c4114403f09bf8 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI4NTU4MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJhZGFuIE5vcnRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQm9kaWphPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDcuNDE3MiwgMy44OTgyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmFkYW4gTm9ydGg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCb2RpamE8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d522fb55c9df0424b3cafaf8037bfd4f.setContent(i_frame_49696d9518c38a34e6c4114403f09bf8);
+            
+        
+
+        circle_marker_067de5dc64495b39643a74ab0597e2ba.bindPopup(popup_d522fb55c9df0424b3cafaf8037bfd4f)
+        ;
+
+        
+    
+    
+            circle_marker_067de5dc64495b39643a74ab0597e2ba.bindTooltip(
+                `<div>
+                     Ibadan North | Bodija (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_029901ac1197e28fae31679b87092fff = L.circleMarker(
+                [7.4286841, 3.8956893],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_dc701aee4aca3242401671e4a83896e5);
+        
+    
+        var popup_849bb4776a2fc411f105f5daafdd8db4 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_e56f499833967c3fa71faf9e3ac269ff = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQyNDQ3NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWRvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSUJBREFOLVNBTkdPPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDcuNDI4NywgMy44OTU3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJZG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJQkFEQU4tU0FOR088L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_849bb4776a2fc411f105f5daafdd8db4.setContent(i_frame_e56f499833967c3fa71faf9e3ac269ff);
+            
+        
+
+        circle_marker_029901ac1197e28fae31679b87092fff.bindPopup(popup_849bb4776a2fc411f105f5daafdd8db4)
+        ;
+
+        
+    
+    
+            circle_marker_029901ac1197e28fae31679b87092fff.bindTooltip(
+                `<div>
+                     Ido | IBADAN-SANGO (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5dc2fe32bf1a726c74ba84d56633b1d7 = L.circleMarker(
+                [7.435060000000001, 3.9143089],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_dc701aee4aca3242401671e4a83896e5);
+        
+    
+        var popup_029c1fa39b5f359a7e56e793728b7c7d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_936a34ed9baf828e884ebe2797bbce98 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM3MjYyNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJhZGFuIE5vcnRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQm9kaWphPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDcuNDM1MSwgMy45MTQzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmFkYW4gTm9ydGg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCb2RpamE8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_029c1fa39b5f359a7e56e793728b7c7d.setContent(i_frame_936a34ed9baf828e884ebe2797bbce98);
+            
+        
+
+        circle_marker_5dc2fe32bf1a726c74ba84d56633b1d7.bindPopup(popup_029c1fa39b5f359a7e56e793728b7c7d)
+        ;
+
+        
+    
+    
+            circle_marker_5dc2fe32bf1a726c74ba84d56633b1d7.bindTooltip(
+                `<div>
+                     Ibadan North | Bodija (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1e9445799192389ad02eab4ec5748d34 = L.circleMarker(
+                [7.4679243, 3.9121797],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_dc701aee4aca3242401671e4a83896e5);
+        
+    
+        var popup_0f6ecb7bfda01f73db49b7ff7edd9c6f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_b2abc2133522e9fbac12bd998f2761c0 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDk0Mzc3NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWtpbnllbGU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBPam9vPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDcuNDY3OSwgMy45MTIyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBa2lueWVsZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE9qb288L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0f6ecb7bfda01f73db49b7ff7edd9c6f.setContent(i_frame_b2abc2133522e9fbac12bd998f2761c0);
+            
+        
+
+        circle_marker_1e9445799192389ad02eab4ec5748d34.bindPopup(popup_0f6ecb7bfda01f73db49b7ff7edd9c6f)
+        ;
+
+        
+    
+    
+            circle_marker_1e9445799192389ad02eab4ec5748d34.bindTooltip(
+                `<div>
+                     Akinyele | Ojoo (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_dc701aee4aca3242401671e4a83896e5.addTo(map_d75000cb2f8054463abf7b36f729f741);
+        
+    
+            var feature_group_a1d11f85b92c8ed29d9145092b423edf = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_f81bd7279d6286a4f1dee30f5873d9ba = L.circleMarker(
+                [8.157380900000001, 3.6146534],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a1d11f85b92c8ed29d9145092b423edf);
+        
+    
+        var popup_bb5be834e95c7b8d08d286b948b0e431 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_add9b4d183e707e6387a6360dc599769 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQxNjIzNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWtpbnllbGU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBPam9vPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDguMTU3NCwgMy42MTQ3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBa2lueWVsZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE9qb288L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_bb5be834e95c7b8d08d286b948b0e431.setContent(i_frame_add9b4d183e707e6387a6360dc599769);
+            
+        
+
+        circle_marker_f81bd7279d6286a4f1dee30f5873d9ba.bindPopup(popup_bb5be834e95c7b8d08d286b948b0e431)
+        ;
+
+        
+    
+    
+            circle_marker_f81bd7279d6286a4f1dee30f5873d9ba.bindTooltip(
+                `<div>
+                     Akinyele | Ojoo (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2250da0214f9d4c179fade91d45ca43e = L.circleMarker(
+                [8.157380900000001, 3.6146534],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a1d11f85b92c8ed29d9145092b423edf);
+        
+    
+        var popup_d98c735dedf8e5eab3244c77adf52eee = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a4858e5b42e65f17280139f5420641b2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDc5MDc5OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWRvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQXBldGU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gOC4xNTc0LCAzLjYxNDc8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElkbzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFwZXRlPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d98c735dedf8e5eab3244c77adf52eee.setContent(i_frame_a4858e5b42e65f17280139f5420641b2);
+            
+        
+
+        circle_marker_2250da0214f9d4c179fade91d45ca43e.bindPopup(popup_d98c735dedf8e5eab3244c77adf52eee)
+        ;
+
+        
+    
+    
+            circle_marker_2250da0214f9d4c179fade91d45ca43e.bindTooltip(
+                `<div>
+                     Ido | Apete (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_210e442140cb866b6b4a48b3b146d3c4 = L.circleMarker(
+                [8.157380900000001, 3.6146534],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a1d11f85b92c8ed29d9145092b423edf);
+        
+    
+        var popup_f0bdaa3c7f26c368265a87283bb5c65b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_6062299da8b89da15b73ff2ebcc1a580 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDgxMjk2MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWRvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDguMTU3NCwgMy42MTQ3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJZG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f0bdaa3c7f26c368265a87283bb5c65b.setContent(i_frame_6062299da8b89da15b73ff2ebcc1a580);
+            
+        
+
+        circle_marker_210e442140cb866b6b4a48b3b146d3c4.bindPopup(popup_f0bdaa3c7f26c368265a87283bb5c65b)
+        ;
+
+        
+    
+    
+            circle_marker_210e442140cb866b6b4a48b3b146d3c4.bindTooltip(
+                `<div>
+                     Ido |  (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_baf96401fce8ebed1407013dd16ae789 = L.circleMarker(
+                [8.157380900000001, 3.6146534],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a1d11f85b92c8ed29d9145092b423edf);
+        
+    
+        var popup_6adcaa59c126518c365bebca83dc6093 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_03481a4f39536330761ec802c672080d = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM1MDk5NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJhZGFuIE5vcnRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gU2FuZ288L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gOC4xNTc0LCAzLjYxNDc8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEliYWRhbiBOb3J0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFNhbmdvPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_6adcaa59c126518c365bebca83dc6093.setContent(i_frame_03481a4f39536330761ec802c672080d);
+            
+        
+
+        circle_marker_baf96401fce8ebed1407013dd16ae789.bindPopup(popup_6adcaa59c126518c365bebca83dc6093)
+        ;
+
+        
+    
+    
+            circle_marker_baf96401fce8ebed1407013dd16ae789.bindTooltip(
+                `<div>
+                     Ibadan North | Sango (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_51558c593641ec7aa58232815de7f21f = L.circleMarker(
+                [8.157380900000001, 3.6146534],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a1d11f85b92c8ed29d9145092b423edf);
+        
+    
+        var popup_393a285b2f9dca6674b8192e785ab4f9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_545e06e44f2f2206c816b8956ee49b57 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM3MjY2ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJhZGFuIE5vcnRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQm9kaWphPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDguMTU3NCwgMy42MTQ3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmFkYW4gTm9ydGg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCb2RpamE8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_393a285b2f9dca6674b8192e785ab4f9.setContent(i_frame_545e06e44f2f2206c816b8956ee49b57);
+            
+        
+
+        circle_marker_51558c593641ec7aa58232815de7f21f.bindPopup(popup_393a285b2f9dca6674b8192e785ab4f9)
+        ;
+
+        
+    
+    
+            circle_marker_51558c593641ec7aa58232815de7f21f.bindTooltip(
+                `<div>
+                     Ibadan North | Bodija (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2ea0781d4433303ec5b8864e6aac3d77 = L.circleMarker(
+                [8.157380900000001, 3.6146534],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a1d11f85b92c8ed29d9145092b423edf);
+        
+    
+        var popup_8e73837a38855791ba8a7654a5b4d4dd = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_5ee7aee5862d15852453974f560ac0c4 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTEyMzI0MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJhZGFuIE5vcnRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRWxleWVsZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA4LjE1NzQsIDMuNjE0NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJhZGFuIE5vcnRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRWxleWVsZTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8e73837a38855791ba8a7654a5b4d4dd.setContent(i_frame_5ee7aee5862d15852453974f560ac0c4);
+            
+        
+
+        circle_marker_2ea0781d4433303ec5b8864e6aac3d77.bindPopup(popup_8e73837a38855791ba8a7654a5b4d4dd)
+        ;
+
+        
+    
+    
+            circle_marker_2ea0781d4433303ec5b8864e6aac3d77.bindTooltip(
+                `<div>
+                     Ibadan North | Eleyele (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_a1d11f85b92c8ed29d9145092b423edf.addTo(map_d75000cb2f8054463abf7b36f729f741);
+        
+    
+            var feature_group_0cd4fec888e89f0b86aa89e473c319c7 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_ef28cd38db5983d4d4f21cb55ce4a28c = L.circleMarker(
+                [7.5503161, 3.9470396],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0cd4fec888e89f0b86aa89e473c319c7);
+        
+    
+        var popup_43529cb12bf6a0f7ed662e86bc6e6658 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_198aac83bd1f025279ec2aab9fa23b88 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI1MTM2OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWtpbnllbGU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNy41NTAzLCAzLjk0NzA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFraW55ZWxlPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_43529cb12bf6a0f7ed662e86bc6e6658.setContent(i_frame_198aac83bd1f025279ec2aab9fa23b88);
+            
+        
+
+        circle_marker_ef28cd38db5983d4d4f21cb55ce4a28c.bindPopup(popup_43529cb12bf6a0f7ed662e86bc6e6658)
+        ;
+
+        
+    
+    
+            circle_marker_ef28cd38db5983d4d4f21cb55ce4a28c.bindTooltip(
+                `<div>
+                     Akinyele |  (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_40e4f983027958cb283868a5ccdb51f1 = L.circleMarker(
+                [7.5951955, 3.9177323],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0cd4fec888e89f0b86aa89e473c319c7);
+        
+    
+        var popup_4f2c98f1e1566e8a4431be9ac1a3b379 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_efbb4e158b2e5d3b2a5d159c09f87ebe = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDg3MTM1NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWtpbnllbGU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBa2lueWVsZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA3LjU5NTIsIDMuOTE3NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWtpbnllbGU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBa2lueWVsZTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_4f2c98f1e1566e8a4431be9ac1a3b379.setContent(i_frame_efbb4e158b2e5d3b2a5d159c09f87ebe);
+            
+        
+
+        circle_marker_40e4f983027958cb283868a5ccdb51f1.bindPopup(popup_4f2c98f1e1566e8a4431be9ac1a3b379)
+        ;
+
+        
+    
+    
+            circle_marker_40e4f983027958cb283868a5ccdb51f1.bindTooltip(
+                `<div>
+                     Akinyele | Akinyele (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_0cd4fec888e89f0b86aa89e473c319c7.addTo(map_d75000cb2f8054463abf7b36f729f741);
+        
+    
+            var feature_group_71ab32db93ab989e187ab16e2486acd8 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_6aa279cf4d0682951ee0b50b1d7be09b = L.circleMarker(
+                [7.433332999999999, 3.883332999999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_71ab32db93ab989e187ab16e2486acd8);
+        
+    
+        var popup_8420db6b61bd37f194eedc25dff81c9a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_bb2217ff9f855fbd5fe8cf7410fa89b2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ2MTY2NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJhZGFuIE5vcnRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gUG9seSBJYmFkYW48L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNy40MzMzLCAzLjg4MzM8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEliYWRhbiBOb3J0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFBvbHkgSWJhZGFuPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8420db6b61bd37f194eedc25dff81c9a.setContent(i_frame_bb2217ff9f855fbd5fe8cf7410fa89b2);
+            
+        
+
+        circle_marker_6aa279cf4d0682951ee0b50b1d7be09b.bindPopup(popup_8420db6b61bd37f194eedc25dff81c9a)
+        ;
+
+        
+    
+    
+            circle_marker_6aa279cf4d0682951ee0b50b1d7be09b.bindTooltip(
+                `<div>
+                     Ibadan North | Poly Ibadan (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c010fcfe6af3bd7805ea65eea100424f = L.circleMarker(
+                [7.447913199999999, 3.8756007],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_71ab32db93ab989e187ab16e2486acd8);
+        
+    
+        var popup_d0f4d82bc85628a25b2fef4b2821de84 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_c7e00d834a308533fc1023901e8797eb = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMwNTg5MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJhZGFuIE5vcnRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gUG9seSBJYmFkYW48L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNy40NDc5LCAzLjg3NTY8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEliYWRhbiBOb3J0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFBvbHkgSWJhZGFuPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d0f4d82bc85628a25b2fef4b2821de84.setContent(i_frame_c7e00d834a308533fc1023901e8797eb);
+            
+        
+
+        circle_marker_c010fcfe6af3bd7805ea65eea100424f.bindPopup(popup_d0f4d82bc85628a25b2fef4b2821de84)
+        ;
+
+        
+    
+    
+            circle_marker_c010fcfe6af3bd7805ea65eea100424f.bindTooltip(
+                `<div>
+                     Ibadan North | Poly Ibadan (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_71ab32db93ab989e187ab16e2486acd8.addTo(map_d75000cb2f8054463abf7b36f729f741);
+        
+    
+            var feature_group_1b1d481ce7873600e31af3b8473f2684 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_dec7137ba6e271325b45065a8bba869c = L.circleMarker(
+                [7.268874, 4.0491077],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_1b1d481ce7873600e31af3b8473f2684);
+        
+    
+        var popup_ca91d9bf05aede66def6db3bc58a3cc6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_0c7127941d94a576834567c0da7d38a8 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzgzNjk5MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJhZGFuIE5vcnRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQm9kaWphPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDcuMjY4OSwgNC4wNDkxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmFkYW4gTm9ydGg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCb2RpamE8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_ca91d9bf05aede66def6db3bc58a3cc6.setContent(i_frame_0c7127941d94a576834567c0da7d38a8);
+            
+        
+
+        circle_marker_dec7137ba6e271325b45065a8bba869c.bindPopup(popup_ca91d9bf05aede66def6db3bc58a3cc6)
+        ;
+
+        
+    
+    
+            circle_marker_dec7137ba6e271325b45065a8bba869c.bindTooltip(
+                `<div>
+                     Ibadan North | Bodija (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_1b1d481ce7873600e31af3b8473f2684.addTo(map_d75000cb2f8054463abf7b36f729f741);
+        
+    
+            var layer_control_0de71cf574cc8d0116e09c6bdbd53029_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_a4e47acf00c819dcbccc740e2d4dff0c,
+                    "OpenStreetMap" : tile_layer_ea6bd642409151b2adc3e2ea5d17bc23,
+                    "Terrain" : tile_layer_70181069d1cfd47b208daaf38b9ed724,
+                    "Toner" : tile_layer_97bfc3a274c05e9fb1b051ae78469997,
+                    "CartoDB Dark" : tile_layer_e5c1984a706f8eae0ab6ba6504e86d52,
+                    "CartoDB Light" : tile_layer_a87e41610aca4f88b545da0730972b9f,
+                },
+                overlays :  {
+                    "Cluster 1 - Ido+2more - Apete+4more (9 points)" : feature_group_dc701aee4aca3242401671e4a83896e5,
+                    "Cluster 5 - Akinyele+2more - Ojoo+5more (6 points)" : feature_group_a1d11f85b92c8ed29d9145092b423edf,
+                    "Cluster 3 - Akinyele - +1more (2 points)" : feature_group_0cd4fec888e89f0b86aa89e473c319c7,
+                    "Cluster 4 - Ibadan North - Poly Ibadan (2 points)" : feature_group_71ab32db93ab989e187ab16e2486acd8,
+                    "Cluster 2 - Ibadan North - Bodija (1 points)" : feature_group_1b1d481ce7873600e31af3b8473f2684,
+                },
+            };
+            let layer_control_0de71cf574cc8d0116e09c6bdbd53029 = L.control.layers(
+                layer_control_0de71cf574cc8d0116e09c6bdbd53029_layers.base_layers,
+                layer_control_0de71cf574cc8d0116e09c6bdbd53029_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_d75000cb2f8054463abf7b36f729f741);
+
+        
+    
+            var tile_layer_54443878b37c689c518411311fb43b34 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_8952ccf67d29f4d7d8b358b7692ee2fb = new L.Control.MiniMap(
+                tile_layer_54443878b37c689c518411311fb43b34,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_d75000cb2f8054463abf7b36f729f741.addControl(mini_map_8952ccf67d29f4d7d8b358b7692ee2fb);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_d75000cb2f8054463abf7b36f729f741);
+        
+    
+            var measure_control_4ff8153e72782ad53c88e392c0313002 = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_d75000cb2f8054463abf7b36f729f741.addControl(measure_control_4ff8153e72782ad53c88e392c0313002);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_2c839b28096e90d01c09c5a849b926de = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_2c839b28096e90d01c09c5a849b926de.options["latFormatter"] =
+                undefined;
+            mouse_position_2c839b28096e90d01c09c5a849b926de.options["lngFormatter"] =
+                undefined;
+            map_d75000cb2f8054463abf7b36f729f741.addControl(mouse_position_2c839b28096e90d01c09c5a849b926de);
+        
+    
+            map_d75000cb2f8054463abf7b36f729f741.fitBounds(
+                [[7.2588740000000005, 3.6046534], [8.167380900000001, 4.0591077]],
+                {}
+            );
+        
+    
+            var marker_72ddf8437be9ab1bcf64136439bcfc5e = L.marker(
+                [7.444793999999999, 3.9124329],
+                {
+  "size": 10,
+}
+            ).addTo(map_d75000cb2f8054463abf7b36f729f741);
+        
+    
+            var icon_1c24cada019a7ac2a65146163c3efd0f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_72ddf8437be9ab1bcf64136439bcfc5e.bindTooltip(
+                `<div>
+                     OmniHub Ibadan North Oyo - Eby 99
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_72ddf8437be9ab1bcf64136439bcfc5e.setIcon(icon_1c24cada019a7ac2a65146163c3efd0f);
+            
+</script>
+</html>

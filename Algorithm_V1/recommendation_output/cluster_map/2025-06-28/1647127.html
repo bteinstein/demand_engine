@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_3c3711468d126a255adbb6e5d3d1c9ae {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 5 clusters | 24 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+                    <div id="cluster-legend" style="position: fixed; 
+                                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                                background-color: rgba(255, 255, 255, 0.95); 
+                                border: 2px solid #ccc; z-index: 999; 
+                                font-size: 11px; padding: 12px; border-radius: 8px;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                backdrop-filter: blur(5px);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #333;">Cluster Legend</strong>
+                        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+                    </div>
+                    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+                        5 clusters | Sorted by size | Showing top 15
+                    </div>
+                    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+                    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 1 
+                <br><span style="color: #666; font-size: 9px;">8 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #d62728; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 4 
+                <br><span style="color: #666; font-size: 9px;">8 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">3 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #9467bd; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#4</strong> Cluster 5 
+                <br><span style="color: #666; font-size: 9px;">3 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#5</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">2 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_3c3711468d126a255adbb6e5d3d1c9ae" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_3c3711468d126a255adbb6e5d3d1c9ae = L.map(
+                "map_3c3711468d126a255adbb6e5d3d1c9ae",
+                {
+                    center: [5.8900561, 5.96634315],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_3c3711468d126a255adbb6e5d3d1c9ae);
+
+            
+
+        
+    
+            var tile_layer_e5a2d3d3c925386d50c04c74a01b8970 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e5a2d3d3c925386d50c04c74a01b8970.addTo(map_3c3711468d126a255adbb6e5d3d1c9ae);
+        
+    
+            var tile_layer_79c330d68d15b070657f3512eda67a1d = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_79c330d68d15b070657f3512eda67a1d.addTo(map_3c3711468d126a255adbb6e5d3d1c9ae);
+        
+    
+            var tile_layer_8200d000faca915bd0b2053f16d76380 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_8200d000faca915bd0b2053f16d76380.addTo(map_3c3711468d126a255adbb6e5d3d1c9ae);
+        
+    
+            var tile_layer_b548559f0bb040df3b500cd05938acc1 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_b548559f0bb040df3b500cd05938acc1.addTo(map_3c3711468d126a255adbb6e5d3d1c9ae);
+        
+    
+            var tile_layer_bd33e6b8cf1ed21b4252efcf94c716b5 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_bd33e6b8cf1ed21b4252efcf94c716b5.addTo(map_3c3711468d126a255adbb6e5d3d1c9ae);
+        
+    
+            var tile_layer_064959d8a90404aa882a9a1ecc5d5989 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_064959d8a90404aa882a9a1ecc5d5989.addTo(map_3c3711468d126a255adbb6e5d3d1c9ae);
+        
+    
+            var feature_group_394710720d417ca2b5d405a0b1372817 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_5313384e2ec8d7dedbd9d7f0816679d1 = L.circleMarker(
+                [4.8607869, 7.020807599999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_394710720d417ca2b5d405a0b1372817);
+        
+    
+        var popup_2a8887e503eac433045755f75d81b90e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_e5a7c553fde4ae0886ac056e29628e33 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTkwNTE0OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVvZG9tYXlhPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODYwOCwgNy4wMjA4PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBPYmlvIEFrcG9yPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gUnVtdW9kb21heWE8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_2a8887e503eac433045755f75d81b90e.setContent(i_frame_e5a7c553fde4ae0886ac056e29628e33);
+            
+        
+
+        circle_marker_5313384e2ec8d7dedbd9d7f0816679d1.bindPopup(popup_2a8887e503eac433045755f75d81b90e)
+        ;
+
+        
+    
+    
+            circle_marker_5313384e2ec8d7dedbd9d7f0816679d1.bindTooltip(
+                `<div>
+                     Obio Akpor | Rumuodomaya (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e04cd3f2225c7d2c3b6e0b20244fa437 = L.circleMarker(
+                [4.8581919, 7.0656876],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_394710720d417ca2b5d405a0b1372817);
+        
+    
+        var popup_15616cc1372fd251c178e5c8101d8f46 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_bf5fe0669f42d5c17b64d7008bdf93fa = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDAxOTU5OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVva3d1cnVzaTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljg1ODIsIDcuMDY1NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVva3d1cnVzaTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_15616cc1372fd251c178e5c8101d8f46.setContent(i_frame_bf5fe0669f42d5c17b64d7008bdf93fa);
+            
+        
+
+        circle_marker_e04cd3f2225c7d2c3b6e0b20244fa437.bindPopup(popup_15616cc1372fd251c178e5c8101d8f46)
+        ;
+
+        
+    
+    
+            circle_marker_e04cd3f2225c7d2c3b6e0b20244fa437.bindTooltip(
+                `<div>
+                     Obio Akpor | Rumuokwurusi (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f820ba4aad6c92260aea52d838907897 = L.circleMarker(
+                [4.835341, 7.055192],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_394710720d417ca2b5d405a0b1372817);
+        
+    
+        var popup_74b539b2d5970ee6a09b7f650beaab0a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_849301c9311e8f8752dc9663d6d2268a = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI2ODEwOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVva29ybzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0LjgzNTMsIDcuMDU1MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVva29ybzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_74b539b2d5970ee6a09b7f650beaab0a.setContent(i_frame_849301c9311e8f8752dc9663d6d2268a);
+            
+        
+
+        circle_marker_f820ba4aad6c92260aea52d838907897.bindPopup(popup_74b539b2d5970ee6a09b7f650beaab0a)
+        ;
+
+        
+    
+    
+            circle_marker_f820ba4aad6c92260aea52d838907897.bindTooltip(
+                `<div>
+                     Obio Akpor | Rumuokoro (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1320f0d5d144d8512e5a2736c7a056b5 = L.circleMarker(
+                [4.8643727, 7.0146614],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_394710720d417ca2b5d405a0b1372817);
+        
+    
+        var popup_19cd42b6da568566f9bd99fbe71d6b83 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_89baab84470a8b9232b85238219de9bd = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzg1OTUyNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVvZG9tYXlhPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODY0NCwgNy4wMTQ3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBPYmlvIEFrcG9yPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gUnVtdW9kb21heWE8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_19cd42b6da568566f9bd99fbe71d6b83.setContent(i_frame_89baab84470a8b9232b85238219de9bd);
+            
+        
+
+        circle_marker_1320f0d5d144d8512e5a2736c7a056b5.bindPopup(popup_19cd42b6da568566f9bd99fbe71d6b83)
+        ;
+
+        
+    
+    
+            circle_marker_1320f0d5d144d8512e5a2736c7a056b5.bindTooltip(
+                `<div>
+                     Obio Akpor | Rumuodomaya (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5baff71dcdaaacc67fa5aaf4006fdd3a = L.circleMarker(
+                [4.8396414, 6.911237799999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_394710720d417ca2b5d405a0b1372817);
+        
+    
+        var popup_b01a13ec58f99434542cdae8309c9766 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_141e61e9306ee8a4d0ab45fa7125c9c9 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDAxOTQ3MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0LjgzOTYsIDYuOTExMjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_b01a13ec58f99434542cdae8309c9766.setContent(i_frame_141e61e9306ee8a4d0ab45fa7125c9c9);
+            
+        
+
+        circle_marker_5baff71dcdaaacc67fa5aaf4006fdd3a.bindPopup(popup_b01a13ec58f99434542cdae8309c9766)
+        ;
+
+        
+    
+    
+            circle_marker_5baff71dcdaaacc67fa5aaf4006fdd3a.bindTooltip(
+                `<div>
+                     Obio Akpor |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_502620534601b1b18b2165e6f44775cd = L.circleMarker(
+                [4.8475663, 6.9902932999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_394710720d417ca2b5d405a0b1372817);
+        
+    
+        var popup_f6fd29f590a56dd4abeb89391579a655 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_6d5279e7e3db2fd7d9b442cb990f39d4 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDY4MDUwMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVpZ2JvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODQ3NiwgNi45OTAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBPYmlvIEFrcG9yPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gUnVtdWlnYm88L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f6fd29f590a56dd4abeb89391579a655.setContent(i_frame_6d5279e7e3db2fd7d9b442cb990f39d4);
+            
+        
+
+        circle_marker_502620534601b1b18b2165e6f44775cd.bindPopup(popup_f6fd29f590a56dd4abeb89391579a655)
+        ;
+
+        
+    
+    
+            circle_marker_502620534601b1b18b2165e6f44775cd.bindTooltip(
+                `<div>
+                     Obio Akpor | Rumuigbo (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_da80d2e43846baac27a3e6e0ef37756a = L.circleMarker(
+                [4.8796304, 6.9781739],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_394710720d417ca2b5d405a0b1372817);
+        
+    
+        var popup_66df412f0f8238d99b74a91b344b6af3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_58e803c3f98dc1e7807ff1206b8c8528 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDU3MjUxMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVhZ2hhb2x1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODc5NiwgNi45NzgyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBPYmlvIEFrcG9yPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gUnVtdWFnaGFvbHU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_66df412f0f8238d99b74a91b344b6af3.setContent(i_frame_58e803c3f98dc1e7807ff1206b8c8528);
+            
+        
+
+        circle_marker_da80d2e43846baac27a3e6e0ef37756a.bindPopup(popup_66df412f0f8238d99b74a91b344b6af3)
+        ;
+
+        
+    
+    
+            circle_marker_da80d2e43846baac27a3e6e0ef37756a.bindTooltip(
+                `<div>
+                     Obio Akpor | Rumuaghaolu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_00ea1a49bcb70336490edb32015b3329 = L.circleMarker(
+                [7.0014657, 4.8830088],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_394710720d417ca2b5d405a0b1372817);
+        
+    
+        var popup_1d2ae7b765e3260bd5457fdfa1039472 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_eeba933bee5cc10c4831d00936bdf10b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI0NjU0MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA3LjAwMTUsIDQuODgzMDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_1d2ae7b765e3260bd5457fdfa1039472.setContent(i_frame_eeba933bee5cc10c4831d00936bdf10b);
+            
+        
+
+        circle_marker_00ea1a49bcb70336490edb32015b3329.bindPopup(popup_1d2ae7b765e3260bd5457fdfa1039472)
+        ;
+
+        
+    
+    
+            circle_marker_00ea1a49bcb70336490edb32015b3329.bindTooltip(
+                `<div>
+                     Obio Akpor |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_394710720d417ca2b5d405a0b1372817.addTo(map_3c3711468d126a255adbb6e5d3d1c9ae);
+        
+    
+            var feature_group_872b03616804f8a3dbebf0cee2dda777 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_5728bf899b84af3a050a85280540a1b0 = L.circleMarker(
+                [4.8727558, 6.9808147],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_872b03616804f8a3dbebf0cee2dda777);
+        
+    
+        var popup_78bbe04a7c8686478de169ae41b44de9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_ed4be5e11dd02ad226117a584fa7a4f3 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMwNjAyMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE5rcGVsdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljg3MjgsIDYuOTgwODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE5rcGVsdTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_78bbe04a7c8686478de169ae41b44de9.setContent(i_frame_ed4be5e11dd02ad226117a584fa7a4f3);
+            
+        
+
+        circle_marker_5728bf899b84af3a050a85280540a1b0.bindPopup(popup_78bbe04a7c8686478de169ae41b44de9)
+        ;
+
+        
+    
+    
+            circle_marker_5728bf899b84af3a050a85280540a1b0.bindTooltip(
+                `<div>
+                     Obio Akpor | Nkpelu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6f28cfc2bae8ed71c4391bba80ef653c = L.circleMarker(
+                [4.8754742, 6.9826614],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_872b03616804f8a3dbebf0cee2dda777);
+        
+    
+        var popup_2d0645a356854e00e20fc6a526de9c9e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_d47086157c6583bf4b80bb90134fe037 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQwODkwMjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE5rcGVsdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljg3NTUsIDYuOTgyNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE5rcGVsdTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_2d0645a356854e00e20fc6a526de9c9e.setContent(i_frame_d47086157c6583bf4b80bb90134fe037);
+            
+        
+
+        circle_marker_6f28cfc2bae8ed71c4391bba80ef653c.bindPopup(popup_2d0645a356854e00e20fc6a526de9c9e)
+        ;
+
+        
+    
+    
+            circle_marker_6f28cfc2bae8ed71c4391bba80ef653c.bindTooltip(
+                `<div>
+                     Obio Akpor | Nkpelu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2a9e8f92eadc3ef8ce306c2a7b011f21 = L.circleMarker(
+                [4.878856100000001, 6.982395899999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_872b03616804f8a3dbebf0cee2dda777);
+        
+    
+        var popup_8547df2b1623902d5d23c46a6ce8c0f4 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_c5167b97eb8a4e5db0ba5441a67e7236 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE2NzAyMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE5rcGVsdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljg3ODksIDYuOTgyNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE5rcGVsdTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8547df2b1623902d5d23c46a6ce8c0f4.setContent(i_frame_c5167b97eb8a4e5db0ba5441a67e7236);
+            
+        
+
+        circle_marker_2a9e8f92eadc3ef8ce306c2a7b011f21.bindPopup(popup_8547df2b1623902d5d23c46a6ce8c0f4)
+        ;
+
+        
+    
+    
+            circle_marker_2a9e8f92eadc3ef8ce306c2a7b011f21.bindTooltip(
+                `<div>
+                     Obio Akpor | Nkpelu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4387d2fb8add036b281ea83bbd67b7bf = L.circleMarker(
+                [4.8749833, 6.9779467],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_872b03616804f8a3dbebf0cee2dda777);
+        
+    
+        var popup_2bde9854f1789504bc849cc3f2179294 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_062af6876951bc0f50bbdf2f5426ad10 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNDYxOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE5rcGVsdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljg3NTAsIDYuOTc3OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE5rcGVsdTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_2bde9854f1789504bc849cc3f2179294.setContent(i_frame_062af6876951bc0f50bbdf2f5426ad10);
+            
+        
+
+        circle_marker_4387d2fb8add036b281ea83bbd67b7bf.bindPopup(popup_2bde9854f1789504bc849cc3f2179294)
+        ;
+
+        
+    
+    
+            circle_marker_4387d2fb8add036b281ea83bbd67b7bf.bindTooltip(
+                `<div>
+                     Obio Akpor | Nkpelu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a0ba6db1ff26db2fae4731d5af3528bc = L.circleMarker(
+                [4.8772494019193, 6.9732549414038],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_872b03616804f8a3dbebf0cee2dda777);
+        
+    
+        var popup_7f046009e69aa6568df25e820de1d01e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_9571d8b31a25bc6ccd59966110861656 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI5OTk5MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVhZ2hhb2x1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODc3MiwgNi45NzMzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBPYmlvIEFrcG9yPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gUnVtdWFnaGFvbHU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_7f046009e69aa6568df25e820de1d01e.setContent(i_frame_9571d8b31a25bc6ccd59966110861656);
+            
+        
+
+        circle_marker_a0ba6db1ff26db2fae4731d5af3528bc.bindPopup(popup_7f046009e69aa6568df25e820de1d01e)
+        ;
+
+        
+    
+    
+            circle_marker_a0ba6db1ff26db2fae4731d5af3528bc.bindTooltip(
+                `<div>
+                     Obio Akpor | Rumuaghaolu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_685cd22d031e603113fa6a06c32ff831 = L.circleMarker(
+                [4.8704418, 6.971251],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_872b03616804f8a3dbebf0cee2dda777);
+        
+    
+        var popup_03ee1f3a05f52b28ecf773c89b6d6c7c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_ea820c458aa53f304555718e1c7d5752 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTA0Njc2OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVpZ2JvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODcwNCwgNi45NzEzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBPYmlvIEFrcG9yPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gUnVtdWlnYm88L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_03ee1f3a05f52b28ecf773c89b6d6c7c.setContent(i_frame_ea820c458aa53f304555718e1c7d5752);
+            
+        
+
+        circle_marker_685cd22d031e603113fa6a06c32ff831.bindPopup(popup_03ee1f3a05f52b28ecf773c89b6d6c7c)
+        ;
+
+        
+    
+    
+            circle_marker_685cd22d031e603113fa6a06c32ff831.bindTooltip(
+                `<div>
+                     Obio Akpor | Rumuigbo (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_276380cf6a7f1bb6ad03828d6eec0fdf = L.circleMarker(
+                [4.8654611, 6.973944899999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_872b03616804f8a3dbebf0cee2dda777);
+        
+    
+        var popup_c8dbe2cd3bffd4173b800e819bcecc08 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_e2d9e6668a1efc56da1dea55e15da5bc = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIxODYyODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVpZ2JvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODY1NSwgNi45NzM5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBPYmlvIEFrcG9yPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gUnVtdWlnYm88L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_c8dbe2cd3bffd4173b800e819bcecc08.setContent(i_frame_e2d9e6668a1efc56da1dea55e15da5bc);
+            
+        
+
+        circle_marker_276380cf6a7f1bb6ad03828d6eec0fdf.bindPopup(popup_c8dbe2cd3bffd4173b800e819bcecc08)
+        ;
+
+        
+    
+    
+            circle_marker_276380cf6a7f1bb6ad03828d6eec0fdf.bindTooltip(
+                `<div>
+                     Obio Akpor | Rumuigbo (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ba911026d499aeb54c335069d3a5038c = L.circleMarker(
+                [4.8728503, 6.965200299999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_872b03616804f8a3dbebf0cee2dda777);
+        
+    
+        var popup_6c2ed9380ec2285c16ea8a6aa65d5488 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a9a778a4da2f259ff0a0fa02e447c1c7 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTgyMzA1ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVhZ2hhb2x1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODcyOSwgNi45NjUyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBPYmlvIEFrcG9yPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gUnVtdWFnaGFvbHU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_6c2ed9380ec2285c16ea8a6aa65d5488.setContent(i_frame_a9a778a4da2f259ff0a0fa02e447c1c7);
+            
+        
+
+        circle_marker_ba911026d499aeb54c335069d3a5038c.bindPopup(popup_6c2ed9380ec2285c16ea8a6aa65d5488)
+        ;
+
+        
+    
+    
+            circle_marker_ba911026d499aeb54c335069d3a5038c.bindTooltip(
+                `<div>
+                     Obio Akpor | Rumuaghaolu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_872b03616804f8a3dbebf0cee2dda777.addTo(map_3c3711468d126a255adbb6e5d3d1c9ae);
+        
+    
+            var feature_group_3d27108a55ea0512a3f8f0ea878d4d9c = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_a7af2b3785c3e1d9859ed2b0b481bfe3 = L.circleMarker(
+                [6.981822, 4.8859511],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_3d27108a55ea0512a3f8f0ea878d4d9c);
+        
+    
+        var popup_f8c64785a3138fd52f5f0180865b94ee = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_1ecdf39f0ca246ec797ba01ea556fff3 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTEzNDAzOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2Ljk4MTgsIDQuODg2MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f8c64785a3138fd52f5f0180865b94ee.setContent(i_frame_1ecdf39f0ca246ec797ba01ea556fff3);
+            
+        
+
+        circle_marker_a7af2b3785c3e1d9859ed2b0b481bfe3.bindPopup(popup_f8c64785a3138fd52f5f0180865b94ee)
+        ;
+
+        
+    
+    
+            circle_marker_a7af2b3785c3e1d9859ed2b0b481bfe3.bindTooltip(
+                `<div>
+                     Obio Akpor |  (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2cc8fe89be13ca984066d76fdfa23495 = L.circleMarker(
+                [7.0123501, 4.8776065],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_3d27108a55ea0512a3f8f0ea878d4d9c);
+        
+    
+        var popup_3db72bdf890c1d027825b67aa5e1a9d9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_40951a1db4045e6e26d79e9ce647fe69 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI3NDEwNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVva29ybzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA3LjAxMjQsIDQuODc3NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVva29ybzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_3db72bdf890c1d027825b67aa5e1a9d9.setContent(i_frame_40951a1db4045e6e26d79e9ce647fe69);
+            
+        
+
+        circle_marker_2cc8fe89be13ca984066d76fdfa23495.bindPopup(popup_3db72bdf890c1d027825b67aa5e1a9d9)
+        ;
+
+        
+    
+    
+            circle_marker_2cc8fe89be13ca984066d76fdfa23495.bindTooltip(
+                `<div>
+                     Obio Akpor | Rumuokoro (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_506fef2ee338268f8ca6d9d03c4e62a3 = L.circleMarker(
+                [7.021661, 4.8669987],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_3d27108a55ea0512a3f8f0ea878d4d9c);
+        
+    
+        var popup_0f855946b354bb45591381872d3cb8fb = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_3537607e3e08b020f22513f30ba04ff3 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIwMDkzNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEVsaW96dTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA3LjAyMTcsIDQuODY3MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEVsaW96dTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0f855946b354bb45591381872d3cb8fb.setContent(i_frame_3537607e3e08b020f22513f30ba04ff3);
+            
+        
+
+        circle_marker_506fef2ee338268f8ca6d9d03c4e62a3.bindPopup(popup_0f855946b354bb45591381872d3cb8fb)
+        ;
+
+        
+    
+    
+            circle_marker_506fef2ee338268f8ca6d9d03c4e62a3.bindTooltip(
+                `<div>
+                     Obio Akpor | Eliozu (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_3d27108a55ea0512a3f8f0ea878d4d9c.addTo(map_3c3711468d126a255adbb6e5d3d1c9ae);
+        
+    
+            var feature_group_95dae591422c0a04ddb94a13eab5cd28 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_3468d449ba172f8212b04ea25b7e525c = L.circleMarker(
+                [4.7804664, 7.0390577],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_95dae591422c0a04ddb94a13eab5cd28);
+        
+    
+        var popup_c4894d3853a6ef246ea212fb421c15db = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_3832ec0e9b6b97b6ea93c30df03fdd25 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDUyNDcwNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVvZG9tYXlhPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzgwNSwgNy4wMzkxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBPYmlvIEFrcG9yPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gUnVtdW9kb21heWE8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_c4894d3853a6ef246ea212fb421c15db.setContent(i_frame_3832ec0e9b6b97b6ea93c30df03fdd25);
+            
+        
+
+        circle_marker_3468d449ba172f8212b04ea25b7e525c.bindPopup(popup_c4894d3853a6ef246ea212fb421c15db)
+        ;
+
+        
+    
+    
+            circle_marker_3468d449ba172f8212b04ea25b7e525c.bindTooltip(
+                `<div>
+                     Obio Akpor | Rumuodomaya (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_14a22cf688d6fef3f4fc71a67f0d56e1 = L.circleMarker(
+                [4.7584512, 7.0333739999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_95dae591422c0a04ddb94a13eab5cd28);
+        
+    
+        var popup_fc225c782ff43a72b58951acb084dfd6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_2864c77affe41f1e200e235259d5b2d6 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE1NjI5MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJvcm9raXJpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzU4NSwgNy4wMzM0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQm9yb2tpcmk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_fc225c782ff43a72b58951acb084dfd6.setContent(i_frame_2864c77affe41f1e200e235259d5b2d6);
+            
+        
+
+        circle_marker_14a22cf688d6fef3f4fc71a67f0d56e1.bindPopup(popup_fc225c782ff43a72b58951acb084dfd6)
+        ;
+
+        
+    
+    
+            circle_marker_14a22cf688d6fef3f4fc71a67f0d56e1.bindTooltip(
+                `<div>
+                     Port Harcourt | Borokiri (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9ffffa0ca2a053fdd8a0950e004682d0 = L.circleMarker(
+                [4.7599906999999, 7.0255161999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_95dae591422c0a04ddb94a13eab5cd28);
+        
+    
+        var popup_08bc196e4669b35be2993426eb09ef61 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_0c8c903c627bf2ba65beb7e9196ba5a5 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI5MjI2MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJvcm9raXJpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzYwMCwgNy4wMjU1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQm9yb2tpcmk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_08bc196e4669b35be2993426eb09ef61.setContent(i_frame_0c8c903c627bf2ba65beb7e9196ba5a5);
+            
+        
+
+        circle_marker_9ffffa0ca2a053fdd8a0950e004682d0.bindPopup(popup_08bc196e4669b35be2993426eb09ef61)
+        ;
+
+        
+    
+    
+            circle_marker_9ffffa0ca2a053fdd8a0950e004682d0.bindTooltip(
+                `<div>
+                     Port Harcourt | Borokiri (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_95dae591422c0a04ddb94a13eab5cd28.addTo(map_3c3711468d126a255adbb6e5d3d1c9ae);
+        
+    
+            var feature_group_7ffa4ef2fd6ceaf4b97249a4e423dea1 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_10cf15c0086528f83579ab380d88caa4 = L.circleMarker(
+                [4.8888023, 6.9084664],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7ffa4ef2fd6ceaf4b97249a4e423dea1);
+        
+    
+        var popup_cd0f9a402b4c6b590dc098aa6fe0422b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_ee4dbd295f829de91cc80c8ae51e14ca = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE1MzkzNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVva29ybzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljg4ODgsIDYuOTA4NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVva29ybzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_cd0f9a402b4c6b590dc098aa6fe0422b.setContent(i_frame_ee4dbd295f829de91cc80c8ae51e14ca);
+            
+        
+
+        circle_marker_10cf15c0086528f83579ab380d88caa4.bindPopup(popup_cd0f9a402b4c6b590dc098aa6fe0422b)
+        ;
+
+        
+    
+    
+            circle_marker_10cf15c0086528f83579ab380d88caa4.bindTooltip(
+                `<div>
+                     Obio Akpor | Rumuokoro (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d5cd650be6c7962111dca691b1771a8f = L.circleMarker(
+                [4.8888023, 6.9084664],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7ffa4ef2fd6ceaf4b97249a4e423dea1);
+        
+    
+        var popup_6b41d29c1ee8ab61fb0bed1c5714ae22 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_78d6bbd6a5ed0d8c4cb5697366db8b77 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDY2NzQ0OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVvbWFzaTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljg4ODgsIDYuOTA4NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gT2JpbyBBa3BvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFJ1bXVvbWFzaTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_6b41d29c1ee8ab61fb0bed1c5714ae22.setContent(i_frame_78d6bbd6a5ed0d8c4cb5697366db8b77);
+            
+        
+
+        circle_marker_d5cd650be6c7962111dca691b1771a8f.bindPopup(popup_6b41d29c1ee8ab61fb0bed1c5714ae22)
+        ;
+
+        
+    
+    
+            circle_marker_d5cd650be6c7962111dca691b1771a8f.bindTooltip(
+                `<div>
+                     Obio Akpor | Rumuomasi (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_7ffa4ef2fd6ceaf4b97249a4e423dea1.addTo(map_3c3711468d126a255adbb6e5d3d1c9ae);
+        
+    
+            var layer_control_03393456cf76e030df04f40b0ef333e8_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_e5a2d3d3c925386d50c04c74a01b8970,
+                    "OpenStreetMap" : tile_layer_79c330d68d15b070657f3512eda67a1d,
+                    "Terrain" : tile_layer_8200d000faca915bd0b2053f16d76380,
+                    "Toner" : tile_layer_b548559f0bb040df3b500cd05938acc1,
+                    "CartoDB Dark" : tile_layer_bd33e6b8cf1ed21b4252efcf94c716b5,
+                    "CartoDB Light" : tile_layer_064959d8a90404aa882a9a1ecc5d5989,
+                },
+                overlays :  {
+                    "Cluster 1 - Obio Akpor - Rumuodomaya+5more (8 points)" : feature_group_394710720d417ca2b5d405a0b1372817,
+                    "Cluster 4 - Obio Akpor - Nkpelu+2more (8 points)" : feature_group_872b03616804f8a3dbebf0cee2dda777,
+                    "Cluster 3 - Obio Akpor - +2more (3 points)" : feature_group_3d27108a55ea0512a3f8f0ea878d4d9c,
+                    "Cluster 5 - Obio Akpor+1more - Rumuodomaya+1more (3 points)" : feature_group_95dae591422c0a04ddb94a13eab5cd28,
+                    "Cluster 2 - Obio Akpor - Rumuokoro+1more (2 points)" : feature_group_7ffa4ef2fd6ceaf4b97249a4e423dea1,
+                },
+            };
+            let layer_control_03393456cf76e030df04f40b0ef333e8 = L.control.layers(
+                layer_control_03393456cf76e030df04f40b0ef333e8_layers.base_layers,
+                layer_control_03393456cf76e030df04f40b0ef333e8_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_3c3711468d126a255adbb6e5d3d1c9ae);
+
+        
+    
+            var tile_layer_23b98535a7160a7b5c4f64123e845e7d = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_04488227a4fd95b9b52b7d5592973e5e = new L.Control.MiniMap(
+                tile_layer_23b98535a7160a7b5c4f64123e845e7d,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_3c3711468d126a255adbb6e5d3d1c9ae.addControl(mini_map_04488227a4fd95b9b52b7d5592973e5e);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_3c3711468d126a255adbb6e5d3d1c9ae);
+        
+    
+            var measure_control_38a4b7a3c555dabb159c27cee85bce54 = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_3c3711468d126a255adbb6e5d3d1c9ae.addControl(measure_control_38a4b7a3c555dabb159c27cee85bce54);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_6f9343c4a7b147c1c00a31032e7d3c39 = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_6f9343c4a7b147c1c00a31032e7d3c39.options["latFormatter"] =
+                undefined;
+            mouse_position_6f9343c4a7b147c1c00a31032e7d3c39.options["lngFormatter"] =
+                undefined;
+            map_3c3711468d126a255adbb6e5d3d1c9ae.addControl(mouse_position_6f9343c4a7b147c1c00a31032e7d3c39);
+        
+    
+            map_3c3711468d126a255adbb6e5d3d1c9ae.fitBounds(
+                [[4.7484512, 4.8569987], [7.031661, 7.0756876]],
+                {}
+            );
+        
+    
+            var marker_6b633f480cb3f8a9225fb4292fe3e434 = L.marker(
+                [4.8340836, 7.020707700000001],
+                {
+  "size": 10,
+}
+            ).addTo(map_3c3711468d126a255adbb6e5d3d1c9ae);
+        
+    
+            var icon_2d8a1b801e18b87e5a01eb8fb29fd7e1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_6b633f480cb3f8a9225fb4292fe3e434.bindTooltip(
+                `<div>
+                     OmniHub Obio Akpor Rivers - FHS
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6b633f480cb3f8a9225fb4292fe3e434.setIcon(icon_2d8a1b801e18b87e5a01eb8fb29fd7e1);
+            
+</script>
+</html>
