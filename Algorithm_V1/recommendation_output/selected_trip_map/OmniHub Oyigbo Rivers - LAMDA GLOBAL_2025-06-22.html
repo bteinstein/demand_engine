@@ -1,0 +1,2353 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_763461c5b8b79a47d5fe39705bb873cc {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 3 clusters | 52 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+    <div id="cluster-legend" style="position: fixed; 
+                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                background-color: rgba(255, 255, 255, 0.95); 
+                border: 2px solid #ccc; z-index: 999; 
+                font-size: 11px; padding: 12px; border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                backdrop-filter: blur(5px);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <strong style="color: #333;">Cluster Legend</strong>
+        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+    </div>
+    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+        3 clusters | Sorted by size | Showing top 15
+    </div>
+    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">30 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 8 
+                <br><span style="color: #666; font-size: 9px;">13 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 10 
+                <br><span style="color: #666; font-size: 9px;">9 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_763461c5b8b79a47d5fe39705bb873cc" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_763461c5b8b79a47d5fe39705bb873cc = L.map(
+                "map_763461c5b8b79a47d5fe39705bb873cc",
+                {
+                    center: [4.874067800000001, 7.1276756],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_763461c5b8b79a47d5fe39705bb873cc);
+
+            
+
+        
+    
+            var tile_layer_94c2001e3611a61ebdd25fce5ce24911 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_94c2001e3611a61ebdd25fce5ce24911.addTo(map_763461c5b8b79a47d5fe39705bb873cc);
+        
+    
+            var tile_layer_9d73d2d2f493a27cb2ac2bfb381d7470 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_9d73d2d2f493a27cb2ac2bfb381d7470.addTo(map_763461c5b8b79a47d5fe39705bb873cc);
+        
+    
+            var tile_layer_dcc94fcd119b34536ef98bcfc4aff4af = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_dcc94fcd119b34536ef98bcfc4aff4af.addTo(map_763461c5b8b79a47d5fe39705bb873cc);
+        
+    
+            var tile_layer_453852651cc74054d0702bb94484b30c = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_453852651cc74054d0702bb94484b30c.addTo(map_763461c5b8b79a47d5fe39705bb873cc);
+        
+    
+            var tile_layer_0d21000bd05f1b99ef967fdb3a8b3892 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_0d21000bd05f1b99ef967fdb3a8b3892.addTo(map_763461c5b8b79a47d5fe39705bb873cc);
+        
+    
+            var tile_layer_0a331946f37da791bd03ea61825088c4 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_0a331946f37da791bd03ea61825088c4.addTo(map_763461c5b8b79a47d5fe39705bb873cc);
+        
+    
+            var feature_group_156548992779a2a4589f961639c3f40a = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_0a1ab611c236577293bf12be8d60cc0f = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_c66e8a1154202ee4d1632781b5e94567 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1c1b648ec210a062cf501b7c17f40c4c = $(`<div id="html_1c1b648ec210a062cf501b7c17f40c4c" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4054159&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_c66e8a1154202ee4d1632781b5e94567.setContent(html_1c1b648ec210a062cf501b7c17f40c4c);
+            
+        
+
+        circle_marker_0a1ab611c236577293bf12be8d60cc0f.bindPopup(popup_c66e8a1154202ee4d1632781b5e94567)
+        ;
+
+        
+    
+    
+            circle_marker_0a1ab611c236577293bf12be8d60cc0f.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6e14d19cb3a33436d1bc3d8614bd4a5e = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_d7664e1fef1370eb671195cd1ddc1ffc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e991c729d36a72bdd0c9d3d28ce459b6 = $(`<div id="html_e991c729d36a72bdd0c9d3d28ce459b6" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4093830&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_d7664e1fef1370eb671195cd1ddc1ffc.setContent(html_e991c729d36a72bdd0c9d3d28ce459b6);
+            
+        
+
+        circle_marker_6e14d19cb3a33436d1bc3d8614bd4a5e.bindPopup(popup_d7664e1fef1370eb671195cd1ddc1ffc)
+        ;
+
+        
+    
+    
+            circle_marker_6e14d19cb3a33436d1bc3d8614bd4a5e.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO (DUPLICATE) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e30bebde20aacb922e1547782f3f147d = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_4899e55ce611af11d23fa5803ba6e798 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9c746a715e3f097267442afef1f89f24 = $(`<div id="html_9c746a715e3f097267442afef1f89f24" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4093832&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_4899e55ce611af11d23fa5803ba6e798.setContent(html_9c746a715e3f097267442afef1f89f24);
+            
+        
+
+        circle_marker_e30bebde20aacb922e1547782f3f147d.bindPopup(popup_4899e55ce611af11d23fa5803ba6e798)
+        ;
+
+        
+    
+    
+            circle_marker_e30bebde20aacb922e1547782f3f147d.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_540651e7409169d86022808ce9a4b392 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_7776ce2b4dd6027fd3be1fcfa84a2259 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4cb50d9fd432c79114d8606ed70a2cc4 = $(`<div id="html_4cb50d9fd432c79114d8606ed70a2cc4" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5270100&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_7776ce2b4dd6027fd3be1fcfa84a2259.setContent(html_4cb50d9fd432c79114d8606ed70a2cc4);
+            
+        
+
+        circle_marker_540651e7409169d86022808ce9a4b392.bindPopup(popup_7776ce2b4dd6027fd3be1fcfa84a2259)
+        ;
+
+        
+    
+    
+            circle_marker_540651e7409169d86022808ce9a4b392.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_04ab00498fea890a4a9e909e183998b2 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_10002b343afb1b096ea0e04c98ed7058 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_22d8639f2644778dcc19f95929b93e0f = $(`<div id="html_22d8639f2644778dcc19f95929b93e0f" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5110017&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Egberu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Egberu&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_10002b343afb1b096ea0e04c98ed7058.setContent(html_22d8639f2644778dcc19f95929b93e0f);
+            
+        
+
+        circle_marker_04ab00498fea890a4a9e909e183998b2.bindPopup(popup_10002b343afb1b096ea0e04c98ed7058)
+        ;
+
+        
+    
+    
+            circle_marker_04ab00498fea890a4a9e909e183998b2.bindTooltip(
+                `<div>
+                     Oyigbo | Egberu (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7a0ef49badf56d8cd2a5d054efe309e8 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_c17a832b9c7ecc1671724c2f8486dd83 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_83cf45b286eaf5a0c733fb7b7f1f0b72 = $(`<div id="html_83cf45b286eaf5a0c733fb7b7f1f0b72" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5116046&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_c17a832b9c7ecc1671724c2f8486dd83.setContent(html_83cf45b286eaf5a0c733fb7b7f1f0b72);
+            
+        
+
+        circle_marker_7a0ef49badf56d8cd2a5d054efe309e8.bindPopup(popup_c17a832b9c7ecc1671724c2f8486dd83)
+        ;
+
+        
+    
+    
+            circle_marker_7a0ef49badf56d8cd2a5d054efe309e8.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_25680f07854519584dd29ee4f241e21c = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_c59b904df4b775d3d9d1bcd016e3eae0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9fb321436b843e89c9d66790d28534c7 = $(`<div id="html_9fb321436b843e89c9d66790d28534c7" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5295547&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO-KOMKOM&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO-KOMKOM&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_c59b904df4b775d3d9d1bcd016e3eae0.setContent(html_9fb321436b843e89c9d66790d28534c7);
+            
+        
+
+        circle_marker_25680f07854519584dd29ee4f241e21c.bindPopup(popup_c59b904df4b775d3d9d1bcd016e3eae0)
+        ;
+
+        
+    
+    
+            circle_marker_25680f07854519584dd29ee4f241e21c.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO-KOMKOM (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_861cee62072296d88d856cae278bc599 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_0424cb1b15aa95b0e0ef7b0f052c3bc6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d6541db893072fb3e59ad08936b92361 = $(`<div id="html_d6541db893072fb3e59ad08936b92361" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5297149&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO-KOMKOM&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO-KOMKOM&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_0424cb1b15aa95b0e0ef7b0f052c3bc6.setContent(html_d6541db893072fb3e59ad08936b92361);
+            
+        
+
+        circle_marker_861cee62072296d88d856cae278bc599.bindPopup(popup_0424cb1b15aa95b0e0ef7b0f052c3bc6)
+        ;
+
+        
+    
+    
+            circle_marker_861cee62072296d88d856cae278bc599.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO-KOMKOM (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_58d260e4ba38220cc29b4256063cfa99 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_8a12c4932c835dd27a529b92bb2f20a8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_28518c6de3d44d6f39dad24d4c4e448b = $(`<div id="html_28518c6de3d44d6f39dad24d4c4e448b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5297278&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Afam&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Afam&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_8a12c4932c835dd27a529b92bb2f20a8.setContent(html_28518c6de3d44d6f39dad24d4c4e448b);
+            
+        
+
+        circle_marker_58d260e4ba38220cc29b4256063cfa99.bindPopup(popup_8a12c4932c835dd27a529b92bb2f20a8)
+        ;
+
+        
+    
+    
+            circle_marker_58d260e4ba38220cc29b4256063cfa99.bindTooltip(
+                `<div>
+                     Oyigbo | Afam (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_661c4fd70b62088c2870e9ac3ae58149 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_6da5440594938b2ccd118b294a217382 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4037b5f47dea60050a57540b323dd1df = $(`<div id="html_4037b5f47dea60050a57540b323dd1df" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5298935&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_6da5440594938b2ccd118b294a217382.setContent(html_4037b5f47dea60050a57540b323dd1df);
+            
+        
+
+        circle_marker_661c4fd70b62088c2870e9ac3ae58149.bindPopup(popup_6da5440594938b2ccd118b294a217382)
+        ;
+
+        
+    
+    
+            circle_marker_661c4fd70b62088c2870e9ac3ae58149.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_63830fb9bcaec35807538d535a36f18e = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_e06938735d50ad0ae4930db21c0a2563 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f28676cc171ec822438c9a7d4f8eaedf = $(`<div id="html_f28676cc171ec822438c9a7d4f8eaedf" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5300526&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_e06938735d50ad0ae4930db21c0a2563.setContent(html_f28676cc171ec822438c9a7d4f8eaedf);
+            
+        
+
+        circle_marker_63830fb9bcaec35807538d535a36f18e.bindPopup(popup_e06938735d50ad0ae4930db21c0a2563)
+        ;
+
+        
+    
+    
+            circle_marker_63830fb9bcaec35807538d535a36f18e.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO (DUPLICATE) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e2ef5320e6c5f7dc00de4dff7cdbf1f2 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_f0ad8f238a5ce6ae1dd0c91a0af61181 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e4f23534da7735ab630d4fcb3db432ac = $(`<div id="html_e4f23534da7735ab630d4fcb3db432ac" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5304036&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_f0ad8f238a5ce6ae1dd0c91a0af61181.setContent(html_e4f23534da7735ab630d4fcb3db432ac);
+            
+        
+
+        circle_marker_e2ef5320e6c5f7dc00de4dff7cdbf1f2.bindPopup(popup_f0ad8f238a5ce6ae1dd0c91a0af61181)
+        ;
+
+        
+    
+    
+            circle_marker_e2ef5320e6c5f7dc00de4dff7cdbf1f2.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO (DUPLICATE) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d69bfc36f7fd554f2a8357e86d8c71b1 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_3b6298217a9c9bdbeee5db955d54287d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ee571550af09c5f611a0945bd3a57553 = $(`<div id="html_ee571550af09c5f611a0945bd3a57553" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5145689&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Izuoma&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Izuoma&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_3b6298217a9c9bdbeee5db955d54287d.setContent(html_ee571550af09c5f611a0945bd3a57553);
+            
+        
+
+        circle_marker_d69bfc36f7fd554f2a8357e86d8c71b1.bindPopup(popup_3b6298217a9c9bdbeee5db955d54287d)
+        ;
+
+        
+    
+    
+            circle_marker_d69bfc36f7fd554f2a8357e86d8c71b1.bindTooltip(
+                `<div>
+                     Oyigbo | Izuoma (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5f5275c2154001f59207ef9256c9550d = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_10be3e120200cdf195ff90edc44368e1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a332aacdffc70e38a00df0ffdc9678da = $(`<div id="html_a332aacdffc70e38a00df0ffdc9678da" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5147411&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_10be3e120200cdf195ff90edc44368e1.setContent(html_a332aacdffc70e38a00df0ffdc9678da);
+            
+        
+
+        circle_marker_5f5275c2154001f59207ef9256c9550d.bindPopup(popup_10be3e120200cdf195ff90edc44368e1)
+        ;
+
+        
+    
+    
+            circle_marker_5f5275c2154001f59207ef9256c9550d.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO (DUPLICATE) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_43ec174b17b89054041412b68e7c0588 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_904f7782df00282853227609b53583d2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_75956f3dfc861aaa63c94171fad527e1 = $(`<div id="html_75956f3dfc861aaa63c94171fad527e1" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5187780&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_904f7782df00282853227609b53583d2.setContent(html_75956f3dfc861aaa63c94171fad527e1);
+            
+        
+
+        circle_marker_43ec174b17b89054041412b68e7c0588.bindPopup(popup_904f7782df00282853227609b53583d2)
+        ;
+
+        
+    
+    
+            circle_marker_43ec174b17b89054041412b68e7c0588.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_215179a6c15e85e42a70a2bc2f5c07cd = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_20460bb8cedca95a68973a2921935ac6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c4677dfbeb6973650976caef76c6cbc9 = $(`<div id="html_c4677dfbeb6973650976caef76c6cbc9" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5203211&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_20460bb8cedca95a68973a2921935ac6.setContent(html_c4677dfbeb6973650976caef76c6cbc9);
+            
+        
+
+        circle_marker_215179a6c15e85e42a70a2bc2f5c07cd.bindPopup(popup_20460bb8cedca95a68973a2921935ac6)
+        ;
+
+        
+    
+    
+            circle_marker_215179a6c15e85e42a70a2bc2f5c07cd.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_01dc450879b8dcbfb197468370cd92cb = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_1f9986367f469c460941ed8edac4cbd3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_85128a977f6a4519c3c659cd6a4f515c = $(`<div id="html_85128a977f6a4519c3c659cd6a4f515c" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5217214&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_1f9986367f469c460941ed8edac4cbd3.setContent(html_85128a977f6a4519c3c659cd6a4f515c);
+            
+        
+
+        circle_marker_01dc450879b8dcbfb197468370cd92cb.bindPopup(popup_1f9986367f469c460941ed8edac4cbd3)
+        ;
+
+        
+    
+    
+            circle_marker_01dc450879b8dcbfb197468370cd92cb.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2e4b2e3b0d5663157f04a432aea59d8c = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_a68c0ab97839a166779e39768c857210 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c6ec26ebe23b18ccb81b1cd9f06fdd15 = $(`<div id="html_c6ec26ebe23b18ccb81b1cd9f06fdd15" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5221011&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_a68c0ab97839a166779e39768c857210.setContent(html_c6ec26ebe23b18ccb81b1cd9f06fdd15);
+            
+        
+
+        circle_marker_2e4b2e3b0d5663157f04a432aea59d8c.bindPopup(popup_a68c0ab97839a166779e39768c857210)
+        ;
+
+        
+    
+    
+            circle_marker_2e4b2e3b0d5663157f04a432aea59d8c.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a762776a89cc63ddb020d32f90ba366f = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_7651ee4900d291261c5fb2e9187310a4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_633c0a556ddf4f6714cbf6fe16789b42 = $(`<div id="html_633c0a556ddf4f6714cbf6fe16789b42" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5223915&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Egberu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Egberu&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_7651ee4900d291261c5fb2e9187310a4.setContent(html_633c0a556ddf4f6714cbf6fe16789b42);
+            
+        
+
+        circle_marker_a762776a89cc63ddb020d32f90ba366f.bindPopup(popup_7651ee4900d291261c5fb2e9187310a4)
+        ;
+
+        
+    
+    
+            circle_marker_a762776a89cc63ddb020d32f90ba366f.bindTooltip(
+                `<div>
+                     Oyigbo | Egberu (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_297b9c9d41a81bd04ce9fea7b84223b1 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_2e487858da5d72348cba0ba4c8d1742d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6a969ec90cf35c603bb3724ebfe666b3 = $(`<div id="html_6a969ec90cf35c603bb3724ebfe666b3" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5227408&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_2e487858da5d72348cba0ba4c8d1742d.setContent(html_6a969ec90cf35c603bb3724ebfe666b3);
+            
+        
+
+        circle_marker_297b9c9d41a81bd04ce9fea7b84223b1.bindPopup(popup_2e487858da5d72348cba0ba4c8d1742d)
+        ;
+
+        
+    
+    
+            circle_marker_297b9c9d41a81bd04ce9fea7b84223b1.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4e313a1e2a534c8790f4e1bc64c33f86 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_30d469c70d2d94743462990c12ba2a78 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d0b41f3401ef84199d649dcdc8f6e414 = $(`<div id="html_d0b41f3401ef84199d649dcdc8f6e414" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5229283&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_30d469c70d2d94743462990c12ba2a78.setContent(html_d0b41f3401ef84199d649dcdc8f6e414);
+            
+        
+
+        circle_marker_4e313a1e2a534c8790f4e1bc64c33f86.bindPopup(popup_30d469c70d2d94743462990c12ba2a78)
+        ;
+
+        
+    
+    
+            circle_marker_4e313a1e2a534c8790f4e1bc64c33f86.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_47a8f182c87af6dd90045e947305d363 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_b14df92425af0f79229b64be71dbf419 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b2a7ad2d108040c4db9007e5c84e22bb = $(`<div id="html_b2a7ad2d108040c4db9007e5c84e22bb" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5232982&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_b14df92425af0f79229b64be71dbf419.setContent(html_b2a7ad2d108040c4db9007e5c84e22bb);
+            
+        
+
+        circle_marker_47a8f182c87af6dd90045e947305d363.bindPopup(popup_b14df92425af0f79229b64be71dbf419)
+        ;
+
+        
+    
+    
+            circle_marker_47a8f182c87af6dd90045e947305d363.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO (DUPLICATE) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6ef3b7af4c7d514c9288d3da62f5ae2f = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_c55bd37fbbe8970a77189f508dfa59ba = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8b506de86ace3ce9ed0d5bf56b42bb63 = $(`<div id="html_8b506de86ace3ce9ed0d5bf56b42bb63" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5234370&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_c55bd37fbbe8970a77189f508dfa59ba.setContent(html_8b506de86ace3ce9ed0d5bf56b42bb63);
+            
+        
+
+        circle_marker_6ef3b7af4c7d514c9288d3da62f5ae2f.bindPopup(popup_c55bd37fbbe8970a77189f508dfa59ba)
+        ;
+
+        
+    
+    
+            circle_marker_6ef3b7af4c7d514c9288d3da62f5ae2f.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO (DUPLICATE) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ebf38cfce774747c137b346df22f7460 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_fd8ab3e72b7fd2f0facb9d77a018f196 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a4dd1a95bc87fd9f672342a5ab19718d = $(`<div id="html_a4dd1a95bc87fd9f672342a5ab19718d" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5236106&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_fd8ab3e72b7fd2f0facb9d77a018f196.setContent(html_a4dd1a95bc87fd9f672342a5ab19718d);
+            
+        
+
+        circle_marker_ebf38cfce774747c137b346df22f7460.bindPopup(popup_fd8ab3e72b7fd2f0facb9d77a018f196)
+        ;
+
+        
+    
+    
+            circle_marker_ebf38cfce774747c137b346df22f7460.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d01afd3f5270f6ae0054a9d3f8bbe2ae = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_39d42d9225188beb7a899f146154c371 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fba4c193c00802b6469902c7d3ff0560 = $(`<div id="html_fba4c193c00802b6469902c7d3ff0560" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5236249&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_39d42d9225188beb7a899f146154c371.setContent(html_fba4c193c00802b6469902c7d3ff0560);
+            
+        
+
+        circle_marker_d01afd3f5270f6ae0054a9d3f8bbe2ae.bindPopup(popup_39d42d9225188beb7a899f146154c371)
+        ;
+
+        
+    
+    
+            circle_marker_d01afd3f5270f6ae0054a9d3f8bbe2ae.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d7f4da84ef53fe97c4b4d892e3ecabf2 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_566a3617955affda278e3e176b6cd627 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_dacf5d625206a8921f245be3618f6337 = $(`<div id="html_dacf5d625206a8921f245be3618f6337" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5236850&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_566a3617955affda278e3e176b6cd627.setContent(html_dacf5d625206a8921f245be3618f6337);
+            
+        
+
+        circle_marker_d7f4da84ef53fe97c4b4d892e3ecabf2.bindPopup(popup_566a3617955affda278e3e176b6cd627)
+        ;
+
+        
+    
+    
+            circle_marker_d7f4da84ef53fe97c4b4d892e3ecabf2.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_be71de268807725fa01bff71842ade8a = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_fb364f1575fdcff8472369897ed8111e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_17b41d574a1760f130b15d2a43d2020e = $(`<div id="html_17b41d574a1760f130b15d2a43d2020e" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5237705&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_fb364f1575fdcff8472369897ed8111e.setContent(html_17b41d574a1760f130b15d2a43d2020e);
+            
+        
+
+        circle_marker_be71de268807725fa01bff71842ade8a.bindPopup(popup_fb364f1575fdcff8472369897ed8111e)
+        ;
+
+        
+    
+    
+            circle_marker_be71de268807725fa01bff71842ade8a.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cbe6bbb89782f6796ee1879c858ed879 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_ec4d8aa41707e60ff2327787811945b7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7a851b00dcab4a29da527a6cbec02899 = $(`<div id="html_7a851b00dcab4a29da527a6cbec02899" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5256432&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_ec4d8aa41707e60ff2327787811945b7.setContent(html_7a851b00dcab4a29da527a6cbec02899);
+            
+        
+
+        circle_marker_cbe6bbb89782f6796ee1879c858ed879.bindPopup(popup_ec4d8aa41707e60ff2327787811945b7)
+        ;
+
+        
+    
+    
+            circle_marker_cbe6bbb89782f6796ee1879c858ed879.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO (DUPLICATE) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3a46e21de82a6c977a74795e99f98676 = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_3f612997e14704144a7e8445ad01f5d4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b4995d73f514968e21c04789b3e9f81f = $(`<div id="html_b4995d73f514968e21c04789b3e9f81f" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5261443&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_3f612997e14704144a7e8445ad01f5d4.setContent(html_b4995d73f514968e21c04789b3e9f81f);
+            
+        
+
+        circle_marker_3a46e21de82a6c977a74795e99f98676.bindPopup(popup_3f612997e14704144a7e8445ad01f5d4)
+        ;
+
+        
+    
+    
+            circle_marker_3a46e21de82a6c977a74795e99f98676.bindTooltip(
+                `<div>
+                      |  (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_57c60a67b1b19703a8d359b2e43b278d = L.circleMarker(
+                [4.8868615, 7.1251699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_156548992779a2a4589f961639c3f40a);
+        
+    
+        var popup_0376808fc04682b761b5ad77bf9c16c0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fec8642f91d111814b457315e7600e69 = $(`<div id="html_fec8642f91d111814b457315e7600e69" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5343695&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8869, 7.1252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_0376808fc04682b761b5ad77bf9c16c0.setContent(html_fec8642f91d111814b457315e7600e69);
+            
+        
+
+        circle_marker_57c60a67b1b19703a8d359b2e43b278d.bindPopup(popup_0376808fc04682b761b5ad77bf9c16c0)
+        ;
+
+        
+    
+    
+            circle_marker_57c60a67b1b19703a8d359b2e43b278d.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO (DUPLICATE) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_156548992779a2a4589f961639c3f40a.addTo(map_763461c5b8b79a47d5fe39705bb873cc);
+        
+    
+            var feature_group_35d7293202b769f8a0389080b917afce = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_e82b4eacfab09f98ab2de8afcf0ef67e = L.circleMarker(
+                [4.8756048, 7.144761099999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_35d7293202b769f8a0389080b917afce);
+        
+    
+        var popup_5bc51efdeebc02a6ad62d706be46b458 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d2983f9c37fdb38f2e03e0429aa2afee = $(`<div id="html_d2983f9c37fdb38f2e03e0429aa2afee" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5243895&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; PORTHARCOURT-OBIBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8756, 7.1448&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; PORTHARCOURT-OBIBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_5bc51efdeebc02a6ad62d706be46b458.setContent(html_d2983f9c37fdb38f2e03e0429aa2afee);
+            
+        
+
+        circle_marker_e82b4eacfab09f98ab2de8afcf0ef67e.bindPopup(popup_5bc51efdeebc02a6ad62d706be46b458)
+        ;
+
+        
+    
+    
+            circle_marker_e82b4eacfab09f98ab2de8afcf0ef67e.bindTooltip(
+                `<div>
+                     Oyigbo | PORTHARCOURT-OBIBO (DUPLICATE) (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0130f43f50f3a82a1f731b60c7e91337 = L.circleMarker(
+                [4.8760517, 7.1458501],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_35d7293202b769f8a0389080b917afce);
+        
+    
+        var popup_8c54eaf41721e15fe8d09c3a980688ad = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_51353986cee52b39518b25febb283278 = $(`<div id="html_51353986cee52b39518b25febb283278" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5246739&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8761, 7.1459&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_8c54eaf41721e15fe8d09c3a980688ad.setContent(html_51353986cee52b39518b25febb283278);
+            
+        
+
+        circle_marker_0130f43f50f3a82a1f731b60c7e91337.bindPopup(popup_8c54eaf41721e15fe8d09c3a980688ad)
+        ;
+
+        
+    
+    
+            circle_marker_0130f43f50f3a82a1f731b60c7e91337.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6d41c3e130eb3741ed1811d7a604212e = L.circleMarker(
+                [4.8756048, 7.144761099999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_35d7293202b769f8a0389080b917afce);
+        
+    
+        var popup_6017bd40da443a3e367ee9b78af2d729 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e395e4863c9d294d4ece129476ee9f66 = $(`<div id="html_e395e4863c9d294d4ece129476ee9f66" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5253333&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8756, 7.1448&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_6017bd40da443a3e367ee9b78af2d729.setContent(html_e395e4863c9d294d4ece129476ee9f66);
+            
+        
+
+        circle_marker_6d41c3e130eb3741ed1811d7a604212e.bindPopup(popup_6017bd40da443a3e367ee9b78af2d729)
+        ;
+
+        
+    
+    
+            circle_marker_6d41c3e130eb3741ed1811d7a604212e.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO (DUPLICATE) (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3580149d86b64cb43f4e9869e80d5812 = L.circleMarker(
+                [4.8802152, 7.137619],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_35d7293202b769f8a0389080b917afce);
+        
+    
+        var popup_d8fa7781723153fe41e244bbafa35c2d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_30516f2d3782774bcde426b4c21b1e3f = $(`<div id="html_30516f2d3782774bcde426b4c21b1e3f" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5182837&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ndoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8802, 7.1376&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ndoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_d8fa7781723153fe41e244bbafa35c2d.setContent(html_30516f2d3782774bcde426b4c21b1e3f);
+            
+        
+
+        circle_marker_3580149d86b64cb43f4e9869e80d5812.bindPopup(popup_d8fa7781723153fe41e244bbafa35c2d)
+        ;
+
+        
+    
+    
+            circle_marker_3580149d86b64cb43f4e9869e80d5812.bindTooltip(
+                `<div>
+                     Oyigbo | Ndoki (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_917cde380aa5ca5e47422ce89704847a = L.circleMarker(
+                [4.8761242796991, 7.1460917964577],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_35d7293202b769f8a0389080b917afce);
+        
+    
+        var popup_8342bad09343a283c8eea283de8aa78a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5bf369f1a0202b5e0acc73490feb2237 = $(`<div id="html_5bf369f1a0202b5e0acc73490feb2237" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 2339064&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8761, 7.1461&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_8342bad09343a283c8eea283de8aa78a.setContent(html_5bf369f1a0202b5e0acc73490feb2237);
+            
+        
+
+        circle_marker_917cde380aa5ca5e47422ce89704847a.bindPopup(popup_8342bad09343a283c8eea283de8aa78a)
+        ;
+
+        
+    
+    
+            circle_marker_917cde380aa5ca5e47422ce89704847a.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2759a63b1b14aa48c42f273c4d1e46b2 = L.circleMarker(
+                [4.8762614, 7.1463297],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_35d7293202b769f8a0389080b917afce);
+        
+    
+        var popup_f93ac0df6459182d6810a69389663a24 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9d4606ac71f58d218b60121063de1d9e = $(`<div id="html_9d4606ac71f58d218b60121063de1d9e" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3880516&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8763, 7.1463&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_f93ac0df6459182d6810a69389663a24.setContent(html_9d4606ac71f58d218b60121063de1d9e);
+            
+        
+
+        circle_marker_2759a63b1b14aa48c42f273c4d1e46b2.bindPopup(popup_f93ac0df6459182d6810a69389663a24)
+        ;
+
+        
+    
+    
+            circle_marker_2759a63b1b14aa48c42f273c4d1e46b2.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8cd2172955bcd9d1bff1e008ca9f6359 = L.circleMarker(
+                [4.8751124, 7.1430903],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_35d7293202b769f8a0389080b917afce);
+        
+    
+        var popup_8c8217c176e78a80d78f1b77348bc5d1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3ce58f78e4dd9396e7cad3bb803703ee = $(`<div id="html_3ce58f78e4dd9396e7cad3bb803703ee" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4604597&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8751, 7.1431&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_8c8217c176e78a80d78f1b77348bc5d1.setContent(html_3ce58f78e4dd9396e7cad3bb803703ee);
+            
+        
+
+        circle_marker_8cd2172955bcd9d1bff1e008ca9f6359.bindPopup(popup_8c8217c176e78a80d78f1b77348bc5d1)
+        ;
+
+        
+    
+    
+            circle_marker_8cd2172955bcd9d1bff1e008ca9f6359.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO (DUPLICATE) (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_63f3416763455aea91df7f4cb68c5518 = L.circleMarker(
+                [4.8760935459303, 7.1460867673158],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_35d7293202b769f8a0389080b917afce);
+        
+    
+        var popup_68fd3e6b96e23630f49dae9f5540ca64 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_54fee7629c08dd601a4653701ce4c082 = $(`<div id="html_54fee7629c08dd601a4653701ce4c082" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4019383&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8761, 7.1461&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_68fd3e6b96e23630f49dae9f5540ca64.setContent(html_54fee7629c08dd601a4653701ce4c082);
+            
+        
+
+        circle_marker_63f3416763455aea91df7f4cb68c5518.bindPopup(popup_68fd3e6b96e23630f49dae9f5540ca64)
+        ;
+
+        
+    
+    
+            circle_marker_63f3416763455aea91df7f4cb68c5518.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_37b4efa7eb69a0c1d785729edec1d729 = L.circleMarker(
+                [4.8824906, 7.1392554],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_35d7293202b769f8a0389080b917afce);
+        
+    
+        var popup_cdb8ca82522dfb30c6db8d3855b65aa2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_38e477a014c9c260b9ab14734078c177 = $(`<div id="html_38e477a014c9c260b9ab14734078c177" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4019387&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8825, 7.1393&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_cdb8ca82522dfb30c6db8d3855b65aa2.setContent(html_38e477a014c9c260b9ab14734078c177);
+            
+        
+
+        circle_marker_37b4efa7eb69a0c1d785729edec1d729.bindPopup(popup_cdb8ca82522dfb30c6db8d3855b65aa2)
+        ;
+
+        
+    
+    
+            circle_marker_37b4efa7eb69a0c1d785729edec1d729.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a6e2b757d4404e9f9b2ced6f1e846e75 = L.circleMarker(
+                [4.8781477, 7.1421635],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_35d7293202b769f8a0389080b917afce);
+        
+    
+        var popup_6a1b39d80b6f7d38e022ef1bfa0b65cb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9c231bfed20ad875e762b5d41f0692e2 = $(`<div id="html_9c231bfed20ad875e762b5d41f0692e2" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5128179&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ndoki&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8781, 7.1422&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ndoki&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_6a1b39d80b6f7d38e022ef1bfa0b65cb.setContent(html_9c231bfed20ad875e762b5d41f0692e2);
+            
+        
+
+        circle_marker_a6e2b757d4404e9f9b2ced6f1e846e75.bindPopup(popup_6a1b39d80b6f7d38e022ef1bfa0b65cb)
+        ;
+
+        
+    
+    
+            circle_marker_a6e2b757d4404e9f9b2ced6f1e846e75.bindTooltip(
+                `<div>
+                     Oyigbo | Ndoki (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_456e0af62d6d622a59a4b6205e66153a = L.circleMarker(
+                [4.8757915531707, 7.146280221641],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_35d7293202b769f8a0389080b917afce);
+        
+    
+        var popup_6c0cf8b20fc7ffa87b0f9db0dd5d6e5f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d0c08ace582dfff086db40e515bd8e07 = $(`<div id="html_d0c08ace582dfff086db40e515bd8e07" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5142400&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8758, 7.1463&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_6c0cf8b20fc7ffa87b0f9db0dd5d6e5f.setContent(html_d0c08ace582dfff086db40e515bd8e07);
+            
+        
+
+        circle_marker_456e0af62d6d622a59a4b6205e66153a.bindPopup(popup_6c0cf8b20fc7ffa87b0f9db0dd5d6e5f)
+        ;
+
+        
+    
+    
+            circle_marker_456e0af62d6d622a59a4b6205e66153a.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_97b6f0ea777667b08a51557e9d0028a8 = L.circleMarker(
+                [4.8757788587818, 7.1461437642574],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_35d7293202b769f8a0389080b917afce);
+        
+    
+        var popup_d05d92fc0ed204482cc6efde259f48a1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5ae731ba31dc9f04de5d1ae8c77baa94 = $(`<div id="html_5ae731ba31dc9f04de5d1ae8c77baa94" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5223666&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8758, 7.1461&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_d05d92fc0ed204482cc6efde259f48a1.setContent(html_5ae731ba31dc9f04de5d1ae8c77baa94);
+            
+        
+
+        circle_marker_97b6f0ea777667b08a51557e9d0028a8.bindPopup(popup_d05d92fc0ed204482cc6efde259f48a1)
+        ;
+
+        
+    
+    
+            circle_marker_97b6f0ea777667b08a51557e9d0028a8.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_394f3b36705aaca64eff3da44639a3e1 = L.circleMarker(
+                [4.8762285, 7.1461343],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_35d7293202b769f8a0389080b917afce);
+        
+    
+        var popup_aa876f7c90c77675d3450f76eb03a0bc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_dab66d59c3b959161ac1f4a49d093689 = $(`<div id="html_dab66d59c3b959161ac1f4a49d093689" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5224939&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; PORTHARCOURT-OBIBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8762, 7.1461&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; PORTHARCOURT-OBIBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_aa876f7c90c77675d3450f76eb03a0bc.setContent(html_dab66d59c3b959161ac1f4a49d093689);
+            
+        
+
+        circle_marker_394f3b36705aaca64eff3da44639a3e1.bindPopup(popup_aa876f7c90c77675d3450f76eb03a0bc)
+        ;
+
+        
+    
+    
+            circle_marker_394f3b36705aaca64eff3da44639a3e1.bindTooltip(
+                `<div>
+                     Oyigbo | PORTHARCOURT-OBIBO (DUPLICATE) (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_35d7293202b769f8a0389080b917afce.addTo(map_763461c5b8b79a47d5fe39705bb873cc);
+        
+    
+            var feature_group_8806b21aa03c335a973e4877a2276f70 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_37457c7b36e7ed85f2bc7d47e1feceec = L.circleMarker(
+                [4.8714173, 7.1102624],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8806b21aa03c335a973e4877a2276f70);
+        
+    
+        var popup_41f4605627f3d6c1b45666e0248af152 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0d29dde89c53738c5fe51fe3b8753cd2 = $(`<div id="html_0d29dde89c53738c5fe51fe3b8753cd2" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 10&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4598357&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8714, 7.1103&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_41f4605627f3d6c1b45666e0248af152.setContent(html_0d29dde89c53738c5fe51fe3b8753cd2);
+            
+        
+
+        circle_marker_37457c7b36e7ed85f2bc7d47e1feceec.bindPopup(popup_41f4605627f3d6c1b45666e0248af152)
+        ;
+
+        
+    
+    
+            circle_marker_37457c7b36e7ed85f2bc7d47e1feceec.bindTooltip(
+                `<div>
+                     Oyigbo |  (Cluster 10)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ae29d78b6664ed55bfdc69ea6db52b12 = L.circleMarker(
+                [4.8612741, 7.1090215],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8806b21aa03c335a973e4877a2276f70);
+        
+    
+        var popup_9f436f7002024453b1993e0b5aa61a61 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_83f602ae38eada5bda2f71542fd43332 = $(`<div id="html_83f602ae38eada5bda2f71542fd43332" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 10&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5366261&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO-EGBERU&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8613, 7.1090&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO-EGBERU&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_9f436f7002024453b1993e0b5aa61a61.setContent(html_83f602ae38eada5bda2f71542fd43332);
+            
+        
+
+        circle_marker_ae29d78b6664ed55bfdc69ea6db52b12.bindPopup(popup_9f436f7002024453b1993e0b5aa61a61)
+        ;
+
+        
+    
+    
+            circle_marker_ae29d78b6664ed55bfdc69ea6db52b12.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO-EGBERU (Cluster 10)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_963290b9c5957d38f009ab9047d84651 = L.circleMarker(
+                [4.8612741, 7.1090215],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8806b21aa03c335a973e4877a2276f70);
+        
+    
+        var popup_d670dcd226fdfada82e25e31838e7de6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4fd856e9d58bc5da35a548fef5d5361b = $(`<div id="html_4fd856e9d58bc5da35a548fef5d5361b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 10&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5367671&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8613, 7.1090&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Komkom&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_d670dcd226fdfada82e25e31838e7de6.setContent(html_4fd856e9d58bc5da35a548fef5d5361b);
+            
+        
+
+        circle_marker_963290b9c5957d38f009ab9047d84651.bindPopup(popup_d670dcd226fdfada82e25e31838e7de6)
+        ;
+
+        
+    
+    
+            circle_marker_963290b9c5957d38f009ab9047d84651.bindTooltip(
+                `<div>
+                     Oyigbo | Komkom (Cluster 10)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b36f71c280e26a71c0f3e7fbf578d39e = L.circleMarker(
+                [4.871925, 7.1149452],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8806b21aa03c335a973e4877a2276f70);
+        
+    
+        var popup_e1031aa0d73774e2d80546aaf24fa952 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_db242d54a90da05ef1e0cb785e283ff9 = $(`<div id="html_db242d54a90da05ef1e0cb785e283ff9" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 10&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5277291&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8719, 7.1149&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_e1031aa0d73774e2d80546aaf24fa952.setContent(html_db242d54a90da05ef1e0cb785e283ff9);
+            
+        
+
+        circle_marker_b36f71c280e26a71c0f3e7fbf578d39e.bindPopup(popup_e1031aa0d73774e2d80546aaf24fa952)
+        ;
+
+        
+    
+    
+            circle_marker_b36f71c280e26a71c0f3e7fbf578d39e.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO (DUPLICATE) (Cluster 10)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dbb15a96d1b2e9d3c384f951097c1a6f = L.circleMarker(
+                [4.8743779, 7.1181044999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8806b21aa03c335a973e4877a2276f70);
+        
+    
+        var popup_10c1b2888fff0784c48c1a2e9ad98018 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_557847e29c9cfc7b2e183501c65335aa = $(`<div id="html_557847e29c9cfc7b2e183501c65335aa" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 10&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5078586&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Izuoma&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8744, 7.1181&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Izuoma&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_10c1b2888fff0784c48c1a2e9ad98018.setContent(html_557847e29c9cfc7b2e183501c65335aa);
+            
+        
+
+        circle_marker_dbb15a96d1b2e9d3c384f951097c1a6f.bindPopup(popup_10c1b2888fff0784c48c1a2e9ad98018)
+        ;
+
+        
+    
+    
+            circle_marker_dbb15a96d1b2e9d3c384f951097c1a6f.bindTooltip(
+                `<div>
+                     Oyigbo | Izuoma (Cluster 10)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2a30fb20b5ae399d2210f4a14cf3f39b = L.circleMarker(
+                [4.8743779, 7.118104499999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8806b21aa03c335a973e4877a2276f70);
+        
+    
+        var popup_817c37b53574819e453d9b89add989f5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e18547409747e47bdc283ed89af01e70 = $(`<div id="html_e18547409747e47bdc283ed89af01e70" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 10&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5303109&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8744, 7.1181&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_817c37b53574819e453d9b89add989f5.setContent(html_e18547409747e47bdc283ed89af01e70);
+            
+        
+
+        circle_marker_2a30fb20b5ae399d2210f4a14cf3f39b.bindPopup(popup_817c37b53574819e453d9b89add989f5)
+        ;
+
+        
+    
+    
+            circle_marker_2a30fb20b5ae399d2210f4a14cf3f39b.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO (DUPLICATE) (Cluster 10)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_88378b4b9f44bf8aec777702058f997f = L.circleMarker(
+                [4.8612741, 7.1090215],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8806b21aa03c335a973e4877a2276f70);
+        
+    
+        var popup_105ade70081ea6e595aebe0653862e91 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9c09967ce11953924ffcf920b4a3ba32 = $(`<div id="html_9c09967ce11953924ffcf920b4a3ba32" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 10&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5134796&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Izuoma&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8613, 7.1090&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Izuoma&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_105ade70081ea6e595aebe0653862e91.setContent(html_9c09967ce11953924ffcf920b4a3ba32);
+            
+        
+
+        circle_marker_88378b4b9f44bf8aec777702058f997f.bindPopup(popup_105ade70081ea6e595aebe0653862e91)
+        ;
+
+        
+    
+    
+            circle_marker_88378b4b9f44bf8aec777702058f997f.bindTooltip(
+                `<div>
+                     Oyigbo | Izuoma (Cluster 10)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f709059e986a82409f9cbb7741082cd7 = L.circleMarker(
+                [4.871925, 7.1149452],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8806b21aa03c335a973e4877a2276f70);
+        
+    
+        var popup_e98991d325a14c2e1d291e7674020c2b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cd934d43e379b4b66e0e14d8cef35892 = $(`<div id="html_cd934d43e379b4b66e0e14d8cef35892" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 10&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5316068&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8719, 7.1149&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_e98991d325a14c2e1d291e7674020c2b.setContent(html_cd934d43e379b4b66e0e14d8cef35892);
+            
+        
+
+        circle_marker_f709059e986a82409f9cbb7741082cd7.bindPopup(popup_e98991d325a14c2e1d291e7674020c2b)
+        ;
+
+        
+    
+    
+            circle_marker_f709059e986a82409f9cbb7741082cd7.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO (DUPLICATE) (Cluster 10)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_34ecda28da72b62c3fc80828b148c0c8 = L.circleMarker(
+                [4.871925, 7.1149452],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_8806b21aa03c335a973e4877a2276f70);
+        
+    
+        var popup_552fa7b8bea5bd26e2fa2424f1682c34 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9fc14edd2176ef22f0b1d3cb1ad46618 = $(`<div id="html_9fc14edd2176ef22f0b1d3cb1ad46618" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 10&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5316192&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.8719, 7.1149&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Oyigbo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OYIGBO (DUPLICATE)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_552fa7b8bea5bd26e2fa2424f1682c34.setContent(html_9fc14edd2176ef22f0b1d3cb1ad46618);
+            
+        
+
+        circle_marker_34ecda28da72b62c3fc80828b148c0c8.bindPopup(popup_552fa7b8bea5bd26e2fa2424f1682c34)
+        ;
+
+        
+    
+    
+            circle_marker_34ecda28da72b62c3fc80828b148c0c8.bindTooltip(
+                `<div>
+                     Oyigbo | OYIGBO (DUPLICATE) (Cluster 10)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_8806b21aa03c335a973e4877a2276f70.addTo(map_763461c5b8b79a47d5fe39705bb873cc);
+        
+    
+            var layer_control_6194be5fdee9f07e5ce0168bad0bc6c9_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_94c2001e3611a61ebdd25fce5ce24911,
+                    "OpenStreetMap" : tile_layer_9d73d2d2f493a27cb2ac2bfb381d7470,
+                    "Terrain" : tile_layer_dcc94fcd119b34536ef98bcfc4aff4af,
+                    "Toner" : tile_layer_453852651cc74054d0702bb94484b30c,
+                    "CartoDB Dark" : tile_layer_0d21000bd05f1b99ef967fdb3a8b3892,
+                    "CartoDB Light" : tile_layer_0a331946f37da791bd03ea61825088c4,
+                },
+                overlays :  {
+                    "Cluster 2 - Oyigbo+1more - Komkom+6more (30 points)" : feature_group_156548992779a2a4589f961639c3f40a,
+                    "Cluster 8 - Oyigbo - PORTHARCOURT-OBIBO (DUPLICATE)+3more (13 points)" : feature_group_35d7293202b769f8a0389080b917afce,
+                    "Cluster 10 - Oyigbo - +4more (9 points)" : feature_group_8806b21aa03c335a973e4877a2276f70,
+                },
+            };
+            let layer_control_6194be5fdee9f07e5ce0168bad0bc6c9 = L.control.layers(
+                layer_control_6194be5fdee9f07e5ce0168bad0bc6c9_layers.base_layers,
+                layer_control_6194be5fdee9f07e5ce0168bad0bc6c9_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_763461c5b8b79a47d5fe39705bb873cc);
+
+        
+    
+            var tile_layer_c051a37803b5d1e67e93def1ebce25bf = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_1bf17d44722a9baf21123e1d238ca51e = new L.Control.MiniMap(
+                tile_layer_c051a37803b5d1e67e93def1ebce25bf,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_763461c5b8b79a47d5fe39705bb873cc.addControl(mini_map_1bf17d44722a9baf21123e1d238ca51e);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_763461c5b8b79a47d5fe39705bb873cc);
+        
+    
+            var measure_control_0676cf377e7cd942ca1b381cf6726997 = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_763461c5b8b79a47d5fe39705bb873cc.addControl(measure_control_0676cf377e7cd942ca1b381cf6726997);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_492c6af23608126bbf09c427bd74d870 = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_492c6af23608126bbf09c427bd74d870.options["latFormatter"] =
+                undefined;
+            mouse_position_492c6af23608126bbf09c427bd74d870.options["lngFormatter"] =
+                undefined;
+            map_763461c5b8b79a47d5fe39705bb873cc.addControl(mouse_position_492c6af23608126bbf09c427bd74d870);
+        
+    
+            map_763461c5b8b79a47d5fe39705bb873cc.fitBounds(
+                [[4.8512741, 7.0990215], [4.8968615, 7.1563297]],
+                {}
+            );
+        
+    
+            var marker_483a2c1000e1beae96423f91fd7be74f = L.marker(
+                [4.835787799999999, 7.0223841],
+                {
+  "size": 10,
+}
+            ).addTo(map_763461c5b8b79a47d5fe39705bb873cc);
+        
+    
+            var icon_71e01a3f5126b79a1c9103498e0677a4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_483a2c1000e1beae96423f91fd7be74f.bindTooltip(
+                `<div>
+                     OmniHub Oyigbo Rivers - LAMDA GLOBAL
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_483a2c1000e1beae96423f91fd7be74f.setIcon(icon_71e01a3f5126b79a1c9103498e0677a4);
+            
+    
+            var poly_line_a7a5fd061d6dad7a3acbd326d8569447 = L.polyline(
+                [[4.83584, 7.02239], [4.83582, 7.02256], [4.83577, 7.02328], [4.83569, 7.02438], [4.83563, 7.02519], [4.8356, 7.02528], [4.83555, 7.02542], [4.83548, 7.0255], [4.83546, 7.02558], [4.83548, 7.02566], [4.83552, 7.02571], [4.83558, 7.02574], [4.83564, 7.02575], [4.8357, 7.02574], [4.83575, 7.02571], [4.83579, 7.02567], [4.83586, 7.02564], [4.83611, 7.02564], [4.83742, 7.0259], [4.83798, 7.02599], [4.83821, 7.02597], [4.83828, 7.02594], [4.83837, 7.02616], [4.83848, 7.02639], [4.83908, 7.02778], [4.83928, 7.02825], [4.83946, 7.02867], [4.83953, 7.02884], [4.83965, 7.02912], [4.83987, 7.02963], [4.84027, 7.03056], [4.84037, 7.03081], [4.84064, 7.03143], [4.84087, 7.03193], [4.84097, 7.03217], [4.84114, 7.03259], [4.84141, 7.03321], [4.84148, 7.0334], [4.84161, 7.03367], [4.84209, 7.03476], [4.84238, 7.03543], [4.84336, 7.03772], [4.84567, 7.0431], [4.84592, 7.04366], [4.84611, 7.04412], [4.84644, 7.04488], [4.84665, 7.0454], [4.84678, 7.0457], [4.84696, 7.04619], [4.84707, 7.04644], [4.84718, 7.04668], [4.84739, 7.04716], [4.84764, 7.04773], [4.84789, 7.04829], [4.84819, 7.04897], [4.8484, 7.0495], [4.84844, 7.04961], [4.8485, 7.04976], [4.8486, 7.04998], [4.84903, 7.05092], [4.84907, 7.05099], [4.84941, 7.05178], [4.84955, 7.05217], [4.84964, 7.05254], [4.8497, 7.05298], [4.84971, 7.05345], [4.8497, 7.05356], [4.84969, 7.05382], [4.84967, 7.05444], [4.84964, 7.05498], [4.84964, 7.0555], [4.84972, 7.05611], [4.8498, 7.05642], [4.84996, 7.05688], [4.8508, 7.05874], [4.85102, 7.05923], [4.85113, 7.05948], [4.85134, 7.05994], [4.85145, 7.06018], [4.85164, 7.06055], [4.85176, 7.06078], [4.85203, 7.06118], [4.8526, 7.06201], [4.85334, 7.06298], [4.8536, 7.06331], [4.85383, 7.0636], [4.8542, 7.06408], [4.85472, 7.06477], [4.85505, 7.06522], [4.85527, 7.06556], [4.85558, 7.06609], [4.85594, 7.06688], [4.85622, 7.06764], [4.85635, 7.06812], [4.85672, 7.06961], [4.85688, 7.07021], [4.85965, 7.08082], [4.86007, 7.08242], [4.86306, 7.09388], [4.86407, 7.09772], [4.86425, 7.09832], [4.86457, 7.09922], [4.86501, 7.10035], [4.86533, 7.10106], [4.86566, 7.10174], [4.86598, 7.10232], [4.86753, 7.10492], [4.87646, 7.11959], [4.87667, 7.11997], [4.87735, 7.12131], [4.8778, 7.12238], [4.87821, 7.12354], [4.87813, 7.12357], [4.87876, 7.12548], [4.87947, 7.12773], [4.87955, 7.12802], [4.87968, 7.12841], [4.8808, 7.13194], [4.88094, 7.13237], [4.88104, 7.13267], [4.88077, 7.13275], [4.87871, 7.13341], [4.87847, 7.13347], [4.87792, 7.13365], [4.87736, 7.13383], [4.87631, 7.13413], [4.87612, 7.13419], [4.87544, 7.13441], [4.87514, 7.1345], [4.874, 7.13483], [4.87324, 7.13508], [4.87335, 7.13563], [4.87337, 7.13573], [4.87346, 7.13606], [4.87348, 7.13616], [4.87353, 7.13636], [4.87361, 7.13666], [4.87366, 7.1369], [4.87386, 7.13777], [4.8741, 7.13869], [4.87424, 7.13933], [4.87443, 7.14017], [4.87448, 7.14038], [4.87462, 7.14098], [4.87479, 7.14171], [4.87513, 7.14309], [4.87517, 7.14324], [4.87532, 7.1439], [4.8754, 7.14446], [4.87548, 7.14479], [4.87565, 7.1455], [4.87587, 7.14594], [4.87597, 7.14615], [4.87599, 7.14619], [4.87603, 7.14628], [4.87612, 7.14633], [4.87623, 7.14639], [4.87628, 7.14637], [4.87623, 7.14639], [4.87603, 7.14628], [4.87597, 7.14616], [4.87593, 7.14607], [4.87565, 7.1455], [4.8754, 7.14446], [4.87532, 7.1439], [4.87517, 7.14324], [4.87479, 7.14171], [4.87462, 7.14098], [4.87448, 7.14038], [4.87443, 7.14017], [4.87424, 7.13933], [4.8741, 7.13869], [4.87386, 7.13777], [4.87366, 7.1369], [4.87361, 7.13666], [4.87353, 7.13636], [4.87348, 7.13616], [4.87346, 7.13606], [4.87337, 7.13573], [4.87335, 7.13563], [4.87324, 7.13508], [4.874, 7.13483], [4.87514, 7.1345], [4.87544, 7.13441], [4.87612, 7.13419], [4.87631, 7.13413], [4.87736, 7.13383], [4.87792, 7.13365], [4.87847, 7.13347], [4.87871, 7.13341], [4.88077, 7.13275], [4.88104, 7.13267], [4.88112, 7.13292], [4.88134, 7.13366], [4.88151, 7.13424], [4.88207, 7.13597], [4.88228, 7.13653], [4.88254, 7.13715], [4.88297, 7.13813], [4.88366, 7.13936], [4.88388, 7.1397], [4.88406, 7.13997], [4.88462, 7.14079], [4.88528, 7.14164], [4.88545, 7.14185], [4.88633, 7.1428], [4.88678, 7.14331], [4.88702, 7.14358], [4.88748, 7.14411], [4.88798, 7.14464], [4.88888, 7.14566], [4.89064, 7.14762], [4.89142, 7.14854], [4.8919, 7.14919], [4.89254, 7.15022], [4.89281, 7.1507], [4.89311, 7.15133], [4.89355, 7.15246], [4.89376, 7.15311], [4.8939, 7.15365], [4.89406, 7.15444], [4.89548, 7.16222], [4.89591, 7.16465], [4.89622, 7.1646], [4.89576, 7.16221], [4.89511, 7.15854], [4.89421, 7.15362], [4.89405, 7.15303], [4.89384, 7.15237], [4.89361, 7.15174], [4.89338, 7.15118], [4.89309, 7.15057], [4.89281, 7.15007], [4.89231, 7.14925], [4.89188, 7.14861], [4.89148, 7.14812], [4.89095, 7.14753], [4.88952, 7.14594], [4.88908, 7.14546], [4.88818, 7.14448], [4.88722, 7.14336], [4.8854, 7.14135], [4.88485, 7.14062], [4.88431, 7.13983], [4.88418, 7.13963], [4.88387, 7.13912], [4.88364, 7.13873], [4.88313, 7.13776], [4.88282, 7.13707], [4.88248, 7.13625], [4.88224, 7.13557], [4.88198, 7.1347], [4.88162, 7.13355], [4.8814, 7.13284], [4.88132, 7.13258], [4.88153, 7.13251], [4.88209, 7.13234], [4.88223, 7.13231], [4.88246, 7.13217], [4.88269, 7.13196], [4.884, 7.13068], [4.88455, 7.13016], [4.88465, 7.13007], [4.8847, 7.13002], [4.88532, 7.12937], [4.88555, 7.12916], [4.88594, 7.12881], [4.88675, 7.12801], [4.88695, 7.12782], [4.88746, 7.12732], [4.88773, 7.12706], [4.88812, 7.12666], [4.88759, 7.12608], [4.88712, 7.12547], [4.88759, 7.12608], [4.88812, 7.12666], [4.88773, 7.12706], [4.88746, 7.12732], [4.88695, 7.12782], [4.88675, 7.12801], [4.88594, 7.12881], [4.88555, 7.12916], [4.88532, 7.12937], [4.8847, 7.13002], [4.88465, 7.13007], [4.88455, 7.13016], [4.884, 7.13068], [4.88269, 7.13196], [4.88246, 7.13217], [4.88223, 7.13231], [4.88209, 7.13234], [4.88153, 7.13251], [4.88132, 7.13258], [4.88124, 7.13233], [4.88109, 7.13188], [4.88099, 7.13156], [4.88098, 7.13148], [4.88062, 7.13039], [4.88058, 7.13025], [4.88051, 7.13004], [4.88033, 7.12946], [4.88013, 7.12883], [4.8788, 7.12466], [4.87841, 7.12347], [4.87834, 7.1235], [4.87791, 7.12231], [4.87746, 7.12124], [4.87656, 7.11949], [4.8665, 7.10295], [4.86608, 7.10224], [4.86578, 7.10167], [4.86545, 7.101], [4.86485, 7.09964], [4.86468, 7.09918], [4.86436, 7.09827], [4.86419, 7.09768], [4.86319, 7.09383], [4.8602, 7.08239], [4.85978, 7.08079], [4.85701, 7.07021], [4.85682, 7.06944], [4.85669, 7.06894], [4.85647, 7.06809], [4.85632, 7.06758], [4.8562, 7.06724], [4.85597, 7.06665], [4.85568, 7.06604], [4.85545, 7.0656], [4.85526, 7.0653], [4.85489, 7.0648], [4.85467, 7.06452], [4.8544, 7.06417], [4.85404, 7.0637], [4.8539, 7.06355], [4.85358, 7.06311], [4.85342, 7.0629], [4.85311, 7.06251], [4.85302, 7.0624], [4.85277, 7.06207], [4.85257, 7.06179], [4.85242, 7.06158], [4.85198, 7.06095], [4.85184, 7.06073], [4.85167, 7.0604], [4.85161, 7.06028], [4.8513, 7.0596], [4.85102, 7.05899], [4.85077, 7.05843], [4.8506, 7.05807], [4.85055, 7.05795], [4.85007, 7.05687], [4.84994, 7.05655], [4.84981, 7.05603], [4.84976, 7.05573], [4.84973, 7.05527], [4.84981, 7.05362], [4.84981, 7.05351], [4.84982, 7.05322], [4.84979, 7.05286], [4.84975, 7.05259], [4.84966, 7.05218], [4.84947, 7.05167], [4.84917, 7.05095], [4.84914, 7.05087], [4.84851, 7.04945], [4.84775, 7.04766], [4.8472, 7.04642], [4.84612, 7.04393], [4.84575, 7.04307], [4.84343, 7.0377], [4.84251, 7.0355], [4.84242, 7.03529], [4.84158, 7.03335], [4.84149, 7.03312], [4.84121, 7.0325], [4.84104, 7.03213], [4.84094, 7.0319], [4.84061, 7.03108], [4.84, 7.02971], [4.83841, 7.02596], [4.83839, 7.02591], [4.83836, 7.02581], [4.83824, 7.02585], [4.83795, 7.02587], [4.83775, 7.02586], [4.83717, 7.02576], [4.83645, 7.02561], [4.83587, 7.02552], [4.83578, 7.02547], [4.83572, 7.02542], [4.83571, 7.02531], [4.83571, 7.0251], [4.83575, 7.02466], [4.83579, 7.02415], [4.83582, 7.02369], [4.83585, 7.02328], [4.83589, 7.02275], [4.83592, 7.02226], [4.83594, 7.02204], [4.83586, 7.02203], [4.83584, 7.02239]],
+                {"bubblingMouseEvents": true, "color": "#1f77b4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#1f77b4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_763461c5b8b79a47d5fe39705bb873cc);
+        
+    
+            var poly_line_7424c00f7ecdb0ed12fe741be274b0fc = L.polyline(
+                [[4.83584, 7.02239], [4.83582, 7.02256], [4.83577, 7.02328], [4.83569, 7.02438], [4.83563, 7.02519], [4.8356, 7.02528], [4.83555, 7.02542], [4.83548, 7.0255], [4.83546, 7.02558], [4.83548, 7.02566], [4.83552, 7.02571], [4.83558, 7.02574], [4.83564, 7.02575], [4.8357, 7.02574], [4.83575, 7.02571], [4.83579, 7.02567], [4.83586, 7.02564], [4.83611, 7.02564], [4.83742, 7.0259], [4.83798, 7.02599], [4.83821, 7.02597], [4.83828, 7.02594], [4.83837, 7.02616], [4.83848, 7.02639], [4.83908, 7.02778], [4.83928, 7.02825], [4.83946, 7.02867], [4.83953, 7.02884], [4.83965, 7.02912], [4.83987, 7.02963], [4.84027, 7.03056], [4.84037, 7.03081], [4.84064, 7.03143], [4.84087, 7.03193], [4.84097, 7.03217], [4.84114, 7.03259], [4.84141, 7.03321], [4.84148, 7.0334], [4.84161, 7.03367], [4.84209, 7.03476], [4.84238, 7.03543], [4.84336, 7.03772], [4.84567, 7.0431], [4.84592, 7.04366], [4.84611, 7.04412], [4.84644, 7.04488], [4.84665, 7.0454], [4.84678, 7.0457], [4.84696, 7.04619], [4.84707, 7.04644], [4.84718, 7.04668], [4.84739, 7.04716], [4.84764, 7.04773], [4.84789, 7.04829], [4.84819, 7.04897], [4.8484, 7.0495], [4.84844, 7.04961], [4.8485, 7.04976], [4.8486, 7.04998], [4.84903, 7.05092], [4.84907, 7.05099], [4.84941, 7.05178], [4.84955, 7.05217], [4.84964, 7.05254], [4.8497, 7.05298], [4.84971, 7.05345], [4.8497, 7.05356], [4.84969, 7.05382], [4.84967, 7.05444], [4.84964, 7.05498], [4.84964, 7.0555], [4.84972, 7.05611], [4.8498, 7.05642], [4.84996, 7.05688], [4.8508, 7.05874], [4.85102, 7.05923], [4.85113, 7.05948], [4.85134, 7.05994], [4.85145, 7.06018], [4.85164, 7.06055], [4.85176, 7.06078], [4.85203, 7.06118], [4.8526, 7.06201], [4.85334, 7.06298], [4.8536, 7.06331], [4.85383, 7.0636], [4.8542, 7.06408], [4.85472, 7.06477], [4.85505, 7.06522], [4.85527, 7.06556], [4.85558, 7.06609], [4.85594, 7.06688], [4.85622, 7.06764], [4.85635, 7.06812], [4.85672, 7.06961], [4.85688, 7.07021], [4.85965, 7.08082], [4.86007, 7.08242], [4.86306, 7.09388], [4.86407, 7.09772], [4.86425, 7.09832], [4.86457, 7.09922], [4.86501, 7.10035], [4.86533, 7.10106], [4.86566, 7.10174], [4.86598, 7.10232], [4.86753, 7.10492], [4.87646, 7.11959], [4.87667, 7.11997], [4.87735, 7.12131], [4.8778, 7.12238], [4.87821, 7.12354], [4.87906, 7.1262], [4.87919, 7.12616], [4.87834, 7.1235], [4.87841, 7.12347], [4.87838, 7.12337], [4.87824, 7.12298], [4.87814, 7.12269], [4.87803, 7.12239], [4.8778, 7.12181], [4.87733, 7.12077], [4.8776, 7.12059], [4.87855, 7.11973], [4.87999, 7.11837], [4.88007, 7.11832], [4.88028, 7.11831], [4.88125, 7.11843], [4.88152, 7.11848], [4.88182, 7.11853], [4.88224, 7.11859], [4.88247, 7.11864], [4.8826, 7.11866], [4.883, 7.11872], [4.88316, 7.11874], [4.88355, 7.11876], [4.88385, 7.11877], [4.88415, 7.11876], [4.88479, 7.11874], [4.88504, 7.11875], [4.88534, 7.11878], [4.88605, 7.11887], [4.88683, 7.11898], [4.88717, 7.11905], [4.88743, 7.11912], [4.88774, 7.11916], [4.88806, 7.11914], [4.88861, 7.1191], [4.88893, 7.1191], [4.88959, 7.11907], [4.88973, 7.11905], [4.88998, 7.11898], [4.89013, 7.11918], [4.89068, 7.11963], [4.89092, 7.11988], [4.8912, 7.12019], [4.89251, 7.12148], [4.89296, 7.12198], [4.89243, 7.12245], [4.89212, 7.12277], [4.89178, 7.12311], [4.89159, 7.12329], [4.89089, 7.12397], [4.89053, 7.12434], [4.89036, 7.12452], [4.89011, 7.12473], [4.8899, 7.12494], [4.88948, 7.12535], [4.88899, 7.12583], [4.88876, 7.12606], [4.88812, 7.12666], [4.88759, 7.12608], [4.88712, 7.12547], [4.88759, 7.12608], [4.88812, 7.12666], [4.88773, 7.12706], [4.88746, 7.12732], [4.88695, 7.12782], [4.88675, 7.12801], [4.88594, 7.12881], [4.88555, 7.12916], [4.88532, 7.12937], [4.8847, 7.13002], [4.88465, 7.13007], [4.88455, 7.13016], [4.884, 7.13068], [4.88269, 7.13196], [4.88246, 7.13217], [4.88223, 7.13231], [4.88209, 7.13234], [4.88153, 7.13251], [4.88132, 7.13258], [4.88124, 7.13233], [4.88109, 7.13188], [4.88099, 7.13156], [4.88098, 7.13148], [4.88062, 7.13039], [4.88058, 7.13025], [4.88051, 7.13004], [4.88033, 7.12946], [4.88013, 7.12883], [4.8788, 7.12466], [4.87841, 7.12347], [4.87834, 7.1235], [4.87791, 7.12231], [4.87746, 7.12124], [4.87656, 7.11949], [4.8665, 7.10295], [4.86608, 7.10224], [4.86578, 7.10167], [4.86545, 7.101], [4.86485, 7.09964], [4.86468, 7.09918], [4.86436, 7.09827], [4.86419, 7.09768], [4.86319, 7.09383], [4.8602, 7.08239], [4.85978, 7.08079], [4.85701, 7.07021], [4.85682, 7.06944], [4.85669, 7.06894], [4.85647, 7.06809], [4.85632, 7.06758], [4.8562, 7.06724], [4.85597, 7.06665], [4.85568, 7.06604], [4.85545, 7.0656], [4.85526, 7.0653], [4.85489, 7.0648], [4.85467, 7.06452], [4.8544, 7.06417], [4.85404, 7.0637], [4.8539, 7.06355], [4.85358, 7.06311], [4.85342, 7.0629], [4.85311, 7.06251], [4.85302, 7.0624], [4.85277, 7.06207], [4.85257, 7.06179], [4.85242, 7.06158], [4.85198, 7.06095], [4.85184, 7.06073], [4.85167, 7.0604], [4.85161, 7.06028], [4.8513, 7.0596], [4.85102, 7.05899], [4.85077, 7.05843], [4.8506, 7.05807], [4.85055, 7.05795], [4.85007, 7.05687], [4.84994, 7.05655], [4.84981, 7.05603], [4.84976, 7.05573], [4.84973, 7.05527], [4.84981, 7.05362], [4.84981, 7.05351], [4.84982, 7.05322], [4.84979, 7.05286], [4.84975, 7.05259], [4.84966, 7.05218], [4.84947, 7.05167], [4.84917, 7.05095], [4.84914, 7.05087], [4.84851, 7.04945], [4.84775, 7.04766], [4.8472, 7.04642], [4.84612, 7.04393], [4.84575, 7.04307], [4.84343, 7.0377], [4.84251, 7.0355], [4.84242, 7.03529], [4.84158, 7.03335], [4.84149, 7.03312], [4.84121, 7.0325], [4.84104, 7.03213], [4.84094, 7.0319], [4.84061, 7.03108], [4.84, 7.02971], [4.83841, 7.02596], [4.83839, 7.02591], [4.83836, 7.02581], [4.83824, 7.02585], [4.83795, 7.02587], [4.83775, 7.02586], [4.83717, 7.02576], [4.83645, 7.02561], [4.83587, 7.02552], [4.83578, 7.02547], [4.83572, 7.02542], [4.83571, 7.02531], [4.83571, 7.0251], [4.83575, 7.02466], [4.83579, 7.02415], [4.83582, 7.02369], [4.83585, 7.02328], [4.83589, 7.02275], [4.83592, 7.02226], [4.83594, 7.02204], [4.83586, 7.02203], [4.83584, 7.02239]],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#ff7f0e", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_763461c5b8b79a47d5fe39705bb873cc);
+        
+</script>
+</html>

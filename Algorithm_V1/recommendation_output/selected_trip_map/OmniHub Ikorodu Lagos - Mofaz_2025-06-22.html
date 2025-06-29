@@ -1,0 +1,2485 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_97f2b616f8791145846d4b0c3ec7ecd8 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 3 clusters | 56 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+    <div id="cluster-legend" style="position: fixed; 
+                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                background-color: rgba(255, 255, 255, 0.95); 
+                border: 2px solid #ccc; z-index: 999; 
+                font-size: 11px; padding: 12px; border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                backdrop-filter: blur(5px);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <strong style="color: #333;">Cluster Legend</strong>
+        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+    </div>
+    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+        3 clusters | Sorted by size | Showing top 15
+    </div>
+    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">25 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 6 
+                <br><span style="color: #666; font-size: 9px;">24 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 21 
+                <br><span style="color: #666; font-size: 9px;">7 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_97f2b616f8791145846d4b0c3ec7ecd8" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_97f2b616f8791145846d4b0c3ec7ecd8 = L.map(
+                "map_97f2b616f8791145846d4b0c3ec7ecd8",
+                {
+                    center: [6.640873249999949, 3.4998402],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_97f2b616f8791145846d4b0c3ec7ecd8);
+
+            
+
+        
+    
+            var tile_layer_a5f685d2a29ec1be9ea50f894cf979ee = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_a5f685d2a29ec1be9ea50f894cf979ee.addTo(map_97f2b616f8791145846d4b0c3ec7ecd8);
+        
+    
+            var tile_layer_920c93565687f394e3bccb2ad6f506d5 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_920c93565687f394e3bccb2ad6f506d5.addTo(map_97f2b616f8791145846d4b0c3ec7ecd8);
+        
+    
+            var tile_layer_f0384b841f634bc564672638384b82a4 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_f0384b841f634bc564672638384b82a4.addTo(map_97f2b616f8791145846d4b0c3ec7ecd8);
+        
+    
+            var tile_layer_493bbddc828c21edaec4cdfb419e78d6 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_493bbddc828c21edaec4cdfb419e78d6.addTo(map_97f2b616f8791145846d4b0c3ec7ecd8);
+        
+    
+            var tile_layer_e2b2a29d165b460c5f7853ae59b0b178 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e2b2a29d165b460c5f7853ae59b0b178.addTo(map_97f2b616f8791145846d4b0c3ec7ecd8);
+        
+    
+            var tile_layer_b3ccefd65095a4836acc871c04faf4d5 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_b3ccefd65095a4836acc871c04faf4d5.addTo(map_97f2b616f8791145846d4b0c3ec7ecd8);
+        
+    
+            var feature_group_6486e69e213034077634f9bc0e3a1315 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_2efff7ee81b23aedbf8a329251aaca94 = L.circleMarker(
+                [6.645446, 3.4737616],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_2c21e8cacae914be92fa95bb077de7e5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_52fbf9a58a842fe6bf5173547a20f34f = $(`<div id="html_52fbf9a58a842fe6bf5173547a20f34f" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5159499&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6454, 3.4738&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_2c21e8cacae914be92fa95bb077de7e5.setContent(html_52fbf9a58a842fe6bf5173547a20f34f);
+            
+        
+
+        circle_marker_2efff7ee81b23aedbf8a329251aaca94.bindPopup(popup_2c21e8cacae914be92fa95bb077de7e5)
+        ;
+
+        
+    
+    
+            circle_marker_2efff7ee81b23aedbf8a329251aaca94.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b27aa90dc70a1a7c482617e1ce8267b3 = L.circleMarker(
+                [6.645333, 3.4738794],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_2b92e07df15374d497a8633aaf743d08 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_edf2162a742476325ba5745c681c4bac = $(`<div id="html_edf2162a742476325ba5745c681c4bac" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5179199&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6453, 3.4739&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_2b92e07df15374d497a8633aaf743d08.setContent(html_edf2162a742476325ba5745c681c4bac);
+            
+        
+
+        circle_marker_b27aa90dc70a1a7c482617e1ce8267b3.bindPopup(popup_2b92e07df15374d497a8633aaf743d08)
+        ;
+
+        
+    
+    
+            circle_marker_b27aa90dc70a1a7c482617e1ce8267b3.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b1023d6f3b1be55c66e6c7215ab54fcf = L.circleMarker(
+                [6.661306700000001, 3.4752509],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_2cfc80b9afac279fe512ab70649c0be8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_304619080c901609d9721510419b4e1e = $(`<div id="html_304619080c901609d9721510419b4e1e" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5356180&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6613, 3.4753&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_2cfc80b9afac279fe512ab70649c0be8.setContent(html_304619080c901609d9721510419b4e1e);
+            
+        
+
+        circle_marker_b1023d6f3b1be55c66e6c7215ab54fcf.bindPopup(popup_2cfc80b9afac279fe512ab70649c0be8)
+        ;
+
+        
+    
+    
+            circle_marker_b1023d6f3b1be55c66e6c7215ab54fcf.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agbede (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9dac5d95598345d4ccfa0f0826002b2c = L.circleMarker(
+                [6.648453399999999, 3.4826736],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_89bae13079f7a6c426166067516803b9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e1d064328a53508aca29d31015ebe64a = $(`<div id="html_e1d064328a53508aca29d31015ebe64a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4477692&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6485, 3.4827&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_89bae13079f7a6c426166067516803b9.setContent(html_e1d064328a53508aca29d31015ebe64a);
+            
+        
+
+        circle_marker_9dac5d95598345d4ccfa0f0826002b2c.bindPopup(popup_89bae13079f7a6c426166067516803b9)
+        ;
+
+        
+    
+    
+            circle_marker_9dac5d95598345d4ccfa0f0826002b2c.bindTooltip(
+                `<div>
+                     Ikorodu |  (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d26abd2bd33d94db72c516258f070410 = L.circleMarker(
+                [6.652880100000001, 3.4847702],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_13cfcb6b4be10f80a9ea9514a4d29839 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b8ed61907979d29a4710f53600e838b3 = $(`<div id="html_b8ed61907979d29a4710f53600e838b3" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4591768&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Eyita&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6529, 3.4848&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Eyita&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_13cfcb6b4be10f80a9ea9514a4d29839.setContent(html_b8ed61907979d29a4710f53600e838b3);
+            
+        
+
+        circle_marker_d26abd2bd33d94db72c516258f070410.bindPopup(popup_13cfcb6b4be10f80a9ea9514a4d29839)
+        ;
+
+        
+    
+    
+            circle_marker_d26abd2bd33d94db72c516258f070410.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Eyita (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2039c212f062b47535707539b292f387 = L.circleMarker(
+                [6.6460249, 3.4836665],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_5f6047fb34a79979c2dcf50952c11889 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6e182259fe77892f33a325bbe1e3b811 = $(`<div id="html_6e182259fe77892f33a325bbe1e3b811" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3483034&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6460, 3.4837&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_5f6047fb34a79979c2dcf50952c11889.setContent(html_6e182259fe77892f33a325bbe1e3b811);
+            
+        
+
+        circle_marker_2039c212f062b47535707539b292f387.bindPopup(popup_5f6047fb34a79979c2dcf50952c11889)
+        ;
+
+        
+    
+    
+            circle_marker_2039c212f062b47535707539b292f387.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4291c4c6f371c383e4ded1990150598d = L.circleMarker(
+                [6.6534662, 3.476837],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_b071acb0b169c6a06a4a5351327169c9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ebea96b41bd32e7d8d59ee6f6095ffd7 = $(`<div id="html_ebea96b41bd32e7d8d59ee6f6095ffd7" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3894041&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6535, 3.4768&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_b071acb0b169c6a06a4a5351327169c9.setContent(html_ebea96b41bd32e7d8d59ee6f6095ffd7);
+            
+        
+
+        circle_marker_4291c4c6f371c383e4ded1990150598d.bindPopup(popup_b071acb0b169c6a06a4a5351327169c9)
+        ;
+
+        
+    
+    
+            circle_marker_4291c4c6f371c383e4ded1990150598d.bindTooltip(
+                `<div>
+                     Ikorodu |  (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6db883ebbbc8bebf0392b8b03c1db338 = L.circleMarker(
+                [6.6645531, 3.4839064],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_9ecb34ad26ca61cff0ab694cf9f22edf = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3372d47a5cd5109ecad9f8f7c40452e6 = $(`<div id="html_3372d47a5cd5109ecad9f8f7c40452e6" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3960244&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6646, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_9ecb34ad26ca61cff0ab694cf9f22edf.setContent(html_3372d47a5cd5109ecad9f8f7c40452e6);
+            
+        
+
+        circle_marker_6db883ebbbc8bebf0392b8b03c1db338.bindPopup(popup_9ecb34ad26ca61cff0ab694cf9f22edf)
+        ;
+
+        
+    
+    
+            circle_marker_6db883ebbbc8bebf0392b8b03c1db338.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agbede (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_61f50ff1aab2e63de73cad93f9f2743c = L.circleMarker(
+                [6.6598192, 3.4762566],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_8a6d82a366840c0ecdb5261bff395439 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a5e0792713018ce7a7ab8aaa8159019c = $(`<div id="html_a5e0792713018ce7a7ab8aaa8159019c" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5290595&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6598, 3.4763&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_8a6d82a366840c0ecdb5261bff395439.setContent(html_a5e0792713018ce7a7ab8aaa8159019c);
+            
+        
+
+        circle_marker_61f50ff1aab2e63de73cad93f9f2743c.bindPopup(popup_8a6d82a366840c0ecdb5261bff395439)
+        ;
+
+        
+    
+    
+            circle_marker_61f50ff1aab2e63de73cad93f9f2743c.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agbede (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_46b833de1417616dd89e1919ad8ae49c = L.circleMarker(
+                [6.6484216, 3.489351],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_e4dc6b6693e04f65ebe3d38f560b833e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_80c5edf4189e0ae5d19df375604c8231 = $(`<div id="html_80c5edf4189e0ae5d19df375604c8231" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4257160&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6484, 3.4894&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_e4dc6b6693e04f65ebe3d38f560b833e.setContent(html_80c5edf4189e0ae5d19df375604c8231);
+            
+        
+
+        circle_marker_46b833de1417616dd89e1919ad8ae49c.bindPopup(popup_e4dc6b6693e04f65ebe3d38f560b833e)
+        ;
+
+        
+    
+    
+            circle_marker_46b833de1417616dd89e1919ad8ae49c.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_91b917e5a7acd669124da9686c1d9442 = L.circleMarker(
+                [6.6561746, 3.47461],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_e08e28c3b4ce49a15b82ef38a84534b6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d7a88c4d7553490cc91727d12e7c2a2a = $(`<div id="html_d7a88c4d7553490cc91727d12e7c2a2a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4290641&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6562, 3.4746&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_e08e28c3b4ce49a15b82ef38a84534b6.setContent(html_d7a88c4d7553490cc91727d12e7c2a2a);
+            
+        
+
+        circle_marker_91b917e5a7acd669124da9686c1d9442.bindPopup(popup_e08e28c3b4ce49a15b82ef38a84534b6)
+        ;
+
+        
+    
+    
+            circle_marker_91b917e5a7acd669124da9686c1d9442.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9647ab9c2053d09c9cfde5749ec01ce9 = L.circleMarker(
+                [6.651704800000001, 3.4769349],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_a4730f3785e045241ca7115bc66edde8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_85b75ea0e2d0a00604aad2cac2ef8ea1 = $(`<div id="html_85b75ea0e2d0a00604aad2cac2ef8ea1" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4347683&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6517, 3.4769&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_a4730f3785e045241ca7115bc66edde8.setContent(html_85b75ea0e2d0a00604aad2cac2ef8ea1);
+            
+        
+
+        circle_marker_9647ab9c2053d09c9cfde5749ec01ce9.bindPopup(popup_a4730f3785e045241ca7115bc66edde8)
+        ;
+
+        
+    
+    
+            circle_marker_9647ab9c2053d09c9cfde5749ec01ce9.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Odongunyan (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1ed24fa3c1fb8c74daffa022f690c39f = L.circleMarker(
+                [6.6570038, 3.4766153],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_13d21bdf3d66ef069a44304dd19df973 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_113da97c426462a561bfd54e29bb93f4 = $(`<div id="html_113da97c426462a561bfd54e29bb93f4" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5370631&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6570, 3.4766&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_13d21bdf3d66ef069a44304dd19df973.setContent(html_113da97c426462a561bfd54e29bb93f4);
+            
+        
+
+        circle_marker_1ed24fa3c1fb8c74daffa022f690c39f.bindPopup(popup_13d21bdf3d66ef069a44304dd19df973)
+        ;
+
+        
+    
+    
+            circle_marker_1ed24fa3c1fb8c74daffa022f690c39f.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_220c1f4ca9ac0989bc94cb740cffae68 = L.circleMarker(
+                [6.6570038, 3.4766153],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_3f61645fbaad7d224da199088423c2b6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_56a62cf144d237936926887d36e65418 = $(`<div id="html_56a62cf144d237936926887d36e65418" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5370637&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6570, 3.4766&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_3f61645fbaad7d224da199088423c2b6.setContent(html_56a62cf144d237936926887d36e65418);
+            
+        
+
+        circle_marker_220c1f4ca9ac0989bc94cb740cffae68.bindPopup(popup_3f61645fbaad7d224da199088423c2b6)
+        ;
+
+        
+    
+    
+            circle_marker_220c1f4ca9ac0989bc94cb740cffae68.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_600d73b8ed8ed40505ae55403f0921c5 = L.circleMarker(
+                [6.6598192, 3.4762566],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_038e87c682f0f78df883de063b96e578 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_53e56c74eeee40cc5d39f078436adaa2 = $(`<div id="html_53e56c74eeee40cc5d39f078436adaa2" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4024408&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6598, 3.4763&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_038e87c682f0f78df883de063b96e578.setContent(html_53e56c74eeee40cc5d39f078436adaa2);
+            
+        
+
+        circle_marker_600d73b8ed8ed40505ae55403f0921c5.bindPopup(popup_038e87c682f0f78df883de063b96e578)
+        ;
+
+        
+    
+    
+            circle_marker_600d73b8ed8ed40505ae55403f0921c5.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agbede (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f3e8c4292cea57abce005e312cf41e98 = L.circleMarker(
+                [6.6702293999999, 3.4894208],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_5650f31801b1f0108b9af55cf6129170 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4f7e587972a968110422115245b22199 = $(`<div id="html_4f7e587972a968110422115245b22199" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4036790&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6702, 3.4894&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_5650f31801b1f0108b9af55cf6129170.setContent(html_4f7e587972a968110422115245b22199);
+            
+        
+
+        circle_marker_f3e8c4292cea57abce005e312cf41e98.bindPopup(popup_5650f31801b1f0108b9af55cf6129170)
+        ;
+
+        
+    
+    
+            circle_marker_f3e8c4292cea57abce005e312cf41e98.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agbede (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_62a8b921b03f58e14e9d98f9fe4a83fd = L.circleMarker(
+                [6.6682106999999, 3.4928028],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_cfb5c1cd9a45e7bc6883369893ed0cab = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e2e69db158947fe09054c7af3dbd7b83 = $(`<div id="html_e2e69db158947fe09054c7af3dbd7b83" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5279207&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6682, 3.4928&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_cfb5c1cd9a45e7bc6883369893ed0cab.setContent(html_e2e69db158947fe09054c7af3dbd7b83);
+            
+        
+
+        circle_marker_62a8b921b03f58e14e9d98f9fe4a83fd.bindPopup(popup_cfb5c1cd9a45e7bc6883369893ed0cab)
+        ;
+
+        
+    
+    
+            circle_marker_62a8b921b03f58e14e9d98f9fe4a83fd.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_95fa631295c12929464064b4d77f739c = L.circleMarker(
+                [6.649720899999999, 3.4770966],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_baf65c90e7324b960545d1cf8566567d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0ce3ef6c14333182cc5cb7463da00072 = $(`<div id="html_0ce3ef6c14333182cc5cb7463da00072" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5001742&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Isawo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6497, 3.4771&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Isawo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_baf65c90e7324b960545d1cf8566567d.setContent(html_0ce3ef6c14333182cc5cb7463da00072);
+            
+        
+
+        circle_marker_95fa631295c12929464064b4d77f739c.bindPopup(popup_baf65c90e7324b960545d1cf8566567d)
+        ;
+
+        
+    
+    
+            circle_marker_95fa631295c12929464064b4d77f739c.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Isawo (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9ecdf3383b91ba31c5d4e9e6011b61fc = L.circleMarker(
+                [6.6645531, 3.4839064],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_1e07e69f2fa6239a11ba5cea36d7c7d9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b79366c2433f85dcaf0a190cb0d31a54 = $(`<div id="html_b79366c2433f85dcaf0a190cb0d31a54" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5299769&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6646, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_1e07e69f2fa6239a11ba5cea36d7c7d9.setContent(html_b79366c2433f85dcaf0a190cb0d31a54);
+            
+        
+
+        circle_marker_9ecdf3383b91ba31c5d4e9e6011b61fc.bindPopup(popup_1e07e69f2fa6239a11ba5cea36d7c7d9)
+        ;
+
+        
+    
+    
+            circle_marker_9ecdf3383b91ba31c5d4e9e6011b61fc.bindTooltip(
+                `<div>
+                     Ikorodu |  (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_063ad26ff39973f0e28713774bd0e974 = L.circleMarker(
+                [6.658427499999999, 3.4766634],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_ac079de070aa3a4cd20612fb75a96c92 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9a0264956a748b975e42a21d4f883bfd = $(`<div id="html_9a0264956a748b975e42a21d4f883bfd" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5304268&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6584, 3.4767&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_ac079de070aa3a4cd20612fb75a96c92.setContent(html_9a0264956a748b975e42a21d4f883bfd);
+            
+        
+
+        circle_marker_063ad26ff39973f0e28713774bd0e974.bindPopup(popup_ac079de070aa3a4cd20612fb75a96c92)
+        ;
+
+        
+    
+    
+            circle_marker_063ad26ff39973f0e28713774bd0e974.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agbede (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f2ee6fbf5219edd0f5105bef5d1aaab7 = L.circleMarker(
+                [6.658728132259208, 3.476840763823712],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_568540e618771644a29646b2710be05c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ebf3cde57dd19ecfbfaa2e63e7bf5ac2 = $(`<div id="html_ebf3cde57dd19ecfbfaa2e63e7bf5ac2" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5135132&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6587, 3.4768&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_568540e618771644a29646b2710be05c.setContent(html_ebf3cde57dd19ecfbfaa2e63e7bf5ac2);
+            
+        
+
+        circle_marker_f2ee6fbf5219edd0f5105bef5d1aaab7.bindPopup(popup_568540e618771644a29646b2710be05c)
+        ;
+
+        
+    
+    
+            circle_marker_f2ee6fbf5219edd0f5105bef5d1aaab7.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agbede (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5e8406623da08c884ed3681afe8a334f = L.circleMarker(
+                [6.6564949, 3.4765041],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_cfc090c8603e6afe2c5a5bff1277d3f1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_80dc685012aec8b5d9afeca5b59445e8 = $(`<div id="html_80dc685012aec8b5d9afeca5b59445e8" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5154873&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Ogolonto&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6565, 3.4765&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Ogolonto&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_cfc090c8603e6afe2c5a5bff1277d3f1.setContent(html_80dc685012aec8b5d9afeca5b59445e8);
+            
+        
+
+        circle_marker_5e8406623da08c884ed3681afe8a334f.bindPopup(popup_cfc090c8603e6afe2c5a5bff1277d3f1)
+        ;
+
+        
+    
+    
+            circle_marker_5e8406623da08c884ed3681afe8a334f.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Ogolonto (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dea5e237887f0d4605c8d4b2db3f8a0f = L.circleMarker(
+                [6.6613047, 3.4751831],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_22ac29e5eb1f973840b4e397b241387f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7ff9485fa06e86cdf4bb9efe286813eb = $(`<div id="html_7ff9485fa06e86cdf4bb9efe286813eb" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5235424&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6613, 3.4752&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_22ac29e5eb1f973840b4e397b241387f.setContent(html_7ff9485fa06e86cdf4bb9efe286813eb);
+            
+        
+
+        circle_marker_dea5e237887f0d4605c8d4b2db3f8a0f.bindPopup(popup_22ac29e5eb1f973840b4e397b241387f)
+        ;
+
+        
+    
+    
+            circle_marker_dea5e237887f0d4605c8d4b2db3f8a0f.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agbede (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7c371e2f8f015dbccb9167c64e375a86 = L.circleMarker(
+                [6.653956099999999, 3.4805498],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_3481e0fc38a417d49fc9e6649fc7863f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_605c5ea524bcf2569eeacb5017a6ff16 = $(`<div id="html_605c5ea524bcf2569eeacb5017a6ff16" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5254235&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Isawo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6540, 3.4805&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Isawo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_3481e0fc38a417d49fc9e6649fc7863f.setContent(html_605c5ea524bcf2569eeacb5017a6ff16);
+            
+        
+
+        circle_marker_7c371e2f8f015dbccb9167c64e375a86.bindPopup(popup_3481e0fc38a417d49fc9e6649fc7863f)
+        ;
+
+        
+    
+    
+            circle_marker_7c371e2f8f015dbccb9167c64e375a86.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Isawo (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_67d4652864b00d9aa8d5c8e038fd1ec1 = L.circleMarker(
+                [6.6557379, 3.4765972],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6486e69e213034077634f9bc0e3a1315);
+        
+    
+        var popup_f0ed36045c5745813749107adccb2a19 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3a0294eacb52825789669628241eba9b = $(`<div id="html_3a0294eacb52825789669628241eba9b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5341128&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Isawo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6557, 3.4766&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Isawo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_f0ed36045c5745813749107adccb2a19.setContent(html_3a0294eacb52825789669628241eba9b);
+            
+        
+
+        circle_marker_67d4652864b00d9aa8d5c8e038fd1ec1.bindPopup(popup_f0ed36045c5745813749107adccb2a19)
+        ;
+
+        
+    
+    
+            circle_marker_67d4652864b00d9aa8d5c8e038fd1ec1.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Isawo (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_6486e69e213034077634f9bc0e3a1315.addTo(map_97f2b616f8791145846d4b0c3ec7ecd8);
+        
+    
+            var feature_group_fd86d422bbfbc38703cac8f11c6fb06d = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_9d10018d34bfa6a259a33293a4ec7564 = L.circleMarker(
+                [6.625461199999999, 3.4839356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_af4a42604c568ddd7b36352ade9a7128 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c83d13a39d78b61792cab68ebe5d781e = $(`<div id="html_c83d13a39d78b61792cab68ebe5d781e" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1820379&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6255, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_af4a42604c568ddd7b36352ade9a7128.setContent(html_c83d13a39d78b61792cab68ebe5d781e);
+            
+        
+
+        circle_marker_9d10018d34bfa6a259a33293a4ec7564.bindPopup(popup_af4a42604c568ddd7b36352ade9a7128)
+        ;
+
+        
+    
+    
+            circle_marker_9d10018d34bfa6a259a33293a4ec7564.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_efccad0b4fd0db036f8a1c122a956f49 = L.circleMarker(
+                [6.6254611999999, 3.4839356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_7457c8ffedb08c348491ea56b896914a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c4b05d5457d640732835fe304a3e98a1 = $(`<div id="html_c4b05d5457d640732835fe304a3e98a1" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5241150&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6255, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_7457c8ffedb08c348491ea56b896914a.setContent(html_c4b05d5457d640732835fe304a3e98a1);
+            
+        
+
+        circle_marker_efccad0b4fd0db036f8a1c122a956f49.bindPopup(popup_7457c8ffedb08c348491ea56b896914a)
+        ;
+
+        
+    
+    
+            circle_marker_efccad0b4fd0db036f8a1c122a956f49.bindTooltip(
+                `<div>
+                     Ikorodu |  (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_aa2f479b396d208237970e3d5ea400a8 = L.circleMarker(
+                [6.625461199999999, 3.4839356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_5fc41d812edc30479b18504d506e00e9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_18020d51dcc66c2f3d45c2695d89d2ad = $(`<div id="html_18020d51dcc66c2f3d45c2695d89d2ad" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5248248&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6255, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_5fc41d812edc30479b18504d506e00e9.setContent(html_18020d51dcc66c2f3d45c2695d89d2ad);
+            
+        
+
+        circle_marker_aa2f479b396d208237970e3d5ea400a8.bindPopup(popup_5fc41d812edc30479b18504d506e00e9)
+        ;
+
+        
+    
+    
+            circle_marker_aa2f479b396d208237970e3d5ea400a8.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ff764811a920ef29d881c11027e95012 = L.circleMarker(
+                [6.625461199999999, 3.4839356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_9b5b3410eec7dcb2c717e37a8c60b1d3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e1ccd39db4a47afb05dcbea85e12e3ba = $(`<div id="html_e1ccd39db4a47afb05dcbea85e12e3ba" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1838117&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6255, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_9b5b3410eec7dcb2c717e37a8c60b1d3.setContent(html_e1ccd39db4a47afb05dcbea85e12e3ba);
+            
+        
+
+        circle_marker_ff764811a920ef29d881c11027e95012.bindPopup(popup_9b5b3410eec7dcb2c717e37a8c60b1d3)
+        ;
+
+        
+    
+    
+            circle_marker_ff764811a920ef29d881c11027e95012.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Odongunyan (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_95defae8c238924bace9df06c0a19000 = L.circleMarker(
+                [6.625461199999999, 3.4839356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_8b7f70b8ded1384840e685088cb7fe59 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6ba34109824c5f7e69487564f698e294 = $(`<div id="html_6ba34109824c5f7e69487564f698e294" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5362589&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Sabo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6255, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Sabo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_8b7f70b8ded1384840e685088cb7fe59.setContent(html_6ba34109824c5f7e69487564f698e294);
+            
+        
+
+        circle_marker_95defae8c238924bace9df06c0a19000.bindPopup(popup_8b7f70b8ded1384840e685088cb7fe59)
+        ;
+
+        
+    
+    
+            circle_marker_95defae8c238924bace9df06c0a19000.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Sabo (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4077aa3c362434bc2eaa41c36decce43 = L.circleMarker(
+                [6.6279452, 3.4876784],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_fb4e69f27d990bcf6cecfecc3e349214 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_01200da04016b9dc44354347814b5e3b = $(`<div id="html_01200da04016b9dc44354347814b5e3b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5363154&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6279, 3.4877&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_fb4e69f27d990bcf6cecfecc3e349214.setContent(html_01200da04016b9dc44354347814b5e3b);
+            
+        
+
+        circle_marker_4077aa3c362434bc2eaa41c36decce43.bindPopup(popup_fb4e69f27d990bcf6cecfecc3e349214)
+        ;
+
+        
+    
+    
+            circle_marker_4077aa3c362434bc2eaa41c36decce43.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agbede (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_70072150eb8c5de88d122ed85d1c4477 = L.circleMarker(
+                [6.622164499999999, 3.4818377],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_beade0efa90c32cf63b5faf8c1e85231 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_32c3e9700cbe891bb54f4741683a3986 = $(`<div id="html_32c3e9700cbe891bb54f4741683a3986" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3049704&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6222, 3.4818&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_beade0efa90c32cf63b5faf8c1e85231.setContent(html_32c3e9700cbe891bb54f4741683a3986);
+            
+        
+
+        circle_marker_70072150eb8c5de88d122ed85d1c4477.bindPopup(popup_beade0efa90c32cf63b5faf8c1e85231)
+        ;
+
+        
+    
+    
+            circle_marker_70072150eb8c5de88d122ed85d1c4477.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4781376fa63b43c77b401a82cbfde993 = L.circleMarker(
+                [6.625461199999999, 3.4839356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_8034571ddd80b6c47739445a57e708bf = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ad6bd80209a0d020a6f916ddbd93ddf2 = $(`<div id="html_ad6bd80209a0d020a6f916ddbd93ddf2" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3410504&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6255, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_8034571ddd80b6c47739445a57e708bf.setContent(html_ad6bd80209a0d020a6f916ddbd93ddf2);
+            
+        
+
+        circle_marker_4781376fa63b43c77b401a82cbfde993.bindPopup(popup_8034571ddd80b6c47739445a57e708bf)
+        ;
+
+        
+    
+    
+            circle_marker_4781376fa63b43c77b401a82cbfde993.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7158e22dad87829e3045d53084ff1f83 = L.circleMarker(
+                [6.625461199999999, 3.4839356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_295b61958b1204285305e0c10ff63918 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_47f1a37b80e9da133937364574322da8 = $(`<div id="html_47f1a37b80e9da133937364574322da8" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3885092&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Sabo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6255, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Sabo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_295b61958b1204285305e0c10ff63918.setContent(html_47f1a37b80e9da133937364574322da8);
+            
+        
+
+        circle_marker_7158e22dad87829e3045d53084ff1f83.bindPopup(popup_295b61958b1204285305e0c10ff63918)
+        ;
+
+        
+    
+    
+            circle_marker_7158e22dad87829e3045d53084ff1f83.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Sabo (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a2a402aa037f4631543a892b00a751d9 = L.circleMarker(
+                [6.6254611999999, 3.4839356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_95bba0dea249ae87ab44fad4d82710f9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4749211e3ff04d65970303fe33bc9f13 = $(`<div id="html_4749211e3ff04d65970303fe33bc9f13" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3906468&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Isawo&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6255, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Isawo&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_95bba0dea249ae87ab44fad4d82710f9.setContent(html_4749211e3ff04d65970303fe33bc9f13);
+            
+        
+
+        circle_marker_a2a402aa037f4631543a892b00a751d9.bindPopup(popup_95bba0dea249ae87ab44fad4d82710f9)
+        ;
+
+        
+    
+    
+            circle_marker_a2a402aa037f4631543a892b00a751d9.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Isawo (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d04c481608edb4793a007dc7ef092df7 = L.circleMarker(
+                [6.6265926, 3.4839185],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_c3a708d429ebd8070a31ef0eaaeb76b6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b5762a2aefe9a1ec4b7aa8ecb5ce39ba = $(`<div id="html_b5762a2aefe9a1ec4b7aa8ecb5ce39ba" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4716471&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Ogolonto&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6266, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Ogolonto&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_c3a708d429ebd8070a31ef0eaaeb76b6.setContent(html_b5762a2aefe9a1ec4b7aa8ecb5ce39ba);
+            
+        
+
+        circle_marker_d04c481608edb4793a007dc7ef092df7.bindPopup(popup_c3a708d429ebd8070a31ef0eaaeb76b6)
+        ;
+
+        
+    
+    
+            circle_marker_d04c481608edb4793a007dc7ef092df7.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Ogolonto (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0d93d755bd2f2698d037ef40fe5192db = L.circleMarker(
+                [6.6207273, 3.4802427],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_47e1c8c69bec9bf151c190a5379003fe = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ebfed12c4966e7eb4eaadd70db31081a = $(`<div id="html_ebfed12c4966e7eb4eaadd70db31081a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5325138&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Eyita&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6207, 3.4802&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Eyita&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_47e1c8c69bec9bf151c190a5379003fe.setContent(html_ebfed12c4966e7eb4eaadd70db31081a);
+            
+        
+
+        circle_marker_0d93d755bd2f2698d037ef40fe5192db.bindPopup(popup_47e1c8c69bec9bf151c190a5379003fe)
+        ;
+
+        
+    
+    
+            circle_marker_0d93d755bd2f2698d037ef40fe5192db.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Eyita (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_418dda9e5159c476e9678e96d9130b1f = L.circleMarker(
+                [6.6272094, 3.4913876],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_b61d28612a641e5119d8415ba6523e2a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e72175b81d488ded82cfa1b1fb9b7f24 = $(`<div id="html_e72175b81d488ded82cfa1b1fb9b7f24" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5335684&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6272, 3.4914&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_b61d28612a641e5119d8415ba6523e2a.setContent(html_e72175b81d488ded82cfa1b1fb9b7f24);
+            
+        
+
+        circle_marker_418dda9e5159c476e9678e96d9130b1f.bindPopup(popup_b61d28612a641e5119d8415ba6523e2a)
+        ;
+
+        
+    
+    
+            circle_marker_418dda9e5159c476e9678e96d9130b1f.bindTooltip(
+                `<div>
+                     Ikorodu |  (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2cd74489ccf409e34847dd867553b205 = L.circleMarker(
+                [6.625461199999999, 3.4839356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_819db0c5839ceb67788e0b3d70845edb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_66ec1e962cafca5ec729a5751a5632c3 = $(`<div id="html_66ec1e962cafca5ec729a5751a5632c3" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5364965&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6255, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_819db0c5839ceb67788e0b3d70845edb.setContent(html_66ec1e962cafca5ec729a5751a5632c3);
+            
+        
+
+        circle_marker_2cd74489ccf409e34847dd867553b205.bindPopup(popup_819db0c5839ceb67788e0b3d70845edb)
+        ;
+
+        
+    
+    
+            circle_marker_2cd74489ccf409e34847dd867553b205.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6ce20dc68de331d98a9f216a44b68ae2 = L.circleMarker(
+                [6.6266628, 3.4839211],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_7e0a0736a1ddf1eee00a53adecea0bbc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_886b4bb9d98a9d7e7fb9952182e9df8a = $(`<div id="html_886b4bb9d98a9d7e7fb9952182e9df8a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5365956&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6267, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_7e0a0736a1ddf1eee00a53adecea0bbc.setContent(html_886b4bb9d98a9d7e7fb9952182e9df8a);
+            
+        
+
+        circle_marker_6ce20dc68de331d98a9f216a44b68ae2.bindPopup(popup_7e0a0736a1ddf1eee00a53adecea0bbc)
+        ;
+
+        
+    
+    
+            circle_marker_6ce20dc68de331d98a9f216a44b68ae2.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bfccac9d95e1f39506e20bbd3e0a26c4 = L.circleMarker(
+                [6.625461199999999, 3.4839356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_c829bfa4f86ea17a03f7ba86f8f0cbbe = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2605ead62322248729258e9d21bfb22c = $(`<div id="html_2605ead62322248729258e9d21bfb22c" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5229685&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6255, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_c829bfa4f86ea17a03f7ba86f8f0cbbe.setContent(html_2605ead62322248729258e9d21bfb22c);
+            
+        
+
+        circle_marker_bfccac9d95e1f39506e20bbd3e0a26c4.bindPopup(popup_c829bfa4f86ea17a03f7ba86f8f0cbbe)
+        ;
+
+        
+    
+    
+            circle_marker_bfccac9d95e1f39506e20bbd3e0a26c4.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d85de66c036b3bc6f4f23343e8d2fad9 = L.circleMarker(
+                [6.626354594619474, 3.4892223943733125],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_8ae2813c706963e98652e58914aa4df2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_deaf92728ce1e03dce9ae46a36f35e2a = $(`<div id="html_deaf92728ce1e03dce9ae46a36f35e2a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5401192&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odokekere&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6264, 3.4892&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odokekere&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_8ae2813c706963e98652e58914aa4df2.setContent(html_deaf92728ce1e03dce9ae46a36f35e2a);
+            
+        
+
+        circle_marker_d85de66c036b3bc6f4f23343e8d2fad9.bindPopup(popup_8ae2813c706963e98652e58914aa4df2)
+        ;
+
+        
+    
+    
+            circle_marker_d85de66c036b3bc6f4f23343e8d2fad9.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Odokekere (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2e37cb449893fb506654ab46cd00dd11 = L.circleMarker(
+                [6.6254611999999, 3.4839356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_3fa906fc4a4ae70da83adcae05784c6b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_072c1d5b97e0a0adad73bb9d5cfe560c = $(`<div id="html_072c1d5b97e0a0adad73bb9d5cfe560c" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5256794&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6255, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agbede&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_3fa906fc4a4ae70da83adcae05784c6b.setContent(html_072c1d5b97e0a0adad73bb9d5cfe560c);
+            
+        
+
+        circle_marker_2e37cb449893fb506654ab46cd00dd11.bindPopup(popup_3fa906fc4a4ae70da83adcae05784c6b)
+        ;
+
+        
+    
+    
+            circle_marker_2e37cb449893fb506654ab46cd00dd11.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agbede (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9bf11f4e322ce4451f1db61f4550f14e = L.circleMarker(
+                [6.6275856, 3.4836],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_e3b37e591d05d88bd8375bcb6fb498e6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d0db518c0ab0d0da326c65a8c5f47a73 = $(`<div id="html_d0db518c0ab0d0da326c65a8c5f47a73" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5306245&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Ogolonto&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6276, 3.4836&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Ogolonto&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_e3b37e591d05d88bd8375bcb6fb498e6.setContent(html_d0db518c0ab0d0da326c65a8c5f47a73);
+            
+        
+
+        circle_marker_9bf11f4e322ce4451f1db61f4550f14e.bindPopup(popup_e3b37e591d05d88bd8375bcb6fb498e6)
+        ;
+
+        
+    
+    
+            circle_marker_9bf11f4e322ce4451f1db61f4550f14e.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Ogolonto (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_16e0e4bbf254827a1521981a9165f3bf = L.circleMarker(
+                [6.6254611999999, 3.4839356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_8c5fb218279b4d8431ccecdf6b9c4427 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_44fef00cda71906b86bc334328b3cac9 = $(`<div id="html_44fef00cda71906b86bc334328b3cac9" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5306271&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6255, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_8c5fb218279b4d8431ccecdf6b9c4427.setContent(html_44fef00cda71906b86bc334328b3cac9);
+            
+        
+
+        circle_marker_16e0e4bbf254827a1521981a9165f3bf.bindPopup(popup_8c5fb218279b4d8431ccecdf6b9c4427)
+        ;
+
+        
+    
+    
+            circle_marker_16e0e4bbf254827a1521981a9165f3bf.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_82744ddcf4f57457b4ddde94b75d7c06 = L.circleMarker(
+                [6.6254611999999, 3.4839356],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_0b471ea488db06888a16f0262fda4581 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2fb93cc1b466cfc7f30194d5b1b858dc = $(`<div id="html_2fb93cc1b466cfc7f30194d5b1b858dc" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5309189&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6255, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_0b471ea488db06888a16f0262fda4581.setContent(html_2fb93cc1b466cfc7f30194d5b1b858dc);
+            
+        
+
+        circle_marker_82744ddcf4f57457b4ddde94b75d7c06.bindPopup(popup_0b471ea488db06888a16f0262fda4581)
+        ;
+
+        
+    
+    
+            circle_marker_82744ddcf4f57457b4ddde94b75d7c06.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6d76e64102d77ba81921b046095806db = L.circleMarker(
+                [6.6266312, 3.4839179],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_dd3b9792f94213d1ba4993609849984a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a66ff44eb66f873f8c4e782112b3e4c3 = $(`<div id="html_a66ff44eb66f873f8c4e782112b3e4c3" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5309314&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6266, 3.4839&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_dd3b9792f94213d1ba4993609849984a.setContent(html_a66ff44eb66f873f8c4e782112b3e4c3);
+            
+        
+
+        circle_marker_6d76e64102d77ba81921b046095806db.bindPopup(popup_dd3b9792f94213d1ba4993609849984a)
+        ;
+
+        
+    
+    
+            circle_marker_6d76e64102d77ba81921b046095806db.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_98719cb20bf16ae6db1bdfbb0bc40dba = L.circleMarker(
+                [6.6150524, 3.4844688],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_06ab660e1ceeddff14bb515a6c6c95fa = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2b4afe1b2abb741150d16286e64c4735 = $(`<div id="html_2b4afe1b2abb741150d16286e64c4735" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5348996&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6151, 3.4845&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_06ab660e1ceeddff14bb515a6c6c95fa.setContent(html_2b4afe1b2abb741150d16286e64c4735);
+            
+        
+
+        circle_marker_98719cb20bf16ae6db1bdfbb0bc40dba.bindPopup(popup_06ab660e1ceeddff14bb515a6c6c95fa)
+        ;
+
+        
+    
+    
+            circle_marker_98719cb20bf16ae6db1bdfbb0bc40dba.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6326745101fd1e35af24b2494e595a12 = L.circleMarker(
+                [6.611517099999999, 3.4874412],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_fd86d422bbfbc38703cac8f11c6fb06d);
+        
+    
+        var popup_90f54491a9d774fb24d18fbb1046af3d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9750482069ec50f494aca67566fd9689 = $(`<div id="html_9750482069ec50f494aca67566fd9689" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5353916&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6115, 3.4874&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Agric&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_90f54491a9d774fb24d18fbb1046af3d.setContent(html_9750482069ec50f494aca67566fd9689);
+            
+        
+
+        circle_marker_6326745101fd1e35af24b2494e595a12.bindPopup(popup_90f54491a9d774fb24d18fbb1046af3d)
+        ;
+
+        
+    
+    
+            circle_marker_6326745101fd1e35af24b2494e595a12.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agric (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_fd86d422bbfbc38703cac8f11c6fb06d.addTo(map_97f2b616f8791145846d4b0c3ec7ecd8);
+        
+    
+            var feature_group_c508b8e3a67b2fa13558e920101da849 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_f017999175c4b0bb4fa2ef198fc83294 = L.circleMarker(
+                [6.661560499999999, 3.5223711],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c508b8e3a67b2fa13558e920101da849);
+        
+    
+        var popup_e2821bc165eb83d3568a0f10f60e690c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3e36bed3a6b35e151e89bb236c468345 = $(`<div id="html_3e36bed3a6b35e151e89bb236c468345" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 21&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5240700&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6616, 3.5224&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_e2821bc165eb83d3568a0f10f60e690c.setContent(html_3e36bed3a6b35e151e89bb236c468345);
+            
+        
+
+        circle_marker_f017999175c4b0bb4fa2ef198fc83294.bindPopup(popup_e2821bc165eb83d3568a0f10f60e690c)
+        ;
+
+        
+    
+    
+            circle_marker_f017999175c4b0bb4fa2ef198fc83294.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Odongunyan (Cluster 21)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a9ae800761b0acc9c5b64ca27ba26105 = L.circleMarker(
+                [6.666392, 3.5259188],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c508b8e3a67b2fa13558e920101da849);
+        
+    
+        var popup_6024f28acc675a5fdddbe3a7945bd163 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_339e46b049554a27a2939bcb7946d466 = $(`<div id="html_339e46b049554a27a2939bcb7946d466" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 21&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1992163&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6664, 3.5259&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_6024f28acc675a5fdddbe3a7945bd163.setContent(html_339e46b049554a27a2939bcb7946d466);
+            
+        
+
+        circle_marker_a9ae800761b0acc9c5b64ca27ba26105.bindPopup(popup_6024f28acc675a5fdddbe3a7945bd163)
+        ;
+
+        
+    
+    
+            circle_marker_a9ae800761b0acc9c5b64ca27ba26105.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Odongunyan (Cluster 21)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2d2478618745369f18711a12d5731479 = L.circleMarker(
+                [6.666392, 3.5259188],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c508b8e3a67b2fa13558e920101da849);
+        
+    
+        var popup_6e7b0947dd1aaf7e21f2aa98c184a888 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ef1080237296113674a65c7baf89d8ef = $(`<div id="html_ef1080237296113674a65c7baf89d8ef" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 21&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 2151347&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6664, 3.5259&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_6e7b0947dd1aaf7e21f2aa98c184a888.setContent(html_ef1080237296113674a65c7baf89d8ef);
+            
+        
+
+        circle_marker_2d2478618745369f18711a12d5731479.bindPopup(popup_6e7b0947dd1aaf7e21f2aa98c184a888)
+        ;
+
+        
+    
+    
+            circle_marker_2d2478618745369f18711a12d5731479.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Odongunyan (Cluster 21)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c8eb16dbaf0295f4850da9cad4269889 = L.circleMarker(
+                [6.6644267, 3.5214695],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c508b8e3a67b2fa13558e920101da849);
+        
+    
+        var popup_6571bee85bb16e83d8972b81ca09b17d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b267d54b1922967954ad62172c2ae277 = $(`<div id="html_b267d54b1922967954ad62172c2ae277" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 21&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4518434&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6644, 3.5215&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_6571bee85bb16e83d8972b81ca09b17d.setContent(html_b267d54b1922967954ad62172c2ae277);
+            
+        
+
+        circle_marker_c8eb16dbaf0295f4850da9cad4269889.bindPopup(popup_6571bee85bb16e83d8972b81ca09b17d)
+        ;
+
+        
+    
+    
+            circle_marker_c8eb16dbaf0295f4850da9cad4269889.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Odongunyan (Cluster 21)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_72c0e5f99b112d1dbb0b17fd1ee965fe = L.circleMarker(
+                [6.666392, 3.5259188],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c508b8e3a67b2fa13558e920101da849);
+        
+    
+        var popup_1e91f8305c0128c1be658f1cfa72799b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2ec84fd9e4cdfc9ad9f22538544ca949 = $(`<div id="html_2ec84fd9e4cdfc9ad9f22538544ca949" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 21&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4841478&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6664, 3.5259&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_1e91f8305c0128c1be658f1cfa72799b.setContent(html_2ec84fd9e4cdfc9ad9f22538544ca949);
+            
+        
+
+        circle_marker_72c0e5f99b112d1dbb0b17fd1ee965fe.bindPopup(popup_1e91f8305c0128c1be658f1cfa72799b)
+        ;
+
+        
+    
+    
+            circle_marker_72c0e5f99b112d1dbb0b17fd1ee965fe.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Odongunyan (Cluster 21)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d1292110132b3ff4da88d7f79458e46d = L.circleMarker(
+                [6.6612421999999, 3.523423],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c508b8e3a67b2fa13558e920101da849);
+        
+    
+        var popup_712147ac88e86319bf135a687e20e05e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5702f84966433daf5cf2b6a902154b4a = $(`<div id="html_5702f84966433daf5cf2b6a902154b4a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 21&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5368894&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6612, 3.5234&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_712147ac88e86319bf135a687e20e05e.setContent(html_5702f84966433daf5cf2b6a902154b4a);
+            
+        
+
+        circle_marker_d1292110132b3ff4da88d7f79458e46d.bindPopup(popup_712147ac88e86319bf135a687e20e05e)
+        ;
+
+        
+    
+    
+            circle_marker_d1292110132b3ff4da88d7f79458e46d.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Odongunyan (Cluster 21)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3ebcec5cebcfb4a278e7b529b0b08634 = L.circleMarker(
+                [6.6607218, 3.5251587],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c508b8e3a67b2fa13558e920101da849);
+        
+    
+        var popup_e0337b38feb76b390ddc4fd240db5e10 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_deb10ace5c651a0a99a0edde1fa651fd = $(`<div id="html_deb10ace5c651a0a99a0edde1fa651fd" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 21&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4044866&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.6607, 3.5252&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Ikorodu&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Ikorodu - Odongunyan&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_e0337b38feb76b390ddc4fd240db5e10.setContent(html_deb10ace5c651a0a99a0edde1fa651fd);
+            
+        
+
+        circle_marker_3ebcec5cebcfb4a278e7b529b0b08634.bindPopup(popup_e0337b38feb76b390ddc4fd240db5e10)
+        ;
+
+        
+    
+    
+            circle_marker_3ebcec5cebcfb4a278e7b529b0b08634.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Odongunyan (Cluster 21)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_c508b8e3a67b2fa13558e920101da849.addTo(map_97f2b616f8791145846d4b0c3ec7ecd8);
+        
+    
+            var layer_control_ab0326d90383273509d45aa2e619ccd9_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_a5f685d2a29ec1be9ea50f894cf979ee,
+                    "OpenStreetMap" : tile_layer_920c93565687f394e3bccb2ad6f506d5,
+                    "Terrain" : tile_layer_f0384b841f634bc564672638384b82a4,
+                    "Toner" : tile_layer_493bbddc828c21edaec4cdfb419e78d6,
+                    "CartoDB Dark" : tile_layer_e2b2a29d165b460c5f7853ae59b0b178,
+                    "CartoDB Light" : tile_layer_b3ccefd65095a4836acc871c04faf4d5,
+                },
+                overlays :  {
+                    "Cluster 3 - Ikorodu - Ikorodu - Agric+6more (25 points)" : feature_group_6486e69e213034077634f9bc0e3a1315,
+                    "Cluster 6 - Ikorodu - Ikorodu - Agric+8more (24 points)" : feature_group_fd86d422bbfbc38703cac8f11c6fb06d,
+                    "Cluster 21 - Ikorodu - Ikorodu - Odongunyan (7 points)" : feature_group_c508b8e3a67b2fa13558e920101da849,
+                },
+            };
+            let layer_control_ab0326d90383273509d45aa2e619ccd9 = L.control.layers(
+                layer_control_ab0326d90383273509d45aa2e619ccd9_layers.base_layers,
+                layer_control_ab0326d90383273509d45aa2e619ccd9_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_97f2b616f8791145846d4b0c3ec7ecd8);
+
+        
+    
+            var tile_layer_12918bd781fc37f94806848b2b20f134 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_2a6c661a6101bb575d94fbbf625fb6ca = new L.Control.MiniMap(
+                tile_layer_12918bd781fc37f94806848b2b20f134,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_97f2b616f8791145846d4b0c3ec7ecd8.addControl(mini_map_2a6c661a6101bb575d94fbbf625fb6ca);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_97f2b616f8791145846d4b0c3ec7ecd8);
+        
+    
+            var measure_control_c7d87897e70dc9c39ff3f3196554c10c = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_97f2b616f8791145846d4b0c3ec7ecd8.addControl(measure_control_c7d87897e70dc9c39ff3f3196554c10c);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_0eecdcec48336de1bebb48bec11fe77d = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_0eecdcec48336de1bebb48bec11fe77d.options["latFormatter"] =
+                undefined;
+            mouse_position_0eecdcec48336de1bebb48bec11fe77d.options["lngFormatter"] =
+                undefined;
+            map_97f2b616f8791145846d4b0c3ec7ecd8.addControl(mouse_position_0eecdcec48336de1bebb48bec11fe77d);
+        
+    
+            map_97f2b616f8791145846d4b0c3ec7ecd8.fitBounds(
+                [[6.601517099999999, 3.4637616], [6.6802293999999, 3.5359187999999997]],
+                {}
+            );
+        
+    
+            var marker_6b716f241c9862e8f5771ed38e0e788f = L.marker(
+                [6.5823532, 3.525617],
+                {
+  "size": 10,
+}
+            ).addTo(map_97f2b616f8791145846d4b0c3ec7ecd8);
+        
+    
+            var icon_6719b5223af36d49d592db524efa9be0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_6b716f241c9862e8f5771ed38e0e788f.bindTooltip(
+                `<div>
+                     OmniHub Ikorodu Lagos - Mofaz
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6b716f241c9862e8f5771ed38e0e788f.setIcon(icon_6719b5223af36d49d592db524efa9be0);
+            
+    
+            var poly_line_8f00bfbae6fb919d63668b1094e056bc = L.polyline(
+                [[6.58218, 3.5256], [6.5822, 3.52498], [6.58344, 3.52454], [6.58436, 3.5242], [6.58484, 3.52403], [6.58513, 3.52389], [6.58524, 3.52381], [6.58553, 3.52347], [6.58575, 3.52309], [6.586, 3.52274], [6.58623, 3.52227], [6.58635, 3.522], [6.58655, 3.52145], [6.58665, 3.52124], [6.58678, 3.52104], [6.58703, 3.52068], [6.58738, 3.52018], [6.58756, 3.51997], [6.58822, 3.51919], [6.58835, 3.51904], [6.58863, 3.51873], [6.58885, 3.51846], [6.58942, 3.51786], [6.58959, 3.51766], [6.58989, 3.51733], [6.59011, 3.51709], [6.59016, 3.51707], [6.59019, 3.51707], [6.59027, 3.51713], [6.59034, 3.51718], [6.59063, 3.51747], [6.59089, 3.51769], [6.59097, 3.51776], [6.59115, 3.51782], [6.59167, 3.51794], [6.59208, 3.51803], [6.59191, 3.5177], [6.59184, 3.51755], [6.5918, 3.51737], [6.59193, 3.51649], [6.59273, 3.51665], [6.59359, 3.51689], [6.59423, 3.51703], [6.59441, 3.51708], [6.59477, 3.51718], [6.59556, 3.51742], [6.59582, 3.5175], [6.59674, 3.51778], [6.59776, 3.51802], [6.59905, 3.5183], [6.59922, 3.51834], [6.59951, 3.51838], [6.60022, 3.51837], [6.60092, 3.51833], [6.60162, 3.51826], [6.6021, 3.51819], [6.60214, 3.51818], [6.60231, 3.51815], [6.60246, 3.51811], [6.60289, 3.518], [6.60364, 3.51781], [6.60374, 3.51779], [6.60438, 3.51759], [6.6048, 3.51736], [6.60503, 3.51719], [6.60521, 3.51703], [6.60589, 3.51632], [6.60691, 3.51517], [6.60717, 3.51486], [6.60734, 3.51467], [6.60786, 3.51411], [6.60843, 3.51364], [6.60932, 3.51303], [6.61024, 3.51239], [6.61154, 3.5113], [6.61179, 3.51152], [6.61205, 3.51167], [6.61234, 3.51179], [6.6125, 3.51183], [6.6127, 3.51185], [6.61294, 3.51185], [6.61309, 3.51181], [6.61343, 3.51169], [6.61381, 3.51148], [6.61434, 3.51114], [6.61439, 3.51111], [6.61454, 3.51095], [6.61466, 3.51077], [6.61471, 3.51066], [6.61491, 3.5103], [6.61499, 3.51015], [6.61507, 3.51006], [6.61515, 3.51], [6.61601, 3.5096], [6.61705, 3.50906], [6.61724, 3.50891], [6.61754, 3.50858], [6.61759, 3.50851], [6.61799, 3.50819], [6.61823, 3.50797], [6.61833, 3.50777], [6.6184, 3.50758], [6.61845, 3.50732], [6.61852, 3.50685], [6.61855, 3.50613], [6.61854, 3.50585], [6.61853, 3.50566], [6.61853, 3.50514], [6.61854, 3.50495], [6.61859, 3.50481], [6.61869, 3.5046], [6.61872, 3.50449], [6.61876, 3.50429], [6.61876, 3.50411], [6.61874, 3.50398], [6.61867, 3.50318], [6.61956, 3.50338], [6.61995, 3.50343], [6.62009, 3.50347], [6.62036, 3.50359], [6.62041, 3.50361], [6.62048, 3.50361], [6.62053, 3.50359], [6.62057, 3.50355], [6.62061, 3.50345], [6.62059, 3.50338], [6.6206, 3.50313], [6.62069, 3.50288], [6.62127, 3.50149], [6.62142, 3.50126], [6.62161, 3.50102], [6.62175, 3.50074], [6.6222, 3.49968], [6.62228, 3.4995], [6.62261, 3.49873], [6.62265, 3.49864], [6.62271, 3.49852], [6.62305, 3.49785], [6.62325, 3.4974], [6.62344, 3.49695], [6.62373, 3.49618], [6.62431, 3.4949], [6.62436, 3.49473], [6.6244, 3.4946], [6.62445, 3.49436], [6.62459, 3.49334], [6.62475, 3.49264], [6.62493, 3.49149], [6.62496, 3.49119], [6.626, 3.49132], [6.62604, 3.49132], [6.62654, 3.49138], [6.62699, 3.49138], [6.62719, 3.49138], [6.62721, 3.49138], [6.62719, 3.49138], [6.62699, 3.49138], [6.62654, 3.49138], [6.62661, 3.4899], [6.62614, 3.48982], [6.62615, 3.48961], [6.62614, 3.48937], [6.62615, 3.48923], [6.62615, 3.48923], [6.62615, 3.48923], [6.62614, 3.48937], [6.62615, 3.48961], [6.62614, 3.48982], [6.62525, 3.48968], [6.62512, 3.48966], [6.62525, 3.48876], [6.62537, 3.48809], [6.62556, 3.48732], [6.62569, 3.48646], [6.62583, 3.4856], [6.62582, 3.4854], [6.62582, 3.48522], [6.62579, 3.48503], [6.62578, 3.48495], [6.62574, 3.48474], [6.62658, 3.48419], [6.6267, 3.48413], [6.62675, 3.4841], [6.62673, 3.48411], [6.62658, 3.48419], [6.62574, 3.48474], [6.62566, 3.48457], [6.62554, 3.48434], [6.62544, 3.48419], [6.62532, 3.48405], [6.62515, 3.48384], [6.62504, 3.48373], [6.62491, 3.48362], [6.62445, 3.48328], [6.62433, 3.48319], [6.62361, 3.48269], [6.62317, 3.48239], [6.62236, 3.48182], [6.62221, 3.48172], [6.62204, 3.48159], [6.62163, 3.4813], [6.62143, 3.48113], [6.62119, 3.4809], [6.62097, 3.48063], [6.62087, 3.48049], [6.62072, 3.48024], [6.62068, 3.48017], [6.62063, 3.48007], [6.62045, 3.47962], [6.62036, 3.47926], [6.62027, 3.47895], [6.62009, 3.4784], [6.61988, 3.47779], [6.61968, 3.47726], [6.61959, 3.47693], [6.61952, 3.47658], [6.61951, 3.47647], [6.61951, 3.47603], [6.61955, 3.47545], [6.61947, 3.47525], [6.61943, 3.47522], [6.61937, 3.4752], [6.61936, 3.47528], [6.61935, 3.47556], [6.61933, 3.47582], [6.61935, 3.47636], [6.61938, 3.47668], [6.61948, 3.47714], [6.61949, 3.47717], [6.6197, 3.47794], [6.61991, 3.47869], [6.6201, 3.47923], [6.6205, 3.48013], [6.6206, 3.48035], [6.62072, 3.48054], [6.62098, 3.48089], [6.6211, 3.48102], [6.62139, 3.4813], [6.62157, 3.48144], [6.62216, 3.48185], [6.6223, 3.48194], [6.62293, 3.48239], [6.62317, 3.48254], [6.62346, 3.48274], [6.62371, 3.48292], [6.6239, 3.48305], [6.62479, 3.48371], [6.62491, 3.48383], [6.6252, 3.48419], [6.62541, 3.48455], [6.62545, 3.48467], [6.62551, 3.48482], [6.62553, 3.48496], [6.62554, 3.48502], [6.62554, 3.4855], [6.62551, 3.4858], [6.62529, 3.48718], [6.62512, 3.48819], [6.62507, 3.48857], [6.62504, 3.48908], [6.62502, 3.48932], [6.62475, 3.49113], [6.62472, 3.49128], [6.62468, 3.49158], [6.62462, 3.49185], [6.62443, 3.49284], [6.6242, 3.49434], [6.62411, 3.49473], [6.62394, 3.49526], [6.62371, 3.49586], [6.62337, 3.4966], [6.62317, 3.49699], [6.62299, 3.49734], [6.62286, 3.49767], [6.62258, 3.49841], [6.62248, 3.49865], [6.622, 3.49973], [6.62154, 3.50082], [6.6212, 3.50139], [6.62106, 3.50166], [6.62061, 3.50276], [6.62042, 3.50323], [6.62037, 3.50331], [6.62022, 3.50338], [6.61995, 3.50343], [6.61956, 3.50338], [6.61867, 3.50318], [6.61874, 3.50398], [6.61876, 3.50411], [6.61876, 3.50429], [6.61872, 3.50449], [6.61869, 3.5046], [6.61859, 3.50481], [6.61854, 3.50495], [6.61853, 3.50514], [6.61853, 3.50566], [6.61854, 3.50585], [6.61855, 3.50613], [6.61852, 3.50685], [6.61845, 3.50732], [6.6184, 3.50758], [6.61833, 3.50777], [6.61823, 3.50797], [6.61799, 3.50819], [6.61759, 3.50851], [6.61754, 3.50858], [6.61724, 3.50891], [6.61705, 3.50906], [6.61601, 3.5096], [6.61515, 3.51], [6.61507, 3.51006], [6.61499, 3.51015], [6.61491, 3.5103], [6.61471, 3.51066], [6.61466, 3.51077], [6.61454, 3.51095], [6.61439, 3.51111], [6.61434, 3.51114], [6.61381, 3.51148], [6.61343, 3.51169], [6.61309, 3.51181], [6.61294, 3.51185], [6.6127, 3.51185], [6.6125, 3.51183], [6.61234, 3.51179], [6.61205, 3.51167], [6.61179, 3.51152], [6.61154, 3.5113], [6.61024, 3.51239], [6.60932, 3.51303], [6.60843, 3.51364], [6.60786, 3.51411], [6.60734, 3.51467], [6.60717, 3.51486], [6.60691, 3.51517], [6.60589, 3.51632], [6.60521, 3.51703], [6.60503, 3.51719], [6.6048, 3.51736], [6.60438, 3.51759], [6.60374, 3.51779], [6.60364, 3.51781], [6.60289, 3.518], [6.60246, 3.51811], [6.60231, 3.51815], [6.60214, 3.51818], [6.6021, 3.51819], [6.60162, 3.51826], [6.60092, 3.51833], [6.60022, 3.51837], [6.59951, 3.51838], [6.59922, 3.51834], [6.59905, 3.5183], [6.59776, 3.51802], [6.59674, 3.51778], [6.59582, 3.5175], [6.59556, 3.51742], [6.59477, 3.51718], [6.59441, 3.51708], [6.59423, 3.51703], [6.59359, 3.51689], [6.59273, 3.51665], [6.59193, 3.51649], [6.5918, 3.51737], [6.59167, 3.51794], [6.59115, 3.51782], [6.59097, 3.51776], [6.59089, 3.51769], [6.59063, 3.51747], [6.59034, 3.51718], [6.59027, 3.51713], [6.59019, 3.51707], [6.59016, 3.51707], [6.59011, 3.51709], [6.58989, 3.51733], [6.58959, 3.51766], [6.58942, 3.51786], [6.58885, 3.51846], [6.58863, 3.51873], [6.58835, 3.51904], [6.58822, 3.51919], [6.58756, 3.51997], [6.58738, 3.52018], [6.58703, 3.52068], [6.58678, 3.52104], [6.58665, 3.52124], [6.58655, 3.52145], [6.58635, 3.522], [6.58623, 3.52227], [6.586, 3.52274], [6.58575, 3.52309], [6.58553, 3.52347], [6.58524, 3.52381], [6.58513, 3.52389], [6.58484, 3.52403], [6.58436, 3.5242], [6.58344, 3.52454], [6.5822, 3.52498], [6.58218, 3.5256]],
+                {"bubblingMouseEvents": true, "color": "#1f77b4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#1f77b4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_97f2b616f8791145846d4b0c3ec7ecd8);
+        
+    
+            var poly_line_1fb65b45edb7aa9afa703073f2f13dcc = L.polyline(
+                [[6.58218, 3.5256], [6.5822, 3.52498], [6.58344, 3.52454], [6.58436, 3.5242], [6.58484, 3.52403], [6.58513, 3.52389], [6.58524, 3.52381], [6.58553, 3.52347], [6.58575, 3.52309], [6.586, 3.52274], [6.58623, 3.52227], [6.58635, 3.522], [6.58655, 3.52145], [6.58665, 3.52124], [6.58678, 3.52104], [6.58703, 3.52068], [6.58738, 3.52018], [6.58756, 3.51997], [6.58822, 3.51919], [6.58835, 3.51904], [6.58863, 3.51873], [6.58885, 3.51846], [6.58942, 3.51786], [6.58959, 3.51766], [6.58989, 3.51733], [6.59011, 3.51709], [6.59016, 3.51707], [6.59019, 3.51707], [6.59027, 3.51713], [6.59034, 3.51718], [6.59063, 3.51747], [6.59089, 3.51769], [6.59097, 3.51776], [6.59115, 3.51782], [6.59167, 3.51794], [6.59208, 3.51803], [6.59191, 3.5177], [6.59184, 3.51755], [6.5918, 3.51737], [6.59193, 3.51649], [6.59273, 3.51665], [6.59359, 3.51689], [6.59423, 3.51703], [6.59441, 3.51708], [6.59477, 3.51718], [6.59556, 3.51742], [6.59582, 3.5175], [6.59674, 3.51778], [6.59776, 3.51802], [6.59905, 3.5183], [6.59922, 3.51834], [6.59951, 3.51838], [6.60022, 3.51837], [6.60092, 3.51833], [6.60162, 3.51826], [6.6021, 3.51819], [6.60214, 3.51818], [6.60231, 3.51815], [6.60246, 3.51811], [6.60289, 3.518], [6.60364, 3.51781], [6.60374, 3.51779], [6.60438, 3.51759], [6.6048, 3.51736], [6.60503, 3.51719], [6.60521, 3.51703], [6.60589, 3.51632], [6.60691, 3.51517], [6.60717, 3.51486], [6.60734, 3.51467], [6.60786, 3.51411], [6.60843, 3.51364], [6.60932, 3.51303], [6.61024, 3.51239], [6.61154, 3.5113], [6.61179, 3.51152], [6.61205, 3.51167], [6.61234, 3.51179], [6.6125, 3.51183], [6.6127, 3.51185], [6.61294, 3.51185], [6.61309, 3.51181], [6.61343, 3.51169], [6.61381, 3.51148], [6.61434, 3.51114], [6.61439, 3.51111], [6.61454, 3.51095], [6.61466, 3.51077], [6.61471, 3.51066], [6.61491, 3.5103], [6.61499, 3.51015], [6.61507, 3.51006], [6.61515, 3.51], [6.61601, 3.5096], [6.61705, 3.50906], [6.61724, 3.50891], [6.61754, 3.50858], [6.61759, 3.50851], [6.61799, 3.50819], [6.61823, 3.50797], [6.61833, 3.50777], [6.6184, 3.50758], [6.61845, 3.50732], [6.61852, 3.50685], [6.61855, 3.50613], [6.61854, 3.50585], [6.61853, 3.50566], [6.61853, 3.50514], [6.61854, 3.50495], [6.61859, 3.50481], [6.61869, 3.5046], [6.61872, 3.50449], [6.61876, 3.50429], [6.61876, 3.50411], [6.61874, 3.50398], [6.61867, 3.50318], [6.61956, 3.50338], [6.61995, 3.50343], [6.62009, 3.50347], [6.62036, 3.50359], [6.62041, 3.50361], [6.62048, 3.50361], [6.62053, 3.50359], [6.62057, 3.50355], [6.62061, 3.50345], [6.62059, 3.50338], [6.6206, 3.50313], [6.62069, 3.50288], [6.62127, 3.50149], [6.62142, 3.50126], [6.62161, 3.50102], [6.62175, 3.50074], [6.6222, 3.49968], [6.62228, 3.4995], [6.62261, 3.49873], [6.62265, 3.49864], [6.62271, 3.49852], [6.62305, 3.49785], [6.62325, 3.4974], [6.62344, 3.49695], [6.62373, 3.49618], [6.62431, 3.4949], [6.62436, 3.49473], [6.6244, 3.4946], [6.62445, 3.49436], [6.62459, 3.49334], [6.62475, 3.49264], [6.62493, 3.49149], [6.62496, 3.49119], [6.62504, 3.49065], [6.62506, 3.49017], [6.62512, 3.48966], [6.62525, 3.48876], [6.62537, 3.48809], [6.62556, 3.48732], [6.62569, 3.48646], [6.62583, 3.4856], [6.62582, 3.4854], [6.62582, 3.48522], [6.62579, 3.48503], [6.62578, 3.48495], [6.62574, 3.48474], [6.62658, 3.48419], [6.62716, 3.48389], [6.62739, 3.48379], [6.6277, 3.48372], [6.62772, 3.48363], [6.6277, 3.48372], [6.63034, 3.48329], [6.63093, 3.48319], [6.63201, 3.48301], [6.63258, 3.48291], [6.63276, 3.48288], [6.63322, 3.4828], [6.63332, 3.48278], [6.63363, 3.48272], [6.63427, 3.4826], [6.63473, 3.48247], [6.63552, 3.48226], [6.63586, 3.48217], [6.63648, 3.48199], [6.63685, 3.48188], [6.63725, 3.48178], [6.6379, 3.48162], [6.63844, 3.48147], [6.63969, 3.4811], [6.64133, 3.48066], [6.64296, 3.48019], [6.64308, 3.48016], [6.64373, 3.47999], [6.64402, 3.47991], [6.64505, 3.47967], [6.64532, 3.4796], [6.64547, 3.48009], [6.6455, 3.48025], [6.64551, 3.48039], [6.64536, 3.48168], [6.64528, 3.48251], [6.64532, 3.48306], [6.64538, 3.48344], [6.64593, 3.48351], [6.64612, 3.48354], [6.64614, 3.48365], [6.64612, 3.48354], [6.64667, 3.48358], [6.64694, 3.48361], [6.64749, 3.4837], [6.64777, 3.4837], [6.64813, 3.48367], [6.64807, 3.48299], [6.64807, 3.48294], [6.64812, 3.48288], [6.64848, 3.48283], [6.64812, 3.48288], [6.64807, 3.48294], [6.64807, 3.48299], [6.64813, 3.48367], [6.64824, 3.48366], [6.6483, 3.48418], [6.64834, 3.48473], [6.6484, 3.48554], [6.64914, 3.48554], [6.64972, 3.48557], [6.65008, 3.48565], [6.65044, 3.48574], [6.65077, 3.48583], [6.65129, 3.48592], [6.65155, 3.48598], [6.65205, 3.48606], [6.6523, 3.4861], [6.65277, 3.48619], [6.65298, 3.48479], [6.65305, 3.48433], [6.65327, 3.48282], [6.65348, 3.48147], [6.65354, 3.48146], [6.65422, 3.48142], [6.65439, 3.4814], [6.65431, 3.48052], [6.65426, 3.47997], [6.65419, 3.47851], [6.65396, 3.47644], [6.65483, 3.47648], [6.65497, 3.47647], [6.65559, 3.47638], [6.65565, 3.47662], [6.65559, 3.47638], [6.65572, 3.47633], [6.65637, 3.47612], [6.65641, 3.47611], [6.65655, 3.47605], [6.65666, 3.47598], [6.65717, 3.47636], [6.65717, 3.47636], [6.6576, 3.47665], [6.65772, 3.47671], [6.65804, 3.47682], [6.65852, 3.47671], [6.6594, 3.47644], [6.65952, 3.47641], [6.65978, 3.4763], [6.65983, 3.47627], [6.65986, 3.47626], [6.66048, 3.47579], [6.66056, 3.47574], [6.66079, 3.47559], [6.66093, 3.47549], [6.66112, 3.47534], [6.66117, 3.47528], [6.66126, 3.4752], [6.66129, 3.47517], [6.66117, 3.47528], [6.66112, 3.47534], [6.66093, 3.47549], [6.66079, 3.47559], [6.66056, 3.47574], [6.66048, 3.47579], [6.65986, 3.47626], [6.65983, 3.47627], [6.65978, 3.4763], [6.65952, 3.47641], [6.6594, 3.47644], [6.65867, 3.47666], [6.65852, 3.47671], [6.65844, 3.47673], [6.65804, 3.47682], [6.65772, 3.47671], [6.6576, 3.47665], [6.65717, 3.47636], [6.65717, 3.47636], [6.65666, 3.47598], [6.65655, 3.47605], [6.65641, 3.47611], [6.65572, 3.47633], [6.65559, 3.47638], [6.65497, 3.47647], [6.65483, 3.47648], [6.65396, 3.47644], [6.65365, 3.47642], [6.65322, 3.47634], [6.65325, 3.47685], [6.65322, 3.47634], [6.65284, 3.47622], [6.6524, 3.4761], [6.65188, 3.47606], [6.65168, 3.47606], [6.6517, 3.47694], [6.65168, 3.47606], [6.65122, 3.47607], [6.65105, 3.4761], [6.65066, 3.4762], [6.65035, 3.47632], [6.65016, 3.47642], [6.64913, 3.47707], [6.6492, 3.4772], [6.64961, 3.47693], [6.6492, 3.4772], [6.64913, 3.47707], [6.6483, 3.47767], [6.64803, 3.47786], [6.64736, 3.47834], [6.64596, 3.47933], [6.64555, 3.47952], [6.64532, 3.4796], [6.64505, 3.47967], [6.6448, 3.47901], [6.64467, 3.47857], [6.64442, 3.47718], [6.64442, 3.47711], [6.64445, 3.47705], [6.64459, 3.47684], [6.64486, 3.47658], [6.64493, 3.47649], [6.64498, 3.47632], [6.64498, 3.47623], [6.64492, 3.476], [6.64485, 3.47577], [6.64479, 3.47535], [6.6448, 3.47515], [6.64487, 3.47495], [6.645, 3.47474], [6.6451, 3.47452], [6.6452, 3.47418], [6.64524, 3.4739], [6.64531, 3.47393], [6.64524, 3.4739], [6.64525, 3.47381], [6.64525, 3.47375], [6.64525, 3.47381], [6.64524, 3.4739], [6.6452, 3.47418], [6.6451, 3.47452], [6.645, 3.47474], [6.64487, 3.47495], [6.6448, 3.47515], [6.64479, 3.47535], [6.64485, 3.47577], [6.64492, 3.476], [6.64498, 3.47623], [6.64498, 3.47632], [6.64493, 3.47649], [6.64486, 3.47658], [6.64459, 3.47684], [6.64445, 3.47705], [6.64442, 3.47711], [6.64442, 3.47718], [6.64467, 3.47857], [6.6448, 3.47901], [6.64505, 3.47967], [6.64402, 3.47991], [6.64373, 3.47999], [6.64308, 3.48016], [6.64296, 3.48019], [6.64133, 3.48066], [6.63969, 3.4811], [6.63844, 3.48147], [6.6379, 3.48162], [6.63725, 3.48178], [6.63685, 3.48188], [6.63648, 3.48199], [6.63586, 3.48217], [6.63552, 3.48226], [6.63473, 3.48247], [6.63427, 3.4826], [6.63363, 3.48272], [6.63332, 3.48278], [6.63322, 3.4828], [6.63276, 3.48288], [6.63258, 3.48291], [6.63201, 3.48301], [6.63093, 3.48319], [6.63034, 3.48329], [6.6277, 3.48372], [6.62739, 3.48379], [6.62716, 3.48389], [6.62658, 3.48419], [6.62574, 3.48474], [6.62566, 3.48457], [6.62554, 3.48434], [6.62544, 3.48419], [6.62515, 3.48384], [6.62504, 3.48373], [6.62491, 3.48362], [6.62445, 3.48328], [6.62433, 3.48319], [6.62361, 3.48269], [6.62317, 3.48239], [6.62236, 3.48182], [6.62221, 3.48172], [6.62204, 3.48159], [6.62163, 3.4813], [6.62143, 3.48113], [6.62119, 3.4809], [6.62097, 3.48063], [6.62087, 3.48049], [6.62068, 3.48017], [6.62063, 3.48007], [6.62045, 3.47962], [6.62036, 3.47926], [6.62027, 3.47895], [6.62009, 3.4784], [6.61988, 3.47779], [6.61968, 3.47726], [6.61959, 3.47693], [6.61952, 3.47658], [6.61951, 3.47647], [6.61951, 3.47603], [6.61955, 3.47545], [6.61947, 3.47525], [6.61943, 3.47522], [6.61937, 3.4752], [6.61913, 3.47521], [6.61812, 3.47525], [6.61781, 3.47527], [6.6164, 3.47532], [6.61584, 3.47536], [6.61535, 3.47553], [6.61498, 3.47573], [6.6148, 3.47586], [6.6144, 3.47627], [6.61415, 3.47672], [6.6139, 3.47733], [6.61346, 3.47837], [6.61311, 3.47923], [6.61213, 3.48163], [6.6119, 3.48207], [6.6116, 3.4825], [6.61144, 3.48271], [6.6113, 3.48288], [6.611, 3.48317], [6.61058, 3.48352], [6.61036, 3.48365], [6.61031, 3.48369], [6.60983, 3.48394], [6.60935, 3.48415], [6.60807, 3.48445], [6.60727, 3.48464], [6.60615, 3.48489], [6.60492, 3.48517], [6.60366, 3.48547], [6.60359, 3.48549], [6.60353, 3.4855], [6.60348, 3.48554], [6.60345, 3.48559], [6.60344, 3.48563], [6.60317, 3.48605], [6.60311, 3.48611], [6.60309, 3.48619], [6.60309, 3.48623], [6.60307, 3.48636], [6.60301, 3.48652], [6.60279, 3.48683], [6.60269, 3.48706], [6.60265, 3.48734], [6.60263, 3.48768], [6.60264, 3.48799], [6.60277, 3.48843], [6.60286, 3.48862], [6.60308, 3.48901], [6.60317, 3.48923], [6.60323, 3.48951], [6.60328, 3.48996], [6.60303, 3.49005], [6.60293, 3.49012], [6.60273, 3.49031], [6.60264, 3.49043], [6.60169, 3.49177], [6.60143, 3.49213], [6.60094, 3.49278], [6.6008, 3.49299], [6.60071, 3.49308], [6.60057, 3.49318], [6.60052, 3.49318], [6.6005, 3.49319], [6.60047, 3.49324], [6.60048, 3.49328], [6.60049, 3.4933], [6.60045, 3.49334], [6.60042, 3.49346], [6.59998, 3.49406], [6.59939, 3.49491], [6.59867, 3.4959], [6.59856, 3.49607], [6.59835, 3.49645], [6.59823, 3.4969], [6.5981, 3.49771], [6.59797, 3.49823], [6.59733, 3.49998], [6.59727, 3.50016], [6.59712, 3.5006], [6.59678, 3.50164], [6.59671, 3.50183], [6.59653, 3.50222], [6.59627, 3.50266], [6.59592, 3.5032], [6.59563, 3.50364], [6.59557, 3.50373], [6.59521, 3.50422], [6.595, 3.50448], [6.5946, 3.50497], [6.59447, 3.50513], [6.59437, 3.50525], [6.59418, 3.50547], [6.59396, 3.50573], [6.59391, 3.5058], [6.59381, 3.50592], [6.59346, 3.50636], [6.5931, 3.50686], [6.59294, 3.50709], [6.59289, 3.50723], [6.59268, 3.50757], [6.59234, 3.50805], [6.59222, 3.50829], [6.59212, 3.50849], [6.59196, 3.50904], [6.59193, 3.50912], [6.59187, 3.50922], [6.5917, 3.50937], [6.59149, 3.50952], [6.59132, 3.50962], [6.59097, 3.50988], [6.59091, 3.51002], [6.59089, 3.51014], [6.5909, 3.51062], [6.59096, 3.51145], [6.59103, 3.51186], [6.59106, 3.51199], [6.59119, 3.51258], [6.59127, 3.51286], [6.59142, 3.51325], [6.59169, 3.51392], [6.59186, 3.51432], [6.59205, 3.51478], [6.59211, 3.51502], [6.59211, 3.51528], [6.59193, 3.51649], [6.5918, 3.51737], [6.59167, 3.51794], [6.59115, 3.51782], [6.59097, 3.51776], [6.59089, 3.51769], [6.59063, 3.51747], [6.59034, 3.51718], [6.59027, 3.51713], [6.59019, 3.51707], [6.59016, 3.51707], [6.59011, 3.51709], [6.58989, 3.51733], [6.58959, 3.51766], [6.58942, 3.51786], [6.58885, 3.51846], [6.58863, 3.51873], [6.58835, 3.51904], [6.58822, 3.51919], [6.58756, 3.51997], [6.58738, 3.52018], [6.58703, 3.52068], [6.58678, 3.52104], [6.58665, 3.52124], [6.58655, 3.52145], [6.58635, 3.522], [6.58623, 3.52227], [6.586, 3.52274], [6.58575, 3.52309], [6.58553, 3.52347], [6.58524, 3.52381], [6.58513, 3.52389], [6.58484, 3.52403], [6.58436, 3.5242], [6.58344, 3.52454], [6.5822, 3.52498], [6.58218, 3.5256]],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#ff7f0e", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_97f2b616f8791145846d4b0c3ec7ecd8);
+        
+</script>
+</html>

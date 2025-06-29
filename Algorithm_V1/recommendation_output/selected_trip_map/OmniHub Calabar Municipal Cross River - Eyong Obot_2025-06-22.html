@@ -1,0 +1,2755 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_865a2e797cf854f0db0b62bd7b0de9fb {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 3 clusters | 64 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+    <div id="cluster-legend" style="position: fixed; 
+                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                background-color: rgba(255, 255, 255, 0.95); 
+                border: 2px solid #ccc; z-index: 999; 
+                font-size: 11px; padding: 12px; border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                backdrop-filter: blur(5px);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <strong style="color: #333;">Cluster Legend</strong>
+        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+    </div>
+    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+        3 clusters | Sorted by size | Showing top 15
+    </div>
+    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">28 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">25 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 9 
+                <br><span style="color: #666; font-size: 9px;">11 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_865a2e797cf854f0db0b62bd7b0de9fb" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_865a2e797cf854f0db0b62bd7b0de9fb = L.map(
+                "map_865a2e797cf854f0db0b62bd7b0de9fb",
+                {
+                    center: [4.94243955, 8.3195865],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+
+            
+
+        
+    
+            var tile_layer_608b306474c14769459b5d9cb722491f = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_608b306474c14769459b5d9cb722491f.addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+        
+    
+            var tile_layer_2a4931da5205715f24b6855394578788 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_2a4931da5205715f24b6855394578788.addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+        
+    
+            var tile_layer_ff3e4995c6c8febe39df10f2cd11bd76 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_ff3e4995c6c8febe39df10f2cd11bd76.addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+        
+    
+            var tile_layer_6797bcbcf655484046ed44f62d096ddb = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_6797bcbcf655484046ed44f62d096ddb.addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+        
+    
+            var tile_layer_e2f7a94fc7a98826f64c7ef01ff3e06d = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e2f7a94fc7a98826f64c7ef01ff3e06d.addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+        
+    
+            var tile_layer_6fa39809a8bcd050da9e070ec49cc45a = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_6fa39809a8bcd050da9e070ec49cc45a.addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+        
+    
+            var feature_group_9eeef910b988f58253354dd00005b023 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_acf6664792c3953afd159634faba0a09 = L.circleMarker(
+                [4.9588368, 8.3223561],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_c78d14495f1175112cd83d439cb8b895 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_39c503f1fa3b440d876e24d498675962 = $(`<div id="html_39c503f1fa3b440d876e24d498675962" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5355256&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Watt Market&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9588, 8.3224&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Watt Market&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_c78d14495f1175112cd83d439cb8b895.setContent(html_39c503f1fa3b440d876e24d498675962);
+            
+        
+
+        circle_marker_acf6664792c3953afd159634faba0a09.bindPopup(popup_c78d14495f1175112cd83d439cb8b895)
+        ;
+
+        
+    
+    
+            circle_marker_acf6664792c3953afd159634faba0a09.bindTooltip(
+                `<div>
+                     Calabar South | Watt Market (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8534a198ca8e6210575d5fe5d286b48e = L.circleMarker(
+                [4.9589612, 8.3223028],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_45e06b14e963d3268cde36594ca7deb4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fe823bed72fa1bc4922a3638f8c557d5 = $(`<div id="html_fe823bed72fa1bc4922a3638f8c557d5" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5359367&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Calabar Road.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9590, 8.3223&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Calabar Road.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_45e06b14e963d3268cde36594ca7deb4.setContent(html_fe823bed72fa1bc4922a3638f8c557d5);
+            
+        
+
+        circle_marker_8534a198ca8e6210575d5fe5d286b48e.bindPopup(popup_45e06b14e963d3268cde36594ca7deb4)
+        ;
+
+        
+    
+    
+            circle_marker_8534a198ca8e6210575d5fe5d286b48e.bindTooltip(
+                `<div>
+                     Calabar South | Calabar Road. (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_824246d626624bd7c4ea6eae920c1de5 = L.circleMarker(
+                [4.958932, 8.3230551],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_55fa61f1e07691fa179daca18198143d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_02e8ef2129c42ced8ee2fa7aba1a82cc = $(`<div id="html_02e8ef2129c42ced8ee2fa7aba1a82cc" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5437477&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9589, 8.3231&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_55fa61f1e07691fa179daca18198143d.setContent(html_02e8ef2129c42ced8ee2fa7aba1a82cc);
+            
+        
+
+        circle_marker_824246d626624bd7c4ea6eae920c1de5.bindPopup(popup_55fa61f1e07691fa179daca18198143d)
+        ;
+
+        
+    
+    
+            circle_marker_824246d626624bd7c4ea6eae920c1de5.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bb5a62b0ec095bdba3290b624233f02e = L.circleMarker(
+                [4.957635499999999, 8.321505799999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_b551838a2285c21fe5741f5fc0314587 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a184dd394ab0d80e86e31da8381e550f = $(`<div id="html_a184dd394ab0d80e86e31da8381e550f" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5447347&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9576, 8.3215&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_b551838a2285c21fe5741f5fc0314587.setContent(html_a184dd394ab0d80e86e31da8381e550f);
+            
+        
+
+        circle_marker_bb5a62b0ec095bdba3290b624233f02e.bindPopup(popup_b551838a2285c21fe5741f5fc0314587)
+        ;
+
+        
+    
+    
+            circle_marker_bb5a62b0ec095bdba3290b624233f02e.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8b34349f2a0831f6131c60d40b89860e = L.circleMarker(
+                [4.9593354, 8.3233382],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_c0c9a3006838a3d49c2d24021ebd0b60 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_28d71a2ef3015ace387935a9b890799a = $(`<div id="html_28d71a2ef3015ace387935a9b890799a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5452855&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9593, 8.3233&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_c0c9a3006838a3d49c2d24021ebd0b60.setContent(html_28d71a2ef3015ace387935a9b890799a);
+            
+        
+
+        circle_marker_8b34349f2a0831f6131c60d40b89860e.bindPopup(popup_c0c9a3006838a3d49c2d24021ebd0b60)
+        ;
+
+        
+    
+    
+            circle_marker_8b34349f2a0831f6131c60d40b89860e.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_345cc82b0d68e62727992457eccc7322 = L.circleMarker(
+                [4.957635499999999, 8.321505799999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_50e7cdf5080cd8fbe0db34746ea32d4b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fddc9ddb2625c4cdc6f7b09cb00f1327 = $(`<div id="html_fddc9ddb2625c4cdc6f7b09cb00f1327" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5454083&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Watt Market&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9576, 8.3215&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Watt Market&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_50e7cdf5080cd8fbe0db34746ea32d4b.setContent(html_fddc9ddb2625c4cdc6f7b09cb00f1327);
+            
+        
+
+        circle_marker_345cc82b0d68e62727992457eccc7322.bindPopup(popup_50e7cdf5080cd8fbe0db34746ea32d4b)
+        ;
+
+        
+    
+    
+            circle_marker_345cc82b0d68e62727992457eccc7322.bindTooltip(
+                `<div>
+                     Calabar South | Watt Market (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dca56e3d28f7c542289c6658bf2b89f5 = L.circleMarker(
+                [4.9579124, 8.3230335],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_ed4c843045c79d4b4b441365bad1a365 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9184d66d0b3b029bbf37b914c7054b5d = $(`<div id="html_9184d66d0b3b029bbf37b914c7054b5d" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5454317&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Bedwell Street.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9579, 8.3230&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Bedwell Street.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_ed4c843045c79d4b4b441365bad1a365.setContent(html_9184d66d0b3b029bbf37b914c7054b5d);
+            
+        
+
+        circle_marker_dca56e3d28f7c542289c6658bf2b89f5.bindPopup(popup_ed4c843045c79d4b4b441365bad1a365)
+        ;
+
+        
+    
+    
+            circle_marker_dca56e3d28f7c542289c6658bf2b89f5.bindTooltip(
+                `<div>
+                     Calabar South | Bedwell Street. (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6294ca7923993750d9ab9299182637a3 = L.circleMarker(
+                [4.9592346, 8.3234341],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_796338f272a2408eaaf61d32dd3d866d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_196ff14ebf3adc37ea7effd083b33eb1 = $(`<div id="html_196ff14ebf3adc37ea7effd083b33eb1" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5455261&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9592, 8.3234&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_796338f272a2408eaaf61d32dd3d866d.setContent(html_196ff14ebf3adc37ea7effd083b33eb1);
+            
+        
+
+        circle_marker_6294ca7923993750d9ab9299182637a3.bindPopup(popup_796338f272a2408eaaf61d32dd3d866d)
+        ;
+
+        
+    
+    
+            circle_marker_6294ca7923993750d9ab9299182637a3.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_da1796ca60ee722c6fb57ae42b3f5d7e = L.circleMarker(
+                [4.9591407, 8.3234083],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_14c5175c3fcb24e873b31144a5b71829 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d56313e2c2c66649c9292bfae5ef50a8 = $(`<div id="html_d56313e2c2c66649c9292bfae5ef50a8" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5455308&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9591, 8.3234&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_14c5175c3fcb24e873b31144a5b71829.setContent(html_d56313e2c2c66649c9292bfae5ef50a8);
+            
+        
+
+        circle_marker_da1796ca60ee722c6fb57ae42b3f5d7e.bindPopup(popup_14c5175c3fcb24e873b31144a5b71829)
+        ;
+
+        
+    
+    
+            circle_marker_da1796ca60ee722c6fb57ae42b3f5d7e.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a46c13340ab5a9abf668733bb68e69f1 = L.circleMarker(
+                [4.957635499999999, 8.321505799999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_f9b1fa70390c465b597a2fd94fe08057 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ee07e959b548e77848208f1e7fe6df5b = $(`<div id="html_ee07e959b548e77848208f1e7fe6df5b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5458752&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Watt Market&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9576, 8.3215&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Watt Market&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_f9b1fa70390c465b597a2fd94fe08057.setContent(html_ee07e959b548e77848208f1e7fe6df5b);
+            
+        
+
+        circle_marker_a46c13340ab5a9abf668733bb68e69f1.bindPopup(popup_f9b1fa70390c465b597a2fd94fe08057)
+        ;
+
+        
+    
+    
+            circle_marker_a46c13340ab5a9abf668733bb68e69f1.bindTooltip(
+                `<div>
+                     Calabar South | Watt Market (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_db2c51b2d5a74059c02306af3e1228c7 = L.circleMarker(
+                [4.957635499999999, 8.321505799999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_ac51afb8a94fccf06e9c547ba73bcd07 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_eed20eaf609f3641bfc20675d7168e0c = $(`<div id="html_eed20eaf609f3641bfc20675d7168e0c" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5321595&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Watt Market&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9576, 8.3215&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Watt Market&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_ac51afb8a94fccf06e9c547ba73bcd07.setContent(html_eed20eaf609f3641bfc20675d7168e0c);
+            
+        
+
+        circle_marker_db2c51b2d5a74059c02306af3e1228c7.bindPopup(popup_ac51afb8a94fccf06e9c547ba73bcd07)
+        ;
+
+        
+    
+    
+            circle_marker_db2c51b2d5a74059c02306af3e1228c7.bindTooltip(
+                `<div>
+                     Calabar South | Watt Market (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f54ebdfdaab76c6d5abef70001020625 = L.circleMarker(
+                [4.9593053, 8.3231489],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_f459f46357312ae9512e90b8493b9125 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c5c69d6646295244f7f03d2d1f47253a = $(`<div id="html_c5c69d6646295244f7f03d2d1f47253a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5321778&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9593, 8.3231&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_f459f46357312ae9512e90b8493b9125.setContent(html_c5c69d6646295244f7f03d2d1f47253a);
+            
+        
+
+        circle_marker_f54ebdfdaab76c6d5abef70001020625.bindPopup(popup_f459f46357312ae9512e90b8493b9125)
+        ;
+
+        
+    
+    
+            circle_marker_f54ebdfdaab76c6d5abef70001020625.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8b6529d485bc90b98065f974c4e2f061 = L.circleMarker(
+                [4.9589012, 8.3231959],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_dacbc62db5cc124254119b4bae3fa7fe = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_51ef146e327e770a7214888fd213c6e4 = $(`<div id="html_51ef146e327e770a7214888fd213c6e4" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5321813&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9589, 8.3232&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_dacbc62db5cc124254119b4bae3fa7fe.setContent(html_51ef146e327e770a7214888fd213c6e4);
+            
+        
+
+        circle_marker_8b6529d485bc90b98065f974c4e2f061.bindPopup(popup_dacbc62db5cc124254119b4bae3fa7fe)
+        ;
+
+        
+    
+    
+            circle_marker_8b6529d485bc90b98065f974c4e2f061.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9235d21eb9946be3172aee917f25058f = L.circleMarker(
+                [4.958977, 8.3234349],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_f23e247b510a1d4260a05006d814dab0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_231ac12a0772992a3495fde8634e68a8 = $(`<div id="html_231ac12a0772992a3495fde8634e68a8" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5321821&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9590, 8.3234&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_f23e247b510a1d4260a05006d814dab0.setContent(html_231ac12a0772992a3495fde8634e68a8);
+            
+        
+
+        circle_marker_9235d21eb9946be3172aee917f25058f.bindPopup(popup_f23e247b510a1d4260a05006d814dab0)
+        ;
+
+        
+    
+    
+            circle_marker_9235d21eb9946be3172aee917f25058f.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_112415c3b1ac02c78f354801f100c072 = L.circleMarker(
+                [4.958937, 8.3232036],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_fddec24ac387a0a4ad0468749f02fcd5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3ab4337b8d50dd8a234c642096c017d7 = $(`<div id="html_3ab4337b8d50dd8a234c642096c017d7" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5324725&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9589, 8.3232&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_fddec24ac387a0a4ad0468749f02fcd5.setContent(html_3ab4337b8d50dd8a234c642096c017d7);
+            
+        
+
+        circle_marker_112415c3b1ac02c78f354801f100c072.bindPopup(popup_fddec24ac387a0a4ad0468749f02fcd5)
+        ;
+
+        
+    
+    
+            circle_marker_112415c3b1ac02c78f354801f100c072.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_be5b051f622a2b7ed48970b12b5b287d = L.circleMarker(
+                [4.959306499999999, 8.3228074],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_873ae45a48bf5f21be32d0400ce1b73c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9445f6f92f9d0869599547b03f75302a = $(`<div id="html_9445f6f92f9d0869599547b03f75302a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5324731&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9593, 8.3228&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_873ae45a48bf5f21be32d0400ce1b73c.setContent(html_9445f6f92f9d0869599547b03f75302a);
+            
+        
+
+        circle_marker_be5b051f622a2b7ed48970b12b5b287d.bindPopup(popup_873ae45a48bf5f21be32d0400ce1b73c)
+        ;
+
+        
+    
+    
+            circle_marker_be5b051f622a2b7ed48970b12b5b287d.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6681e4da026933b1382eb63549aa9fcb = L.circleMarker(
+                [4.9584348, 8.3234261],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_a8bed3da2b5fa5398744ae5e79d2eeec = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_67462b0f5dc1a054e037dd22de4ae6cd = $(`<div id="html_67462b0f5dc1a054e037dd22de4ae6cd" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5324754&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9584, 8.3234&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_a8bed3da2b5fa5398744ae5e79d2eeec.setContent(html_67462b0f5dc1a054e037dd22de4ae6cd);
+            
+        
+
+        circle_marker_6681e4da026933b1382eb63549aa9fcb.bindPopup(popup_a8bed3da2b5fa5398744ae5e79d2eeec)
+        ;
+
+        
+    
+    
+            circle_marker_6681e4da026933b1382eb63549aa9fcb.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8af48f68897b80f30717301b03732c82 = L.circleMarker(
+                [4.9584757, 8.3230328],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_cd6dd97f833892215cbcbdcd7265a063 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_522581226ef919088e055b9668adff73 = $(`<div id="html_522581226ef919088e055b9668adff73" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5325832&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Watt Market&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9585, 8.3230&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Watt Market&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_cd6dd97f833892215cbcbdcd7265a063.setContent(html_522581226ef919088e055b9668adff73);
+            
+        
+
+        circle_marker_8af48f68897b80f30717301b03732c82.bindPopup(popup_cd6dd97f833892215cbcbdcd7265a063)
+        ;
+
+        
+    
+    
+            circle_marker_8af48f68897b80f30717301b03732c82.bindTooltip(
+                `<div>
+                     Calabar South | Watt Market (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c2691c4605d9fae07df5210925e621eb = L.circleMarker(
+                [4.9576354999999, 8.3215057999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_16f3972cacc16659e9bbc9d53bdaaccd = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_780222b86f33c3e34716711f0d962822 = $(`<div id="html_780222b86f33c3e34716711f0d962822" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5325993&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Calabar Road.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9576, 8.3215&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Calabar Road.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_16f3972cacc16659e9bbc9d53bdaaccd.setContent(html_780222b86f33c3e34716711f0d962822);
+            
+        
+
+        circle_marker_c2691c4605d9fae07df5210925e621eb.bindPopup(popup_16f3972cacc16659e9bbc9d53bdaaccd)
+        ;
+
+        
+    
+    
+            circle_marker_c2691c4605d9fae07df5210925e621eb.bindTooltip(
+                `<div>
+                     Calabar South | Calabar Road. (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d616dbb0ff3199277f24732b742fda29 = L.circleMarker(
+                [4.9571733, 8.321145],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_46451a845fd3a2edce58bfc8cde60fce = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cc63d2b1468601cda087665e1408fc50 = $(`<div id="html_cc63d2b1468601cda087665e1408fc50" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5326066&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Watt Market&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9572, 8.3211&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Watt Market&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_46451a845fd3a2edce58bfc8cde60fce.setContent(html_cc63d2b1468601cda087665e1408fc50);
+            
+        
+
+        circle_marker_d616dbb0ff3199277f24732b742fda29.bindPopup(popup_46451a845fd3a2edce58bfc8cde60fce)
+        ;
+
+        
+    
+    
+            circle_marker_d616dbb0ff3199277f24732b742fda29.bindTooltip(
+                `<div>
+                     Calabar South | Watt Market (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0aaa1542a7cb90f26527b09a310a653a = L.circleMarker(
+                [4.959105, 8.323098],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_11490cb18f66050dda9b0893105e74a0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_90c6e2ba5eb2131fa0f13aa00f62cbb8 = $(`<div id="html_90c6e2ba5eb2131fa0f13aa00f62cbb8" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5326108&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9591, 8.3231&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_11490cb18f66050dda9b0893105e74a0.setContent(html_90c6e2ba5eb2131fa0f13aa00f62cbb8);
+            
+        
+
+        circle_marker_0aaa1542a7cb90f26527b09a310a653a.bindPopup(popup_11490cb18f66050dda9b0893105e74a0)
+        ;
+
+        
+    
+    
+            circle_marker_0aaa1542a7cb90f26527b09a310a653a.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5ba3eef15358768f6205a4f70fe710be = L.circleMarker(
+                [4.9574897, 8.3203079],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_724dfec0815f9b79321b2520a9130c3c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bbe75064aba725d1e3ad4bfd5c2c0690 = $(`<div id="html_bbe75064aba725d1e3ad4bfd5c2c0690" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5326542&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9575, 8.3203&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_724dfec0815f9b79321b2520a9130c3c.setContent(html_bbe75064aba725d1e3ad4bfd5c2c0690);
+            
+        
+
+        circle_marker_5ba3eef15358768f6205a4f70fe710be.bindPopup(popup_724dfec0815f9b79321b2520a9130c3c)
+        ;
+
+        
+    
+    
+            circle_marker_5ba3eef15358768f6205a4f70fe710be.bindTooltip(
+                `<div>
+                      |  (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6e90105d9cb8026482c65479d0fef137 = L.circleMarker(
+                [4.9582478, 8.323073599999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_31b205bf54499caae30e5286844aaa06 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_99ecda8cce3fa7c28df54399cfc245ca = $(`<div id="html_99ecda8cce3fa7c28df54399cfc245ca" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5399003&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9582, 8.3231&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_31b205bf54499caae30e5286844aaa06.setContent(html_99ecda8cce3fa7c28df54399cfc245ca);
+            
+        
+
+        circle_marker_6e90105d9cb8026482c65479d0fef137.bindPopup(popup_31b205bf54499caae30e5286844aaa06)
+        ;
+
+        
+    
+    
+            circle_marker_6e90105d9cb8026482c65479d0fef137.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fdc2daaabe43ff87f74e550d3129b054 = L.circleMarker(
+                [4.9593077999999, 8.3228219],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_bccbaa39f89137bb9620acef26bfc02b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_85bc3c558822b1bbc1cebe299b82246a = $(`<div id="html_85bc3c558822b1bbc1cebe299b82246a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5400484&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9593, 8.3228&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_bccbaa39f89137bb9620acef26bfc02b.setContent(html_85bc3c558822b1bbc1cebe299b82246a);
+            
+        
+
+        circle_marker_fdc2daaabe43ff87f74e550d3129b054.bindPopup(popup_bccbaa39f89137bb9620acef26bfc02b)
+        ;
+
+        
+    
+    
+            circle_marker_fdc2daaabe43ff87f74e550d3129b054.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1c3a3d7f43d6d3e7702b5db879ba6541 = L.circleMarker(
+                [4.9590373, 8.3236272],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_0bb057173815d3b0782bfc5551a84aa1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cf41222ef6faf6d5d5960b781f83c920 = $(`<div id="html_cf41222ef6faf6d5d5960b781f83c920" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5408959&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9590, 8.3236&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_0bb057173815d3b0782bfc5551a84aa1.setContent(html_cf41222ef6faf6d5d5960b781f83c920);
+            
+        
+
+        circle_marker_1c3a3d7f43d6d3e7702b5db879ba6541.bindPopup(popup_0bb057173815d3b0782bfc5551a84aa1)
+        ;
+
+        
+    
+    
+            circle_marker_1c3a3d7f43d6d3e7702b5db879ba6541.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_37c8939e9839b1a72e511aab2288d853 = L.circleMarker(
+                [4.9589615, 8.3232697],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_7d5a4c1539b9f71e149890c92e513fab = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1df078b1ac931fe11f0ca431f3ec2b9d = $(`<div id="html_1df078b1ac931fe11f0ca431f3ec2b9d" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5344958&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9590, 8.3233&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_7d5a4c1539b9f71e149890c92e513fab.setContent(html_1df078b1ac931fe11f0ca431f3ec2b9d);
+            
+        
+
+        circle_marker_37c8939e9839b1a72e511aab2288d853.bindPopup(popup_7d5a4c1539b9f71e149890c92e513fab)
+        ;
+
+        
+    
+    
+            circle_marker_37c8939e9839b1a72e511aab2288d853.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a5bcd16b30b7d490cc4c0af7852adcee = L.circleMarker(
+                [4.958435, 8.3234053],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_9fcc0f64be1d5770fb9c2b1d10915047 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7f10f8420cb54c13e0ea1a6c57f9e26b = $(`<div id="html_7f10f8420cb54c13e0ea1a6c57f9e26b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5353640&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9584, 8.3234&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_9fcc0f64be1d5770fb9c2b1d10915047.setContent(html_7f10f8420cb54c13e0ea1a6c57f9e26b);
+            
+        
+
+        circle_marker_a5bcd16b30b7d490cc4c0af7852adcee.bindPopup(popup_9fcc0f64be1d5770fb9c2b1d10915047)
+        ;
+
+        
+    
+    
+            circle_marker_a5bcd16b30b7d490cc4c0af7852adcee.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f5a183a50b396803e46b1b5b1bf1eb22 = L.circleMarker(
+                [4.959311, 8.3228561],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9eeef910b988f58253354dd00005b023);
+        
+    
+        var popup_c4a049a678ea4711e2fdbe8e1b4d9df9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3caae1c85a6c840552b350aba1846a89 = $(`<div id="html_3caae1c85a6c840552b350aba1846a89" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5354265&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9593, 8.3229&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_c4a049a678ea4711e2fdbe8e1b4d9df9.setContent(html_3caae1c85a6c840552b350aba1846a89);
+            
+        
+
+        circle_marker_f5a183a50b396803e46b1b5b1bf1eb22.bindPopup(popup_c4a049a678ea4711e2fdbe8e1b4d9df9)
+        ;
+
+        
+    
+    
+            circle_marker_f5a183a50b396803e46b1b5b1bf1eb22.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_9eeef910b988f58253354dd00005b023.addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+        
+    
+            var feature_group_899f3737bbc70c2efd1bc412cfa95036 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_8077473ef0a5f4c0462ad70ed5947fd4 = L.circleMarker(
+                [4.9323578, 8.314154],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_5c9978aa217011e2f21d40550304ddc3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5517894290f418a3cd719e23064dd0c8 = $(`<div id="html_5517894290f418a3cd719e23064dd0c8" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5434259&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9324, 8.3142&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_5c9978aa217011e2f21d40550304ddc3.setContent(html_5517894290f418a3cd719e23064dd0c8);
+            
+        
+
+        circle_marker_8077473ef0a5f4c0462ad70ed5947fd4.bindPopup(popup_5c9978aa217011e2f21d40550304ddc3)
+        ;
+
+        
+    
+    
+            circle_marker_8077473ef0a5f4c0462ad70ed5947fd4.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b8d1fe8c1b2091eb7075d00b476f269f = L.circleMarker(
+                [4.9328147, 8.3139843],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_967c94b5ee1dc12acc96a80521ce3aaa = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_be4c12d4fa9275c16e7ac3604f770e2e = $(`<div id="html_be4c12d4fa9275c16e7ac3604f770e2e" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5434344&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9328, 8.3140&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_967c94b5ee1dc12acc96a80521ce3aaa.setContent(html_be4c12d4fa9275c16e7ac3604f770e2e);
+            
+        
+
+        circle_marker_b8d1fe8c1b2091eb7075d00b476f269f.bindPopup(popup_967c94b5ee1dc12acc96a80521ce3aaa)
+        ;
+
+        
+    
+    
+            circle_marker_b8d1fe8c1b2091eb7075d00b476f269f.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_94b7892359bfc3d328d2ceddd5d02dbc = L.circleMarker(
+                [4.9301667, 8.311881099999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_946662f53ed526081802f36419245a60 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_368b5e5d276395971709ecb287101626 = $(`<div id="html_368b5e5d276395971709ecb287101626" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5443812&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9302, 8.3119&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_946662f53ed526081802f36419245a60.setContent(html_368b5e5d276395971709ecb287101626);
+            
+        
+
+        circle_marker_94b7892359bfc3d328d2ceddd5d02dbc.bindPopup(popup_946662f53ed526081802f36419245a60)
+        ;
+
+        
+    
+    
+            circle_marker_94b7892359bfc3d328d2ceddd5d02dbc.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_96794c091cb00869a4cbae0e57c612ff = L.circleMarker(
+                [4.9284534, 8.3179597],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_013c30677e017349237a9d3297ee71be = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9223ecae38fbc7c24fae4a0d73ab3747 = $(`<div id="html_9223ecae38fbc7c24fae4a0d73ab3747" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5444543&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9285, 8.3180&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_013c30677e017349237a9d3297ee71be.setContent(html_9223ecae38fbc7c24fae4a0d73ab3747);
+            
+        
+
+        circle_marker_96794c091cb00869a4cbae0e57c612ff.bindPopup(popup_013c30677e017349237a9d3297ee71be)
+        ;
+
+        
+    
+    
+            circle_marker_96794c091cb00869a4cbae0e57c612ff.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_88817b8db025a4956d6457ee1e0e3aa6 = L.circleMarker(
+                [4.9284531, 8.3182981],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_301d74f7c792e3213e5d7c01a89ea298 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1a2e1435f9c04fece7021eb0fefbf37e = $(`<div id="html_1a2e1435f9c04fece7021eb0fefbf37e" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5444660&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9285, 8.3183&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_301d74f7c792e3213e5d7c01a89ea298.setContent(html_1a2e1435f9c04fece7021eb0fefbf37e);
+            
+        
+
+        circle_marker_88817b8db025a4956d6457ee1e0e3aa6.bindPopup(popup_301d74f7c792e3213e5d7c01a89ea298)
+        ;
+
+        
+    
+    
+            circle_marker_88817b8db025a4956d6457ee1e0e3aa6.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_db53296baf43efc6059ea8ec1c9bbdbd = L.circleMarker(
+                [4.9309686, 8.3166826],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_c00135e852ea2fb20f7edca012eeb69b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f81688cac15fdb2f39d2c472225ca59c = $(`<div id="html_f81688cac15fdb2f39d2c472225ca59c" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5447356&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9310, 8.3167&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_c00135e852ea2fb20f7edca012eeb69b.setContent(html_f81688cac15fdb2f39d2c472225ca59c);
+            
+        
+
+        circle_marker_db53296baf43efc6059ea8ec1c9bbdbd.bindPopup(popup_c00135e852ea2fb20f7edca012eeb69b)
+        ;
+
+        
+    
+    
+            circle_marker_db53296baf43efc6059ea8ec1c9bbdbd.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7c9964526adbccd5270b042705d1a46e = L.circleMarker(
+                [4.9266893, 8.3222858],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_2955b1af278b2a1305f124e5b6021de4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1d12e58a3425c136fc7d9030400347b3 = $(`<div id="html_1d12e58a3425c136fc7d9030400347b3" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5318408&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; ANANTIGHA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9267, 8.3223&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; ANANTIGHA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_2955b1af278b2a1305f124e5b6021de4.setContent(html_1d12e58a3425c136fc7d9030400347b3);
+            
+        
+
+        circle_marker_7c9964526adbccd5270b042705d1a46e.bindPopup(popup_2955b1af278b2a1305f124e5b6021de4)
+        ;
+
+        
+    
+    
+            circle_marker_7c9964526adbccd5270b042705d1a46e.bindTooltip(
+                `<div>
+                     Calabar South | ANANTIGHA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_794804c2eab5cdcdc232872d92b4e30d = L.circleMarker(
+                [4.9243251, 8.3228378],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_8c2434dcc6f21dfe65b5ccd13118a172 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c5f3911316bd075521b7ca2615608e90 = $(`<div id="html_c5f3911316bd075521b7ca2615608e90" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5319473&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Airport Road.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9243, 8.3228&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Airport Road.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_8c2434dcc6f21dfe65b5ccd13118a172.setContent(html_c5f3911316bd075521b7ca2615608e90);
+            
+        
+
+        circle_marker_794804c2eab5cdcdc232872d92b4e30d.bindPopup(popup_8c2434dcc6f21dfe65b5ccd13118a172)
+        ;
+
+        
+    
+    
+            circle_marker_794804c2eab5cdcdc232872d92b4e30d.bindTooltip(
+                `<div>
+                     Calabar South | Airport Road. (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_844829e6aceccc29b6522ed1a3a3308d = L.circleMarker(
+                [4.9267296, 8.3168584],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_68bd0704eeeacdc7c195be6f5c6e4252 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f1b869d308a9dd099d2bfe3120538cdf = $(`<div id="html_f1b869d308a9dd099d2bfe3120538cdf" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5320644&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; EKPO ABASI&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9267, 8.3169&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; EKPO ABASI&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_68bd0704eeeacdc7c195be6f5c6e4252.setContent(html_f1b869d308a9dd099d2bfe3120538cdf);
+            
+        
+
+        circle_marker_844829e6aceccc29b6522ed1a3a3308d.bindPopup(popup_68bd0704eeeacdc7c195be6f5c6e4252)
+        ;
+
+        
+    
+    
+            circle_marker_844829e6aceccc29b6522ed1a3a3308d.bindTooltip(
+                `<div>
+                     Calabar South | EKPO ABASI (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1c4a167521ebab654c12c8a9ae077710 = L.circleMarker(
+                [4.9286157, 8.3154791],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_6ee69edb57644f3f5a07193a0e43604b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2ad341f5d878cd173976f19202d900d9 = $(`<div id="html_2ad341f5d878cd173976f19202d900d9" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5320676&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9286, 8.3155&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_6ee69edb57644f3f5a07193a0e43604b.setContent(html_2ad341f5d878cd173976f19202d900d9);
+            
+        
+
+        circle_marker_1c4a167521ebab654c12c8a9ae077710.bindPopup(popup_6ee69edb57644f3f5a07193a0e43604b)
+        ;
+
+        
+    
+    
+            circle_marker_1c4a167521ebab654c12c8a9ae077710.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9f38dfc802c900e37335f78a89ca031f = L.circleMarker(
+                [4.930916, 8.3166164],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_be8815f1c8d79a0baaf8553002111a91 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_56d78671cae6ac63502a6b49d27ea9cd = $(`<div id="html_56d78671cae6ac63502a6b49d27ea9cd" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5320689&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MAYNE AVENUE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9309, 8.3166&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MAYNE AVENUE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_be8815f1c8d79a0baaf8553002111a91.setContent(html_56d78671cae6ac63502a6b49d27ea9cd);
+            
+        
+
+        circle_marker_9f38dfc802c900e37335f78a89ca031f.bindPopup(popup_be8815f1c8d79a0baaf8553002111a91)
+        ;
+
+        
+    
+    
+            circle_marker_9f38dfc802c900e37335f78a89ca031f.bindTooltip(
+                `<div>
+                     Calabar South | MAYNE AVENUE (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_22e4f850c572b523392ea171b5850674 = L.circleMarker(
+                [4.9249829, 8.3184514],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_289f8abf03667efc476bd14257d14cd2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e7b896dd28c25e5f038e6e0a78c13e28 = $(`<div id="html_e7b896dd28c25e5f038e6e0a78c13e28" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5320819&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; ANANTIGHA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9250, 8.3185&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; ANANTIGHA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_289f8abf03667efc476bd14257d14cd2.setContent(html_e7b896dd28c25e5f038e6e0a78c13e28);
+            
+        
+
+        circle_marker_22e4f850c572b523392ea171b5850674.bindPopup(popup_289f8abf03667efc476bd14257d14cd2)
+        ;
+
+        
+    
+    
+            circle_marker_22e4f850c572b523392ea171b5850674.bindTooltip(
+                `<div>
+                     Calabar South | ANANTIGHA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c800379f83b608dc358f970aa782e88b = L.circleMarker(
+                [4.9301667, 8.3118810999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_30dec7f4d3eda994d38803d3adc1b1e9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7a1ef082f194a06286d9d19a98a0a0f1 = $(`<div id="html_7a1ef082f194a06286d9d19a98a0a0f1" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5454496&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9302, 8.3119&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_30dec7f4d3eda994d38803d3adc1b1e9.setContent(html_7a1ef082f194a06286d9d19a98a0a0f1);
+            
+        
+
+        circle_marker_c800379f83b608dc358f970aa782e88b.bindPopup(popup_30dec7f4d3eda994d38803d3adc1b1e9)
+        ;
+
+        
+    
+    
+            circle_marker_c800379f83b608dc358f970aa782e88b.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5cfe0c12330acdb6fae5d63ea21050b3 = L.circleMarker(
+                [4.9317306, 8.3145657],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_1ad00b1f82ff06eac305940a12c68d71 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1f7d56a770e7e87e9e0e908ec575dd33 = $(`<div id="html_1f7d56a770e7e87e9e0e908ec575dd33" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5454553&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9317, 8.3146&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_1ad00b1f82ff06eac305940a12c68d71.setContent(html_1f7d56a770e7e87e9e0e908ec575dd33);
+            
+        
+
+        circle_marker_5cfe0c12330acdb6fae5d63ea21050b3.bindPopup(popup_1ad00b1f82ff06eac305940a12c68d71)
+        ;
+
+        
+    
+    
+            circle_marker_5cfe0c12330acdb6fae5d63ea21050b3.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0f3366f1d6e70686260c0bfc4e8a23a6 = L.circleMarker(
+                [4.9301667, 8.311881099999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_aacdf4f366f1b53ab239a2c9e7ff9817 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_096dd6ccafc5bd489ab10210adc0e311 = $(`<div id="html_096dd6ccafc5bd489ab10210adc0e311" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5459781&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9302, 8.3119&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_aacdf4f366f1b53ab239a2c9e7ff9817.setContent(html_096dd6ccafc5bd489ab10210adc0e311);
+            
+        
+
+        circle_marker_0f3366f1d6e70686260c0bfc4e8a23a6.bindPopup(popup_aacdf4f366f1b53ab239a2c9e7ff9817)
+        ;
+
+        
+    
+    
+            circle_marker_0f3366f1d6e70686260c0bfc4e8a23a6.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0530ab80bf91fbd0bcf092c7dd535f3f = L.circleMarker(
+                [4.9290581, 8.3171955],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_f7e01cf6a488c51f117110c0b55c9080 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a06625ea24bfef02794f68bcfaff9202 = $(`<div id="html_a06625ea24bfef02794f68bcfaff9202" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5373095&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9291, 8.3172&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_f7e01cf6a488c51f117110c0b55c9080.setContent(html_a06625ea24bfef02794f68bcfaff9202);
+            
+        
+
+        circle_marker_0530ab80bf91fbd0bcf092c7dd535f3f.bindPopup(popup_f7e01cf6a488c51f117110c0b55c9080)
+        ;
+
+        
+    
+    
+            circle_marker_0530ab80bf91fbd0bcf092c7dd535f3f.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_90c5e19672daeb9855249ae1eb3cda6d = L.circleMarker(
+                [4.9301667, 8.3118810999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_5b905b110de15f2d8b6420dcc0f2bb9d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bdececa4629fb54a3e852e9a8d448305 = $(`<div id="html_bdececa4629fb54a3e852e9a8d448305" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5384443&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9302, 8.3119&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_5b905b110de15f2d8b6420dcc0f2bb9d.setContent(html_bdececa4629fb54a3e852e9a8d448305);
+            
+        
+
+        circle_marker_90c5e19672daeb9855249ae1eb3cda6d.bindPopup(popup_5b905b110de15f2d8b6420dcc0f2bb9d)
+        ;
+
+        
+    
+    
+            circle_marker_90c5e19672daeb9855249ae1eb3cda6d.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f529607a20770262427f23c3c249433d = L.circleMarker(
+                [4.9301667, 8.3118810999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_5c7c432c19dbd9364fdcf1d33a084ddc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_18a6716b44aaeadb2c64fd68c3b812df = $(`<div id="html_18a6716b44aaeadb2c64fd68c3b812df" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5385416&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9302, 8.3119&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_5c7c432c19dbd9364fdcf1d33a084ddc.setContent(html_18a6716b44aaeadb2c64fd68c3b812df);
+            
+        
+
+        circle_marker_f529607a20770262427f23c3c249433d.bindPopup(popup_5c7c432c19dbd9364fdcf1d33a084ddc)
+        ;
+
+        
+    
+    
+            circle_marker_f529607a20770262427f23c3c249433d.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_74609722fa1d0d667f80171f533f8d58 = L.circleMarker(
+                [4.9301667, 8.3118810999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_4837883839e41d7c612b45fc1ea33f37 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_27c536d709773868837a02ba222705b0 = $(`<div id="html_27c536d709773868837a02ba222705b0" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5385418&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9302, 8.3119&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_4837883839e41d7c612b45fc1ea33f37.setContent(html_27c536d709773868837a02ba222705b0);
+            
+        
+
+        circle_marker_74609722fa1d0d667f80171f533f8d58.bindPopup(popup_4837883839e41d7c612b45fc1ea33f37)
+        ;
+
+        
+    
+    
+            circle_marker_74609722fa1d0d667f80171f533f8d58.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_99640529b2b07b1741e5401da7dfa6ad = L.circleMarker(
+                [4.9305818, 8.3116329],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_f906ba9503d7b3c5ea18b878760caad1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_eef77aac6b267d327df086af6f989b08 = $(`<div id="html_eef77aac6b267d327df086af6f989b08" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5393940&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9306, 8.3116&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_f906ba9503d7b3c5ea18b878760caad1.setContent(html_eef77aac6b267d327df086af6f989b08);
+            
+        
+
+        circle_marker_99640529b2b07b1741e5401da7dfa6ad.bindPopup(popup_f906ba9503d7b3c5ea18b878760caad1)
+        ;
+
+        
+    
+    
+            circle_marker_99640529b2b07b1741e5401da7dfa6ad.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_26839622af24795dc0ba1a72efbc1898 = L.circleMarker(
+                [4.9301667, 8.311881099999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_10d4951f55efc9590701d0979f76353c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ba984dcb5947ecbd90bbf54391c4a670 = $(`<div id="html_ba984dcb5947ecbd90bbf54391c4a670" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5394491&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9302, 8.3119&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_10d4951f55efc9590701d0979f76353c.setContent(html_ba984dcb5947ecbd90bbf54391c4a670);
+            
+        
+
+        circle_marker_26839622af24795dc0ba1a72efbc1898.bindPopup(popup_10d4951f55efc9590701d0979f76353c)
+        ;
+
+        
+    
+    
+            circle_marker_26839622af24795dc0ba1a72efbc1898.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7d1fa4c6011bec99b2a642587f0f8910 = L.circleMarker(
+                [4.9336653, 8.3169582],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_fc2a8732474b4e47950f2723fbb8464f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e252537568ef92f4e976367344cbd21b = $(`<div id="html_e252537568ef92f4e976367344cbd21b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5409945&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9337, 8.3170&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_fc2a8732474b4e47950f2723fbb8464f.setContent(html_e252537568ef92f4e976367344cbd21b);
+            
+        
+
+        circle_marker_7d1fa4c6011bec99b2a642587f0f8910.bindPopup(popup_fc2a8732474b4e47950f2723fbb8464f)
+        ;
+
+        
+    
+    
+            circle_marker_7d1fa4c6011bec99b2a642587f0f8910.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c94a8a70b6f1db60afa566358cf07636 = L.circleMarker(
+                [4.9318221, 8.3146278],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_60863741ee284d30fd7608d81ac51c04 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0a1308d5a60a30f15cb7d192dfb53c8f = $(`<div id="html_0a1308d5a60a30f15cb7d192dfb53c8f" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5410528&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9318, 8.3146&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_60863741ee284d30fd7608d81ac51c04.setContent(html_0a1308d5a60a30f15cb7d192dfb53c8f);
+            
+        
+
+        circle_marker_c94a8a70b6f1db60afa566358cf07636.bindPopup(popup_60863741ee284d30fd7608d81ac51c04)
+        ;
+
+        
+    
+    
+            circle_marker_c94a8a70b6f1db60afa566358cf07636.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_503c84dd36be1d7aca0a162362c1db4f = L.circleMarker(
+                [4.9314098, 8.3136645],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_803f6c35d380d54ea35675890bca034b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4549eb91b79ce782a177c84de96e1b42 = $(`<div id="html_4549eb91b79ce782a177c84de96e1b42" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5410901&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9314, 8.3137&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_803f6c35d380d54ea35675890bca034b.setContent(html_4549eb91b79ce782a177c84de96e1b42);
+            
+        
+
+        circle_marker_503c84dd36be1d7aca0a162362c1db4f.bindPopup(popup_803f6c35d380d54ea35675890bca034b)
+        ;
+
+        
+    
+    
+            circle_marker_503c84dd36be1d7aca0a162362c1db4f.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8af5d21a0b1997e7db4f7313eb9e216b = L.circleMarker(
+                [4.9301667, 8.311881099999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_899f3737bbc70c2efd1bc412cfa95036);
+        
+    
+        var popup_5c0ccfca6c4251de97813fd0491054f7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0e8d672c4a1eda042ea1a022e50953f6 = $(`<div id="html_0e8d672c4a1eda042ea1a022e50953f6" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 3&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5412532&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9302, 8.3119&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; MBUKPA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_5c0ccfca6c4251de97813fd0491054f7.setContent(html_0e8d672c4a1eda042ea1a022e50953f6);
+            
+        
+
+        circle_marker_8af5d21a0b1997e7db4f7313eb9e216b.bindPopup(popup_5c0ccfca6c4251de97813fd0491054f7)
+        ;
+
+        
+    
+    
+            circle_marker_8af5d21a0b1997e7db4f7313eb9e216b.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_899f3737bbc70c2efd1bc412cfa95036.addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+        
+    
+            var feature_group_975f52854870a69b612d629cdf449b89 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_04217502fccc6272cec305a86841e7b7 = L.circleMarker(
+                [4.9591134, 8.3238126],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_975f52854870a69b612d629cdf449b89);
+        
+    
+        var popup_c6ec73008c3d59768715b2d2c9c3dec7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bc84c20b2265dc97022f9afc9a852fad = $(`<div id="html_bc84c20b2265dc97022f9afc9a852fad" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5359313&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9591, 8.3238&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_c6ec73008c3d59768715b2d2c9c3dec7.setContent(html_bc84c20b2265dc97022f9afc9a852fad);
+            
+        
+
+        circle_marker_04217502fccc6272cec305a86841e7b7.bindPopup(popup_c6ec73008c3d59768715b2d2c9c3dec7)
+        ;
+
+        
+    
+    
+            circle_marker_04217502fccc6272cec305a86841e7b7.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e464c5e9ac48ee7813cc14cfd5c3764f = L.circleMarker(
+                [4.9595746, 8.3243864],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_975f52854870a69b612d629cdf449b89);
+        
+    
+        var popup_70ebda654a2f2cf0de4fcdae4b94771b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_16ce4407a01623fb2abd00878bc4f51a = $(`<div id="html_16ce4407a01623fb2abd00878bc4f51a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5428456&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9596, 8.3244&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_70ebda654a2f2cf0de4fcdae4b94771b.setContent(html_16ce4407a01623fb2abd00878bc4f51a);
+            
+        
+
+        circle_marker_e464c5e9ac48ee7813cc14cfd5c3764f.bindPopup(popup_70ebda654a2f2cf0de4fcdae4b94771b)
+        ;
+
+        
+    
+    
+            circle_marker_e464c5e9ac48ee7813cc14cfd5c3764f.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e1efcc8b87321c2902bde4e5d1acf6f6 = L.circleMarker(
+                [4.959717299999999, 8.3275401],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_975f52854870a69b612d629cdf449b89);
+        
+    
+        var popup_ad9d4ed470cad4d1e36529cfe7cde473 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4dd7c4fd048e0f6e119e13a0424dfec0 = $(`<div id="html_4dd7c4fd048e0f6e119e13a0424dfec0" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5318169&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Bogobiri Street.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9597, 8.3275&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Bogobiri Street.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_ad9d4ed470cad4d1e36529cfe7cde473.setContent(html_4dd7c4fd048e0f6e119e13a0424dfec0);
+            
+        
+
+        circle_marker_e1efcc8b87321c2902bde4e5d1acf6f6.bindPopup(popup_ad9d4ed470cad4d1e36529cfe7cde473)
+        ;
+
+        
+    
+    
+            circle_marker_e1efcc8b87321c2902bde4e5d1acf6f6.bindTooltip(
+                `<div>
+                     Calabar South | Bogobiri Street. (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_034542712f4cc2fa9b35d4b4646d1b81 = L.circleMarker(
+                [4.960554, 8.3243549],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_975f52854870a69b612d629cdf449b89);
+        
+    
+        var popup_de92d8f28f4de6698dc2ada725ed5aaa = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_448768633ea0efd47d932705a24c49b8 = $(`<div id="html_448768633ea0efd47d932705a24c49b8" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5452884&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9606, 8.3244&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_de92d8f28f4de6698dc2ada725ed5aaa.setContent(html_448768633ea0efd47d932705a24c49b8);
+            
+        
+
+        circle_marker_034542712f4cc2fa9b35d4b4646d1b81.bindPopup(popup_de92d8f28f4de6698dc2ada725ed5aaa)
+        ;
+
+        
+    
+    
+            circle_marker_034542712f4cc2fa9b35d4b4646d1b81.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bb9292e6087134590e3662183e8fdd92 = L.circleMarker(
+                [4.9594837, 8.3240402],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_975f52854870a69b612d629cdf449b89);
+        
+    
+        var popup_43889c4a3f5c683c028fe2dac5944591 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9cea7ffc4f6086843502bab4b007f808 = $(`<div id="html_9cea7ffc4f6086843502bab4b007f808" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5458883&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9595, 8.3240&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_43889c4a3f5c683c028fe2dac5944591.setContent(html_9cea7ffc4f6086843502bab4b007f808);
+            
+        
+
+        circle_marker_bb9292e6087134590e3662183e8fdd92.bindPopup(popup_43889c4a3f5c683c028fe2dac5944591)
+        ;
+
+        
+    
+    
+            circle_marker_bb9292e6087134590e3662183e8fdd92.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a618a2cdbb086c256839ac89dffde15e = L.circleMarker(
+                [4.9591831, 8.3269205],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_975f52854870a69b612d629cdf449b89);
+        
+    
+        var popup_6bc35056366887f910ff233bb3fe4c69 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d68878df040ccba4d54f2609d41d63b6 = $(`<div id="html_d68878df040ccba4d54f2609d41d63b6" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5322921&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9592, 8.3269&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_6bc35056366887f910ff233bb3fe4c69.setContent(html_d68878df040ccba4d54f2609d41d63b6);
+            
+        
+
+        circle_marker_a618a2cdbb086c256839ac89dffde15e.bindPopup(popup_6bc35056366887f910ff233bb3fe4c69)
+        ;
+
+        
+    
+    
+            circle_marker_a618a2cdbb086c256839ac89dffde15e.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_28156cb6a6de09cd87710e0936e38f57 = L.circleMarker(
+                [4.9595766, 8.3243963],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_975f52854870a69b612d629cdf449b89);
+        
+    
+        var popup_cbb9a5c4e4e3b36c4de247eba8bc37c9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ede057d29b8587af982d4aebfeee0f92 = $(`<div id="html_ede057d29b8587af982d4aebfeee0f92" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5325250&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9596, 8.3244&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Etim Edem Street.&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_cbb9a5c4e4e3b36c4de247eba8bc37c9.setContent(html_ede057d29b8587af982d4aebfeee0f92);
+            
+        
+
+        circle_marker_28156cb6a6de09cd87710e0936e38f57.bindPopup(popup_cbb9a5c4e4e3b36c4de247eba8bc37c9)
+        ;
+
+        
+    
+    
+            circle_marker_28156cb6a6de09cd87710e0936e38f57.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cf27f3f678f95b352f7b6c46249cf584 = L.circleMarker(
+                [4.9590321999999, 8.3254862],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_975f52854870a69b612d629cdf449b89);
+        
+    
+        var popup_66f9e0349906f06d01cfc50d0e95bd67 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ac648eb40d64ca09767aaf806f22f522 = $(`<div id="html_ac648eb40d64ca09767aaf806f22f522" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5326499&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9590, 8.3255&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_66f9e0349906f06d01cfc50d0e95bd67.setContent(html_ac648eb40d64ca09767aaf806f22f522);
+            
+        
+
+        circle_marker_cf27f3f678f95b352f7b6c46249cf584.bindPopup(popup_66f9e0349906f06d01cfc50d0e95bd67)
+        ;
+
+        
+    
+    
+            circle_marker_cf27f3f678f95b352f7b6c46249cf584.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_27e0eb017a8b9ccf153ef0413dbf3de6 = L.circleMarker(
+                [4.9596506, 8.323639],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_975f52854870a69b612d629cdf449b89);
+        
+    
+        var popup_4cd3bebc648c36e8e0e81820c3ffb56f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_292b5f86376513ee62fec0e64bf80d30 = $(`<div id="html_292b5f86376513ee62fec0e64bf80d30" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5397328&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9597, 8.3236&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_4cd3bebc648c36e8e0e81820c3ffb56f.setContent(html_292b5f86376513ee62fec0e64bf80d30);
+            
+        
+
+        circle_marker_27e0eb017a8b9ccf153ef0413dbf3de6.bindPopup(popup_4cd3bebc648c36e8e0e81820c3ffb56f)
+        ;
+
+        
+    
+    
+            circle_marker_27e0eb017a8b9ccf153ef0413dbf3de6.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3d54c3fd71d339f48824c4e8fed9fc21 = L.circleMarker(
+                [4.9590017, 8.3240174],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_975f52854870a69b612d629cdf449b89);
+        
+    
+        var popup_47b2662f4509d9f9fa2e527764ced3b8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0558b15d39bd01fe1d21fb0390fb9121 = $(`<div id="html_0558b15d39bd01fe1d21fb0390fb9121" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5397511&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9590, 8.3240&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_47b2662f4509d9f9fa2e527764ced3b8.setContent(html_0558b15d39bd01fe1d21fb0390fb9121);
+            
+        
+
+        circle_marker_3d54c3fd71d339f48824c4e8fed9fc21.bindPopup(popup_47b2662f4509d9f9fa2e527764ced3b8)
+        ;
+
+        
+    
+    
+            circle_marker_3d54c3fd71d339f48824c4e8fed9fc21.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7a6e78e7d3f69532d1ab86ad9b27cce7 = L.circleMarker(
+                [4.960554, 8.3243549],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_975f52854870a69b612d629cdf449b89);
+        
+    
+        var popup_a0293915986454590f8056f5b036b931 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6fa18b022e84a6f3b298099c16b40752 = $(`<div id="html_6fa18b022e84a6f3b298099c16b40752" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 9&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5406948&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 4.9606, 8.3244&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Calabar South&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; GOLDIE&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_a0293915986454590f8056f5b036b931.setContent(html_6fa18b022e84a6f3b298099c16b40752);
+            
+        
+
+        circle_marker_7a6e78e7d3f69532d1ab86ad9b27cce7.bindPopup(popup_a0293915986454590f8056f5b036b931)
+        ;
+
+        
+    
+    
+            circle_marker_7a6e78e7d3f69532d1ab86ad9b27cce7.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 9)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_975f52854870a69b612d629cdf449b89.addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+        
+    
+            var layer_control_c2c48e89e3d6e949e6d15b1282744f48_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_608b306474c14769459b5d9cb722491f,
+                    "OpenStreetMap" : tile_layer_2a4931da5205715f24b6855394578788,
+                    "Terrain" : tile_layer_ff3e4995c6c8febe39df10f2cd11bd76,
+                    "Toner" : tile_layer_6797bcbcf655484046ed44f62d096ddb,
+                    "CartoDB Dark" : tile_layer_e2f7a94fc7a98826f64c7ef01ff3e06d,
+                    "CartoDB Light" : tile_layer_6fa39809a8bcd050da9e070ec49cc45a,
+                },
+                overlays :  {
+                    "Cluster 2 - Calabar South+1more - Watt Market+5more (28 points)" : feature_group_9eeef910b988f58253354dd00005b023,
+                    "Cluster 3 - Calabar South - MBUKPA+4more (25 points)" : feature_group_899f3737bbc70c2efd1bc412cfa95036,
+                    "Cluster 9 - Calabar South - Etim Edem Street.+2more (11 points)" : feature_group_975f52854870a69b612d629cdf449b89,
+                },
+            };
+            let layer_control_c2c48e89e3d6e949e6d15b1282744f48 = L.control.layers(
+                layer_control_c2c48e89e3d6e949e6d15b1282744f48_layers.base_layers,
+                layer_control_c2c48e89e3d6e949e6d15b1282744f48_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+
+        
+    
+            var tile_layer_3b11d8392b9a4c9e360bbc2460bd8821 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_8e885f53879f90c26fcfdc7b2f4cc496 = new L.Control.MiniMap(
+                tile_layer_3b11d8392b9a4c9e360bbc2460bd8821,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_865a2e797cf854f0db0b62bd7b0de9fb.addControl(mini_map_8e885f53879f90c26fcfdc7b2f4cc496);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+        
+    
+            var measure_control_59ae0e3c620a6801d0e842eef9a358c3 = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_865a2e797cf854f0db0b62bd7b0de9fb.addControl(measure_control_59ae0e3c620a6801d0e842eef9a358c3);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_23e9d8a922aa88284ecf892f9ff0f960 = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_23e9d8a922aa88284ecf892f9ff0f960.options["latFormatter"] =
+                undefined;
+            mouse_position_23e9d8a922aa88284ecf892f9ff0f960.options["lngFormatter"] =
+                undefined;
+            map_865a2e797cf854f0db0b62bd7b0de9fb.addControl(mouse_position_23e9d8a922aa88284ecf892f9ff0f960);
+        
+    
+            map_865a2e797cf854f0db0b62bd7b0de9fb.fitBounds(
+                [[4.9143251, 8.3016329], [4.970554, 8.3375401]],
+                {}
+            );
+        
+    
+            var marker_096d56e3a5f2bb60bbdeb022ece62caa = L.marker(
+                [4.9548751, 8.3222803],
+                {
+  "size": 10,
+}
+            ).addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+        
+    
+            var icon_9affdba033decc662696bfe5693af85d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_096d56e3a5f2bb60bbdeb022ece62caa.bindTooltip(
+                `<div>
+                     OmniHub Calabar Municipal Cross River - Eyong Obot
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_096d56e3a5f2bb60bbdeb022ece62caa.setIcon(icon_9affdba033decc662696bfe5693af85d);
+            
+    
+            var poly_line_0516ac251ef33c28aa140b3fb772c253 = L.polyline(
+                [[4.95485, 8.32232], [4.95493, 8.32237], [4.9547, 8.32263], [4.95462, 8.32271], [4.95421, 8.32315], [4.95279, 8.32244], [4.95277, 8.32238], [4.95251, 8.32173], [4.95225, 8.32104], [4.95215, 8.32079], [4.95199, 8.32036], [4.95139, 8.31872], [4.95136, 8.31862], [4.95089, 8.3186], [4.94889, 8.31847], [4.94884, 8.31846], [4.94864, 8.31845], [4.94777, 8.31839], [4.9473, 8.31835], [4.94679, 8.31831], [4.94611, 8.31825], [4.94548, 8.31819], [4.94517, 8.31817], [4.94477, 8.31814], [4.94404, 8.31808], [4.94391, 8.31806], [4.94381, 8.31805], [4.94338, 8.31801], [4.94311, 8.31797], [4.94303, 8.31791], [4.94289, 8.31774], [4.94248, 8.31709], [4.94209, 8.3165], [4.9421, 8.31648], [4.94208, 8.31642], [4.94203, 8.3164], [4.942, 8.3164], [4.94196, 8.31644], [4.94195, 8.31646], [4.94197, 8.31652], [4.94176, 8.31662], [4.94159, 8.31665], [4.94096, 8.31669], [4.94093, 8.3167], [4.94008, 8.31671], [4.93956, 8.31673], [4.93896, 8.31674], [4.93888, 8.31675], [4.93831, 8.31676], [4.93747, 8.31678], [4.93741, 8.31678], [4.93716, 8.31677], [4.93606, 8.31677], [4.93597, 8.31678], [4.93541, 8.31682], [4.93485, 8.31686], [4.93378, 8.31698], [4.93367, 8.31699], [4.93378, 8.31698], [4.93485, 8.31686], [4.93541, 8.31682], [4.93597, 8.31678], [4.93606, 8.31677], [4.93716, 8.31677], [4.93741, 8.31678], [4.93747, 8.31678], [4.93831, 8.31676], [4.93888, 8.31675], [4.93896, 8.31674], [4.93956, 8.31673], [4.94008, 8.31671], [4.94093, 8.3167], [4.94096, 8.31669], [4.94159, 8.31665], [4.94176, 8.31662], [4.94197, 8.31652], [4.94202, 8.31654], [4.94207, 8.31653], [4.94209, 8.3165], [4.94248, 8.31709], [4.94289, 8.31774], [4.94303, 8.31791], [4.94311, 8.31797], [4.94338, 8.31801], [4.94381, 8.31805], [4.94391, 8.31806], [4.94404, 8.31808], [4.94477, 8.31814], [4.94517, 8.31817], [4.94548, 8.31819], [4.94611, 8.31825], [4.94679, 8.31831], [4.9473, 8.31835], [4.94777, 8.31839], [4.94864, 8.31845], [4.94884, 8.31846], [4.94889, 8.31847], [4.95089, 8.3186], [4.95136, 8.31862], [4.95139, 8.31872], [4.95199, 8.32036], [4.9522, 8.32024], [4.95276, 8.31989], [4.95338, 8.31949], [4.95388, 8.31914], [4.95451, 8.31869], [4.95537, 8.31918], [4.95589, 8.31949], [4.95637, 8.31977], [4.95682, 8.32003], [4.95721, 8.32021], [4.95735, 8.32026], [4.95735, 8.32032], [4.95739, 8.3204], [4.95743, 8.32042], [4.95747, 8.32044], [4.95731, 8.32077], [4.95707, 8.32118], [4.95712, 8.32111], [4.95731, 8.32077], [4.95747, 8.32044], [4.95751, 8.32045], [4.9577, 8.32061], [4.95799, 8.3208], [4.95868, 8.3212], [4.95898, 8.32139], [4.95931, 8.32164], [4.95902, 8.32209], [4.95892, 8.32228], [4.95886, 8.32237], [4.95882, 8.32244], [4.95893, 8.32288], [4.9591, 8.32297], [4.95916, 8.32302], [4.95959, 8.32351], [4.95949, 8.32362], [4.95943, 8.32372], [4.95942, 8.32387], [4.95943, 8.32372], [4.95949, 8.32362], [4.95959, 8.32351], [4.95968, 8.32361], [4.95959, 8.32351], [4.9594, 8.32328], [4.95929, 8.32316], [4.95918, 8.32303], [4.95916, 8.32302], [4.95916, 8.32301], [4.95915, 8.323], [4.9591, 8.32297], [4.95893, 8.32288], [4.95882, 8.32244], [4.9585, 8.32304], [4.95836, 8.32327], [4.9582, 8.32317], [4.95819, 8.32317], [4.95793, 8.32301], [4.95653, 8.32217], [4.95622, 8.32197], [4.95564, 8.32164], [4.95528, 8.32203], [4.95493, 8.32237], [4.95485, 8.32232]],
+                {"bubblingMouseEvents": true, "color": "#1f77b4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#1f77b4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+        
+    
+            var poly_line_d19bd6c2875a10ab6f6ef85db5d76b49 = L.polyline(
+                [[4.95485, 8.32232], [4.95493, 8.32237], [4.9547, 8.32263], [4.95462, 8.32271], [4.95421, 8.32315], [4.95524, 8.3237], [4.95563, 8.32389], [4.95657, 8.32436], [4.95731, 8.32473], [4.95717, 8.32494], [4.95778, 8.32517], [4.95872, 8.32544], [4.95903, 8.32551], [4.95945, 8.32562], [4.95971, 8.32577], [4.95958, 8.32601], [4.95954, 8.32609], [4.95937, 8.32642], [4.95913, 8.32691], [4.95881, 8.32759], [4.95856, 8.32814], [4.95861, 8.32816], [4.95887, 8.32762], [4.9592, 8.32694], [4.95981, 8.32743], [4.9592, 8.32694], [4.9592, 8.32693], [4.9595, 8.32634], [4.95964, 8.32605], [4.96012, 8.32524], [4.96062, 8.32445], [4.96089, 8.32406], [4.96114, 8.32377], [4.96133, 8.32355], [4.96144, 8.32341], [4.96149, 8.32335], [4.96151, 8.32328], [4.96144, 8.32331], [4.96139, 8.32337], [4.96128, 8.32348], [4.96085, 8.32401], [4.96058, 8.32438], [4.96055, 8.32442], [4.96031, 8.32481], [4.9597, 8.32477], [4.95957, 8.32476], [4.95957, 8.32476], [4.95927, 8.32476], [4.95917, 8.3243], [4.95912, 8.324], [4.95909, 8.32382], [4.95905, 8.32362], [4.95903, 8.32347], [4.95902, 8.32343], [4.95899, 8.32326], [4.95898, 8.32318], [4.95898, 8.3232], [4.95896, 8.32305], [4.95893, 8.32288], [4.95882, 8.32244], [4.9585, 8.32304], [4.9585, 8.32305], [4.95836, 8.32327], [4.95832, 8.32333], [4.95831, 8.32334], [4.95793, 8.32388], [4.95772, 8.32416], [4.95746, 8.32452], [4.95731, 8.32473], [4.95657, 8.32436], [4.95563, 8.32389], [4.95524, 8.3237], [4.95421, 8.32315], [4.95462, 8.32271], [4.9547, 8.32263], [4.95493, 8.32237], [4.95485, 8.32232]],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#ff7f0e", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+        
+    
+            var poly_line_6392fe8396840bf570f022bab861ffc1 = L.polyline(
+                [[4.95485, 8.32232], [4.95493, 8.32237], [4.9547, 8.32263], [4.95462, 8.32271], [4.95421, 8.32315], [4.95279, 8.32244], [4.95277, 8.32238], [4.95251, 8.32173], [4.95225, 8.32104], [4.95215, 8.32079], [4.95199, 8.32036], [4.95133, 8.32066], [4.94972, 8.32134], [4.9492, 8.32154], [4.94916, 8.32155], [4.94893, 8.32161], [4.94865, 8.32166], [4.94788, 8.32175], [4.94781, 8.32175], [4.94745, 8.3218], [4.94694, 8.32184], [4.9465, 8.32182], [4.94571, 8.32181], [4.94556, 8.32182], [4.94442, 8.32183], [4.94356, 8.32182], [4.94351, 8.32181], [4.94197, 8.32177], [4.94115, 8.32184], [4.94096, 8.32186], [4.94012, 8.32194], [4.93943, 8.32198], [4.93878, 8.322], [4.93861, 8.32204], [4.9377, 8.32145], [4.93723, 8.32113], [4.93721, 8.32115], [4.9372, 8.32112], [4.93693, 8.32095], [4.93646, 8.32065], [4.93569, 8.32], [4.93548, 8.31982], [4.93524, 8.31965], [4.93504, 8.31956], [4.93409, 8.31914], [4.93339, 8.31883], [4.93315, 8.3187], [4.93272, 8.31845], [4.9322, 8.31802], [4.93217, 8.318], [4.932, 8.31783], [4.93158, 8.31734], [4.93113, 8.31688], [4.93098, 8.31668], [4.93092, 8.31661], [4.93082, 8.31647], [4.93043, 8.31598], [4.92973, 8.31663], [4.9292, 8.31723], [4.92908, 8.31716], [4.9292, 8.31723], [4.9286, 8.31792], [4.92843, 8.31815], [4.92837, 8.31824], [4.92837, 8.31825], [4.92837, 8.31824], [4.92843, 8.31815], [4.92853, 8.31802], [4.9286, 8.31792], [4.9292, 8.31723], [4.92973, 8.31663], [4.93043, 8.31598], [4.93018, 8.31565], [4.92998, 8.3154], [4.92978, 8.31514], [4.92956, 8.31487], [4.92894, 8.31529], [4.92862, 8.31549], [4.92894, 8.31529], [4.92956, 8.31487], [4.92937, 8.31464], [4.9292, 8.31439], [4.92901, 8.31402], [4.92889, 8.31374], [4.92884, 8.31365], [4.92868, 8.31328], [4.92853, 8.31295], [4.92836, 8.31254], [4.92833, 8.31241], [4.92834, 8.31237], [4.92861, 8.31224], [4.92903, 8.31208], [4.92924, 8.31205], [4.93009, 8.31198], [4.93019, 8.31195], [4.93021, 8.31194], [4.93026, 8.3119], [4.93051, 8.31171], [4.9306, 8.31166], [4.93051, 8.31171], [4.93026, 8.3119], [4.93064, 8.31234], [4.93068, 8.31241], [4.93075, 8.31256], [4.93108, 8.31334], [4.9312, 8.31357], [4.93129, 8.31373], [4.93165, 8.31435], [4.93174, 8.31456], [4.93177, 8.31462], [4.93178, 8.31465], [4.93177, 8.31462], [4.93165, 8.31435], [4.93235, 8.31413], [4.93243, 8.3141], [4.93252, 8.31408], [4.93282, 8.31399], [4.93326, 8.31386], [4.93365, 8.31371], [4.93377, 8.31365], [4.93424, 8.31342], [4.93489, 8.31318], [4.93509, 8.31313], [4.93543, 8.31308], [4.93589, 8.31307], [4.93622, 8.31306], [4.93665, 8.31305], [4.93709, 8.313], [4.93754, 8.31292], [4.93859, 8.31294], [4.93976, 8.31299], [4.94071, 8.31309], [4.94069, 8.31285], [4.9407, 8.31265], [4.94075, 8.31239], [4.94083, 8.3121], [4.94095, 8.31178], [4.9411, 8.31137], [4.94147, 8.31152], [4.9417, 8.31161], [4.94191, 8.3117], [4.94336, 8.31232], [4.94341, 8.31235], [4.9436, 8.31245], [4.94412, 8.31288], [4.94498, 8.31353], [4.94515, 8.31363], [4.94535, 8.31374], [4.94572, 8.31393], [4.94577, 8.31396], [4.94636, 8.31431], [4.94676, 8.31457], [4.94717, 8.31481], [4.948, 8.31526], [4.95006, 8.31619], [4.9507, 8.31649], [4.9508, 8.31691], [4.95105, 8.31777], [4.95121, 8.31817], [4.95135, 8.31857], [4.95136, 8.31862], [4.95139, 8.31872], [4.95199, 8.32036], [4.95215, 8.32079], [4.95225, 8.32104], [4.95251, 8.32173], [4.95277, 8.32238], [4.95279, 8.32244], [4.95421, 8.32315], [4.95462, 8.32271], [4.9547, 8.32263], [4.95493, 8.32237], [4.95485, 8.32232]],
+                {"bubblingMouseEvents": true, "color": "#2ca02c", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#2ca02c", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_865a2e797cf854f0db0b62bd7b0de9fb);
+        
+</script>
+</html>

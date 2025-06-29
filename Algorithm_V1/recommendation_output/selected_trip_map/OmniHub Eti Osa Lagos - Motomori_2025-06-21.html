@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_f8f32e436e685f391346af51473cfcf9 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 3 clusters | 38 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+    <div id="cluster-legend" style="position: fixed; 
+                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                background-color: rgba(255, 255, 255, 0.95); 
+                border: 2px solid #ccc; z-index: 999; 
+                font-size: 11px; padding: 12px; border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                backdrop-filter: blur(5px);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <strong style="color: #333;">Cluster Legend</strong>
+        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+    </div>
+    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+        3 clusters | Sorted by size | Showing top 15
+    </div>
+    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">20 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 6 
+                <br><span style="color: #666; font-size: 9px;">12 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 8 
+                <br><span style="color: #666; font-size: 9px;">6 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_f8f32e436e685f391346af51473cfcf9" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_f8f32e436e685f391346af51473cfcf9 = L.map(
+                "map_f8f32e436e685f391346af51473cfcf9",
+                {
+                    center: [6.46729515, 3.51231475],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_f8f32e436e685f391346af51473cfcf9);
+
+            
+
+        
+    
+            var tile_layer_1035a048aeb48ac4827f224ab6f1ba67 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_1035a048aeb48ac4827f224ab6f1ba67.addTo(map_f8f32e436e685f391346af51473cfcf9);
+        
+    
+            var tile_layer_8dec9eb802c23e9b424f1d5b427028f8 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_8dec9eb802c23e9b424f1d5b427028f8.addTo(map_f8f32e436e685f391346af51473cfcf9);
+        
+    
+            var tile_layer_938453836f1568a45ca29b302b640d6c = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_938453836f1568a45ca29b302b640d6c.addTo(map_f8f32e436e685f391346af51473cfcf9);
+        
+    
+            var tile_layer_05561b9b86c8834edf77507be698f2d4 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_05561b9b86c8834edf77507be698f2d4.addTo(map_f8f32e436e685f391346af51473cfcf9);
+        
+    
+            var tile_layer_cce07124fd8c0840f64d7757896b71d8 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_cce07124fd8c0840f64d7757896b71d8.addTo(map_f8f32e436e685f391346af51473cfcf9);
+        
+    
+            var tile_layer_1e4b89c7015004854a358707fd230ad0 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_1e4b89c7015004854a358707fd230ad0.addTo(map_f8f32e436e685f391346af51473cfcf9);
+        
+    
+            var feature_group_4063ac81609f6cd952d6e41a3a5110c4 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_2a8649428368bbdd28e4200a787615e9 = L.circleMarker(
+                [6.4634707, 3.555718],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_4f4cae89b4270e507d6727411eb7058b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d480bd2fd5113cea741f1c3d170d5224 = $(`<div id="html_d480bd2fd5113cea741f1c3d170d5224" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1804219&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4635, 3.5557&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_4f4cae89b4270e507d6727411eb7058b.setContent(html_d480bd2fd5113cea741f1c3d170d5224);
+            
+        
+
+        circle_marker_2a8649428368bbdd28e4200a787615e9.bindPopup(popup_4f4cae89b4270e507d6727411eb7058b)
+        ;
+
+        
+    
+    
+            circle_marker_2a8649428368bbdd28e4200a787615e9.bindTooltip(
+                `<div>
+                     Eti Osa |  (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_79b931ba16d3ac4117ebe925cdd43d92 = L.circleMarker(
+                [6.465894, 3.561445],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_02540e510183c2d73f174df93de8ffe7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6b7b73849cf8509fadd984e4e019733e = $(`<div id="html_6b7b73849cf8509fadd984e4e019733e" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1876195&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4659, 3.5614&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_02540e510183c2d73f174df93de8ffe7.setContent(html_6b7b73849cf8509fadd984e4e019733e);
+            
+        
+
+        circle_marker_79b931ba16d3ac4117ebe925cdd43d92.bindPopup(popup_02540e510183c2d73f174df93de8ffe7)
+        ;
+
+        
+    
+    
+            circle_marker_79b931ba16d3ac4117ebe925cdd43d92.bindTooltip(
+                `<div>
+                     Eti Osa |  (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2c3e55594ac4981e00ab464903c84af8 = L.circleMarker(
+                [6.4478212, 3.5688645],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_c83d92ba5c9276d7b8900ba85be5c606 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2692ef92d1fc8f03755cc455d168d0d0 = $(`<div id="html_2692ef92d1fc8f03755cc455d168d0d0" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 1876256&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4478, 3.5689&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_c83d92ba5c9276d7b8900ba85be5c606.setContent(html_2692ef92d1fc8f03755cc455d168d0d0);
+            
+        
+
+        circle_marker_2c3e55594ac4981e00ab464903c84af8.bindPopup(popup_c83d92ba5c9276d7b8900ba85be5c606)
+        ;
+
+        
+    
+    
+            circle_marker_2c3e55594ac4981e00ab464903c84af8.bindTooltip(
+                `<div>
+                     Eti Osa |  (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0029946d17b37470947ccac054089bf7 = L.circleMarker(
+                [6.4478212, 3.5688645],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_89b503115de852f63d39b5d1d4f9f99b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_21df160cc16459d44a22754c0e79dee1 = $(`<div id="html_21df160cc16459d44a22754c0e79dee1" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5440983&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (ilaje)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4478, 3.5689&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (ilaje)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_89b503115de852f63d39b5d1d4f9f99b.setContent(html_21df160cc16459d44a22754c0e79dee1);
+            
+        
+
+        circle_marker_0029946d17b37470947ccac054089bf7.bindPopup(popup_89b503115de852f63d39b5d1d4f9f99b)
+        ;
+
+        
+    
+    
+            circle_marker_0029946d17b37470947ccac054089bf7.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (ilaje) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3ed27d72e61938efeb730b1c3032cfce = L.circleMarker(
+                [6.4487049, 3.5741515],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_f8399ebec472ea094c38a3a5ac9e21d8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_261b364839230a41cd5e4198f02e530d = $(`<div id="html_261b364839230a41cd5e4198f02e530d" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 2507639&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Ajah (lekki)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4487, 3.5742&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Ajah (lekki)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_f8399ebec472ea094c38a3a5ac9e21d8.setContent(html_261b364839230a41cd5e4198f02e530d);
+            
+        
+
+        circle_marker_3ed27d72e61938efeb730b1c3032cfce.bindPopup(popup_f8399ebec472ea094c38a3a5ac9e21d8)
+        ;
+
+        
+    
+    
+            circle_marker_3ed27d72e61938efeb730b1c3032cfce.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Ajah (lekki) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9c562839e1f0b850f02d320fe7b93951 = L.circleMarker(
+                [6.4478212, 3.5688645],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_c939e813967479bfa7a8240da30d1808 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d597e19ed0f67d17ca11f408600159d2 = $(`<div id="html_d597e19ed0f67d17ca11f408600159d2" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3119224&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4478, 3.5689&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_c939e813967479bfa7a8240da30d1808.setContent(html_d597e19ed0f67d17ca11f408600159d2);
+            
+        
+
+        circle_marker_9c562839e1f0b850f02d320fe7b93951.bindPopup(popup_c939e813967479bfa7a8240da30d1808)
+        ;
+
+        
+    
+    
+            circle_marker_9c562839e1f0b850f02d320fe7b93951.bindTooltip(
+                `<div>
+                     Eti Osa |  (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cde4a11bad410cd96fac0b22c7e9d6a8 = L.circleMarker(
+                [6.4578452, 3.5696564],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_4379a7fe9e7a29540caad994cd80b467 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1e326690b773c3b466164d3859a486ad = $(`<div id="html_1e326690b773c3b466164d3859a486ad" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3785994&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OmniShelf LCDA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4578, 3.5697&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OmniShelf LCDA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_4379a7fe9e7a29540caad994cd80b467.setContent(html_1e326690b773c3b466164d3859a486ad);
+            
+        
+
+        circle_marker_cde4a11bad410cd96fac0b22c7e9d6a8.bindPopup(popup_4379a7fe9e7a29540caad994cd80b467)
+        ;
+
+        
+    
+    
+            circle_marker_cde4a11bad410cd96fac0b22c7e9d6a8.bindTooltip(
+                `<div>
+                     Eti Osa | OmniShelf LCDA (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c653d2b9c14920d7447e33616fa03911 = L.circleMarker(
+                [6.4634707, 3.555718],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_6a57d6ab7658696aac907049db8a3420 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_edeb8a8dbf88b2f67ffddc86b38c0c95 = $(`<div id="html_edeb8a8dbf88b2f67ffddc86b38c0c95" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3885647&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4635, 3.5557&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_6a57d6ab7658696aac907049db8a3420.setContent(html_edeb8a8dbf88b2f67ffddc86b38c0c95);
+            
+        
+
+        circle_marker_c653d2b9c14920d7447e33616fa03911.bindPopup(popup_6a57d6ab7658696aac907049db8a3420)
+        ;
+
+        
+    
+    
+            circle_marker_c653d2b9c14920d7447e33616fa03911.bindTooltip(
+                `<div>
+                     Eti Osa |  (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5e8f884ef6512dff69e3b50c6acf2cc8 = L.circleMarker(
+                [6.4660322, 3.5445844],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_0cbabaa12ba06d221f468a90eddfc0a5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e9141802b825b534afc294aacd23cc26 = $(`<div id="html_e9141802b825b534afc294aacd23cc26" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5291403&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Vgc&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4660, 3.5446&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Vgc&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_0cbabaa12ba06d221f468a90eddfc0a5.setContent(html_e9141802b825b534afc294aacd23cc26);
+            
+        
+
+        circle_marker_5e8f884ef6512dff69e3b50c6acf2cc8.bindPopup(popup_0cbabaa12ba06d221f468a90eddfc0a5)
+        ;
+
+        
+    
+    
+            circle_marker_5e8f884ef6512dff69e3b50c6acf2cc8.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Vgc (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5500b70a912226ca79d9255a7c7e69dd = L.circleMarker(
+                [6.4478212, 3.5688645],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_d72d0c111082ccdd0bb977249240c2cf = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fe321676a56b68082e2cc0a105da9eb6 = $(`<div id="html_fe321676a56b68082e2cc0a105da9eb6" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4279282&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (ilaje)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4478, 3.5689&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (ilaje)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_d72d0c111082ccdd0bb977249240c2cf.setContent(html_fe321676a56b68082e2cc0a105da9eb6);
+            
+        
+
+        circle_marker_5500b70a912226ca79d9255a7c7e69dd.bindPopup(popup_d72d0c111082ccdd0bb977249240c2cf)
+        ;
+
+        
+    
+    
+            circle_marker_5500b70a912226ca79d9255a7c7e69dd.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (ilaje) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_be1509817e11e5634366fd9ae336dd8d = L.circleMarker(
+                [6.464587400000001, 3.5725244],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_33910a9144dbabbe8f51d1e2fe3bb2c0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_aea7f3ae826ac8445f1828cfb4b80d6f = $(`<div id="html_aea7f3ae826ac8445f1828cfb4b80d6f" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4334057&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (jakande)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4646, 3.5725&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (jakande)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_33910a9144dbabbe8f51d1e2fe3bb2c0.setContent(html_aea7f3ae826ac8445f1828cfb4b80d6f);
+            
+        
+
+        circle_marker_be1509817e11e5634366fd9ae336dd8d.bindPopup(popup_33910a9144dbabbe8f51d1e2fe3bb2c0)
+        ;
+
+        
+    
+    
+            circle_marker_be1509817e11e5634366fd9ae336dd8d.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (jakande) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4237a20faf08be17acee3a08c01f625d = L.circleMarker(
+                [6.4562344, 3.5725572],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_9c780125c48f98a37dc7270996fd114c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_664e4075cf58736a3a8d911863d881bc = $(`<div id="html_664e4075cf58736a3a8d911863d881bc" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4354246&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (addo Road)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4562, 3.5726&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (addo Road)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_9c780125c48f98a37dc7270996fd114c.setContent(html_664e4075cf58736a3a8d911863d881bc);
+            
+        
+
+        circle_marker_4237a20faf08be17acee3a08c01f625d.bindPopup(popup_9c780125c48f98a37dc7270996fd114c)
+        ;
+
+        
+    
+    
+            circle_marker_4237a20faf08be17acee3a08c01f625d.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (addo Road) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b4c662b38dd1043bd937f5403b66f7a0 = L.circleMarker(
+                [6.4667118, 3.5622718],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_7421f1c4d6e1c2a7cca5b3bf875ebce4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_acfc47835bfc67e136350c8fe91b726d = $(`<div id="html_acfc47835bfc67e136350c8fe91b726d" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5328522&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (abraham Adesanya)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4667, 3.5623&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (abraham Adesanya)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_7421f1c4d6e1c2a7cca5b3bf875ebce4.setContent(html_acfc47835bfc67e136350c8fe91b726d);
+            
+        
+
+        circle_marker_b4c662b38dd1043bd937f5403b66f7a0.bindPopup(popup_7421f1c4d6e1c2a7cca5b3bf875ebce4)
+        ;
+
+        
+    
+    
+            circle_marker_b4c662b38dd1043bd937f5403b66f7a0.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (abraham Adesanya) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a97c1f72ed8f4e8d56fad3e4d60ed03f = L.circleMarker(
+                [6.464587400000001, 3.5725244],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_7bd222ad938a29928617647eba4d53ca = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e4da435e07ed2cbd56abb2e647337b3f = $(`<div id="html_e4da435e07ed2cbd56abb2e647337b3f" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5365177&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (sangotedo)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4646, 3.5725&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (sangotedo)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_7bd222ad938a29928617647eba4d53ca.setContent(html_e4da435e07ed2cbd56abb2e647337b3f);
+            
+        
+
+        circle_marker_a97c1f72ed8f4e8d56fad3e4d60ed03f.bindPopup(popup_7bd222ad938a29928617647eba4d53ca)
+        ;
+
+        
+    
+    
+            circle_marker_a97c1f72ed8f4e8d56fad3e4d60ed03f.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (sangotedo) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_451eefcced808fabfd4e47ac7b938207 = L.circleMarker(
+                [6.4478212, 3.5688645],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_d5ee2d96efd3a0f0dcdb941267b707cf = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4f6cb265bcb78b907eabd8315bfda1e9 = $(`<div id="html_4f6cb265bcb78b907eabd8315bfda1e9" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3968667&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (ilaje)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4478, 3.5689&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (ilaje)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_d5ee2d96efd3a0f0dcdb941267b707cf.setContent(html_4f6cb265bcb78b907eabd8315bfda1e9);
+            
+        
+
+        circle_marker_451eefcced808fabfd4e47ac7b938207.bindPopup(popup_d5ee2d96efd3a0f0dcdb941267b707cf)
+        ;
+
+        
+    
+    
+            circle_marker_451eefcced808fabfd4e47ac7b938207.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (ilaje) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_43f435086d28394d92a2e62393f57a83 = L.circleMarker(
+                [6.455408299999999, 3.5691663],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_293f6ba0b5d03469878732afd02e5b96 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7f170770b4c9fdcc7e6c8922c8b1d170 = $(`<div id="html_7f170770b4c9fdcc7e6c8922c8b1d170" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4035843&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (ilaje)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4554, 3.5692&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (ilaje)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_293f6ba0b5d03469878732afd02e5b96.setContent(html_7f170770b4c9fdcc7e6c8922c8b1d170);
+            
+        
+
+        circle_marker_43f435086d28394d92a2e62393f57a83.bindPopup(popup_293f6ba0b5d03469878732afd02e5b96)
+        ;
+
+        
+    
+    
+            circle_marker_43f435086d28394d92a2e62393f57a83.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (ilaje) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cf39e8b2232a4eb7cb0ee658bfc03f98 = L.circleMarker(
+                [6.466691, 3.56313],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_f4aae355a5ee2e72c7ed24bc8bfbbfbc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4c2f385ba3cbd5f259e6a0c7fcb4d9b0 = $(`<div id="html_4c2f385ba3cbd5f259e6a0c7fcb4d9b0" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4059512&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (ilaje)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4667, 3.5631&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (ilaje)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_f4aae355a5ee2e72c7ed24bc8bfbbfbc.setContent(html_4c2f385ba3cbd5f259e6a0c7fcb4d9b0);
+            
+        
+
+        circle_marker_cf39e8b2232a4eb7cb0ee658bfc03f98.bindPopup(popup_f4aae355a5ee2e72c7ed24bc8bfbbfbc)
+        ;
+
+        
+    
+    
+            circle_marker_cf39e8b2232a4eb7cb0ee658bfc03f98.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (ilaje) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_afb401074ddb3a7048404735dfa201c9 = L.circleMarker(
+                [6.464587400000001, 3.5725244],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_76a5598f2d63966d422e77f68ec69fa3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_aeb2100e68388b550b02e2d71b2697c9 = $(`<div id="html_aeb2100e68388b550b02e2d71b2697c9" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4091321&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Oniru Estate&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4646, 3.5725&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Oniru Estate&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_76a5598f2d63966d422e77f68ec69fa3.setContent(html_aeb2100e68388b550b02e2d71b2697c9);
+            
+        
+
+        circle_marker_afb401074ddb3a7048404735dfa201c9.bindPopup(popup_76a5598f2d63966d422e77f68ec69fa3)
+        ;
+
+        
+    
+    
+            circle_marker_afb401074ddb3a7048404735dfa201c9.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Oniru Estate (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cc9b4ba91ced5e31d6e2ce453a1974a8 = L.circleMarker(
+                [6.465894, 3.561445],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_040a84fe6b8b6beff51b294f095e36e7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_969339254cc6adb0fe8154264909fa16 = $(`<div id="html_969339254cc6adb0fe8154264909fa16" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5136322&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (abraham Adesanya)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4659, 3.5614&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (abraham Adesanya)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_040a84fe6b8b6beff51b294f095e36e7.setContent(html_969339254cc6adb0fe8154264909fa16);
+            
+        
+
+        circle_marker_cc9b4ba91ced5e31d6e2ce453a1974a8.bindPopup(popup_040a84fe6b8b6beff51b294f095e36e7)
+        ;
+
+        
+    
+    
+            circle_marker_cc9b4ba91ced5e31d6e2ce453a1974a8.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (abraham Adesanya) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dae0a2558816663ada6a56008fdabff6 = L.circleMarker(
+                [6.455633, 3.554946],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_4063ac81609f6cd952d6e41a3a5110c4);
+        
+    
+        var popup_df95aa46871f453320d5011469a51ccc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_266277a99cda23fdbca691d55e757053 = $(`<div id="html_266277a99cda23fdbca691d55e757053" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #1f77b4; margin-bottom: 5px;&#39;&gt;Cluster 2&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5377284&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ikota&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4556, 3.5549&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ikota&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_df95aa46871f453320d5011469a51ccc.setContent(html_266277a99cda23fdbca691d55e757053);
+            
+        
+
+        circle_marker_dae0a2558816663ada6a56008fdabff6.bindPopup(popup_df95aa46871f453320d5011469a51ccc)
+        ;
+
+        
+    
+    
+            circle_marker_dae0a2558816663ada6a56008fdabff6.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ikota (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_4063ac81609f6cd952d6e41a3a5110c4.addTo(map_f8f32e436e685f391346af51473cfcf9);
+        
+    
+            var feature_group_798a6da6b77fef6f0580424fb48f4697 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_50a1eea34b8ac225782d6dc1fff28b23 = L.circleMarker(
+                [6.4840250999999, 3.6041963],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_798a6da6b77fef6f0580424fb48f4697);
+        
+    
+        var popup_90d08690065e0aece839e0bf9c2ba0de = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3af59c59d8b62bb39d2c926125abfb0b = $(`<div id="html_3af59c59d8b62bb39d2c926125abfb0b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5166189&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OmniShelf LCDA&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4840, 3.6042&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; OmniShelf LCDA&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_90d08690065e0aece839e0bf9c2ba0de.setContent(html_3af59c59d8b62bb39d2c926125abfb0b);
+            
+        
+
+        circle_marker_50a1eea34b8ac225782d6dc1fff28b23.bindPopup(popup_90d08690065e0aece839e0bf9c2ba0de)
+        ;
+
+        
+    
+    
+            circle_marker_50a1eea34b8ac225782d6dc1fff28b23.bindTooltip(
+                `<div>
+                     Eti Osa | OmniShelf LCDA (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fec6ebaadf9b2c5abb6c8fe22941543c = L.circleMarker(
+                [6.4875745, 3.6032353],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_798a6da6b77fef6f0580424fb48f4697);
+        
+    
+        var popup_3cdb989a0348e34e0c045f3958cba789 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3811327660562196b6bd23bf238ce301 = $(`<div id="html_3811327660562196b6bd23bf238ce301" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5437495&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (addo Road)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4876, 3.6032&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (addo Road)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_3cdb989a0348e34e0c045f3958cba789.setContent(html_3811327660562196b6bd23bf238ce301);
+            
+        
+
+        circle_marker_fec6ebaadf9b2c5abb6c8fe22941543c.bindPopup(popup_3cdb989a0348e34e0c045f3958cba789)
+        ;
+
+        
+    
+    
+            circle_marker_fec6ebaadf9b2c5abb6c8fe22941543c.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (addo Road) (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d2430f0f976500efa6bb99e55d977458 = L.circleMarker(
+                [6.4705879, 3.6034246],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_798a6da6b77fef6f0580424fb48f4697);
+        
+    
+        var popup_ff5f09cb2d5e31fb1a8e32670233da4d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d44fe43f144d9f8c333df1f076026efd = $(`<div id="html_d44fe43f144d9f8c333df1f076026efd" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4444662&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (sangotedo)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4706, 3.6034&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (sangotedo)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_ff5f09cb2d5e31fb1a8e32670233da4d.setContent(html_d44fe43f144d9f8c333df1f076026efd);
+            
+        
+
+        circle_marker_d2430f0f976500efa6bb99e55d977458.bindPopup(popup_ff5f09cb2d5e31fb1a8e32670233da4d)
+        ;
+
+        
+    
+    
+            circle_marker_d2430f0f976500efa6bb99e55d977458.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (sangotedo) (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4cc1c62868db485348f03ed63eb1927c = L.circleMarker(
+                [6.4877641, 3.5973021],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_798a6da6b77fef6f0580424fb48f4697);
+        
+    
+        var popup_ca448b7a617ba64f3cf379cae7241df1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_390073a26c0a4a6df2813bf87f90245a = $(`<div id="html_390073a26c0a4a6df2813bf87f90245a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3277689&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (abijo)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4878, 3.5973&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (abijo)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_ca448b7a617ba64f3cf379cae7241df1.setContent(html_390073a26c0a4a6df2813bf87f90245a);
+            
+        
+
+        circle_marker_4cc1c62868db485348f03ed63eb1927c.bindPopup(popup_ca448b7a617ba64f3cf379cae7241df1)
+        ;
+
+        
+    
+    
+            circle_marker_4cc1c62868db485348f03ed63eb1927c.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (abijo) (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_aa308051832e5affae585704eefc88de = L.circleMarker(
+                [6.4713525, 3.6081882],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_798a6da6b77fef6f0580424fb48f4697);
+        
+    
+        var popup_33a396ca48d5af964b7750f9a71a56ec = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_593d9db7e73571b110a7cc013f460ad6 = $(`<div id="html_593d9db7e73571b110a7cc013f460ad6" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3795126&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4714, 3.6082&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_33a396ca48d5af964b7750f9a71a56ec.setContent(html_593d9db7e73571b110a7cc013f460ad6);
+            
+        
+
+        circle_marker_aa308051832e5affae585704eefc88de.bindPopup(popup_33a396ca48d5af964b7750f9a71a56ec)
+        ;
+
+        
+    
+    
+            circle_marker_aa308051832e5affae585704eefc88de.bindTooltip(
+                `<div>
+                     Eti Osa |  (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e03f2d5f3ec28bdad7fb7f2995783937 = L.circleMarker(
+                [6.4875745, 3.6032353],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_798a6da6b77fef6f0580424fb48f4697);
+        
+    
+        var popup_daf8b823328525ceae63c482aa421375 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9ccc519cbffe4e55a82c808ca24f94f9 = $(`<div id="html_9ccc519cbffe4e55a82c808ca24f94f9" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5328148&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (addo Road)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4876, 3.6032&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (addo Road)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_daf8b823328525ceae63c482aa421375.setContent(html_9ccc519cbffe4e55a82c808ca24f94f9);
+            
+        
+
+        circle_marker_e03f2d5f3ec28bdad7fb7f2995783937.bindPopup(popup_daf8b823328525ceae63c482aa421375)
+        ;
+
+        
+    
+    
+            circle_marker_e03f2d5f3ec28bdad7fb7f2995783937.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (addo Road) (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d289e69a059cb864ae825e30cb09fbbb = L.circleMarker(
+                [6.4742549, 3.6172313],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_798a6da6b77fef6f0580424fb48f4697);
+        
+    
+        var popup_4f0b7dfa1906ad4eea9804aa1f7bab52 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8c2679fe45462c29f6ae419e439a4e46 = $(`<div id="html_8c2679fe45462c29f6ae419e439a4e46" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5269858&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4743, 3.6172&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_4f0b7dfa1906ad4eea9804aa1f7bab52.setContent(html_8c2679fe45462c29f6ae419e439a4e46);
+            
+        
+
+        circle_marker_d289e69a059cb864ae825e30cb09fbbb.bindPopup(popup_4f0b7dfa1906ad4eea9804aa1f7bab52)
+        ;
+
+        
+    
+    
+            circle_marker_d289e69a059cb864ae825e30cb09fbbb.bindTooltip(
+                `<div>
+                     Eti Osa |  (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ea2cad093b458f88d25fe5e8fffd4bb5 = L.circleMarker(
+                [6.4875745, 3.6032353],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_798a6da6b77fef6f0580424fb48f4697);
+        
+    
+        var popup_34cdbfc9be8225038589d2581309f487 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_30c3417ff72c39aeb6e4b619f7a41ed4 = $(`<div id="html_30c3417ff72c39aeb6e4b619f7a41ed4" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5193702&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (addo Road)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4876, 3.6032&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (addo Road)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_34cdbfc9be8225038589d2581309f487.setContent(html_30c3417ff72c39aeb6e4b619f7a41ed4);
+            
+        
+
+        circle_marker_ea2cad093b458f88d25fe5e8fffd4bb5.bindPopup(popup_34cdbfc9be8225038589d2581309f487)
+        ;
+
+        
+    
+    
+            circle_marker_ea2cad093b458f88d25fe5e8fffd4bb5.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (addo Road) (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8b39c3f38ecc53c0a025e9eac55e9c6a = L.circleMarker(
+                [6.5109753, 3.6155943],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_798a6da6b77fef6f0580424fb48f4697);
+        
+    
+        var popup_5032bd26eef91932594e1ccd08720739 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4437481f83895ff9aad967eff7988ba0 = $(`<div id="html_4437481f83895ff9aad967eff7988ba0" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5415978&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (badore)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.5110, 3.6156&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (badore)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_5032bd26eef91932594e1ccd08720739.setContent(html_4437481f83895ff9aad967eff7988ba0);
+            
+        
+
+        circle_marker_8b39c3f38ecc53c0a025e9eac55e9c6a.bindPopup(popup_5032bd26eef91932594e1ccd08720739)
+        ;
+
+        
+    
+    
+            circle_marker_8b39c3f38ecc53c0a025e9eac55e9c6a.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (badore) (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6c81bc1b1593f174abd63ba753129db0 = L.circleMarker(
+                [6.4877642, 3.6024816],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_798a6da6b77fef6f0580424fb48f4697);
+        
+    
+        var popup_d0f38595a94138ba5ba9e538dfd46829 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3f6a551b8993a06ddec8ddc12267a13b = $(`<div id="html_3f6a551b8993a06ddec8ddc12267a13b" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5417079&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (badore)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4878, 3.6025&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (badore)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_d0f38595a94138ba5ba9e538dfd46829.setContent(html_3f6a551b8993a06ddec8ddc12267a13b);
+            
+        
+
+        circle_marker_6c81bc1b1593f174abd63ba753129db0.bindPopup(popup_d0f38595a94138ba5ba9e538dfd46829)
+        ;
+
+        
+    
+    
+            circle_marker_6c81bc1b1593f174abd63ba753129db0.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (badore) (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e87e05ebb8e0486c9f96d8625713bdae = L.circleMarker(
+                [6.4875745, 3.6032353],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_798a6da6b77fef6f0580424fb48f4697);
+        
+    
+        var popup_d650d35229b039b16a3b83576933308e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_aaea85868192b67fa0eb5aef80a6dea9 = $(`<div id="html_aaea85868192b67fa0eb5aef80a6dea9" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5417169&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Ajah (lekki)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4876, 3.6032&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Ajah (lekki)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_d650d35229b039b16a3b83576933308e.setContent(html_aaea85868192b67fa0eb5aef80a6dea9);
+            
+        
+
+        circle_marker_e87e05ebb8e0486c9f96d8625713bdae.bindPopup(popup_d650d35229b039b16a3b83576933308e)
+        ;
+
+        
+    
+    
+            circle_marker_e87e05ebb8e0486c9f96d8625713bdae.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Ajah (lekki) (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_29623cfce11c5f1a757ddc3dd48b452d = L.circleMarker(
+                [6.4713525, 3.6081882],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_798a6da6b77fef6f0580424fb48f4697);
+        
+    
+        var popup_7cbc38f0409c5da08fc1a4bfa7860e39 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_01523e8a4c1f20f2fc14d7a3bfdc7d75 = $(`<div id="html_01523e8a4c1f20f2fc14d7a3bfdc7d75" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #ff7f0e; margin-bottom: 5px;&#39;&gt;Cluster 6&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5256670&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (sangotedo)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4714, 3.6082&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Lekki - Ajah (sangotedo)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_7cbc38f0409c5da08fc1a4bfa7860e39.setContent(html_01523e8a4c1f20f2fc14d7a3bfdc7d75);
+            
+        
+
+        circle_marker_29623cfce11c5f1a757ddc3dd48b452d.bindPopup(popup_7cbc38f0409c5da08fc1a4bfa7860e39)
+        ;
+
+        
+    
+    
+            circle_marker_29623cfce11c5f1a757ddc3dd48b452d.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Lekki - Ajah (sangotedo) (Cluster 6)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_798a6da6b77fef6f0580424fb48f4697.addTo(map_f8f32e436e685f391346af51473cfcf9);
+        
+    
+            var feature_group_b3c19629e0a558de5b8e43a14da00151 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_ec3d39ef6b73057b50edce1954150043 = L.circleMarker(
+                [6.4370489, 3.4073982],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b3c19629e0a558de5b8e43a14da00151);
+        
+    
+        var popup_2294509bd55f159ca77b2d21ab0a8343 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bdbfd34a09f92424c7644b32ce39c55a = $(`<div id="html_bdbfd34a09f92424c7644b32ce39c55a" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 2289345&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4370, 3.4074&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_2294509bd55f159ca77b2d21ab0a8343.setContent(html_bdbfd34a09f92424c7644b32ce39c55a);
+            
+        
+
+        circle_marker_ec3d39ef6b73057b50edce1954150043.bindPopup(popup_2294509bd55f159ca77b2d21ab0a8343)
+        ;
+
+        
+    
+    
+            circle_marker_ec3d39ef6b73057b50edce1954150043.bindTooltip(
+                `<div>
+                     Eti Osa |  (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_64ceb20c508f197f5fdbe816c0c09c3f = L.circleMarker(
+                [6.423615, 3.4134367],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b3c19629e0a558de5b8e43a14da00151);
+        
+    
+        var popup_fc41fd71a26278c497a0d5d5199c0ec9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2badec337107697d94b7c9772596674d = $(`<div id="html_2badec337107697d94b7c9772596674d" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 3868492&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Victoria Island (ahmed Bello Way)&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4236, 3.4134&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Victoria Island (ahmed Bello Way)&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_fc41fd71a26278c497a0d5d5199c0ec9.setContent(html_2badec337107697d94b7c9772596674d);
+            
+        
+
+        circle_marker_64ceb20c508f197f5fdbe816c0c09c3f.bindPopup(popup_fc41fd71a26278c497a0d5d5199c0ec9)
+        ;
+
+        
+    
+    
+            circle_marker_64ceb20c508f197f5fdbe816c0c09c3f.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Victoria Island (ahmed Bello Way) (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c3358078130cd65796cc0e24d0c0d7da = L.circleMarker(
+                [6.4491081, 3.415365],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b3c19629e0a558de5b8e43a14da00151);
+        
+    
+        var popup_d5d904970795731d318f1edd76f62ef9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d0e1878184382fab112b1fcac6f47ddd = $(`<div id="html_d0e1878184382fab112b1fcac6f47ddd" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4211817&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4491, 3.4154&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_d5d904970795731d318f1edd76f62ef9.setContent(html_d0e1878184382fab112b1fcac6f47ddd);
+            
+        
+
+        circle_marker_c3358078130cd65796cc0e24d0c0d7da.bindPopup(popup_d5d904970795731d318f1edd76f62ef9)
+        ;
+
+        
+    
+    
+            circle_marker_c3358078130cd65796cc0e24d0c0d7da.bindTooltip(
+                `<div>
+                     Eti Osa |  (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2fa75a85e118f7f454b571bdad9d4d99 = L.circleMarker(
+                [6.4427435, 3.4247117],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b3c19629e0a558de5b8e43a14da00151);
+        
+    
+        var popup_faa05f5ef0036c9b3ce511d4c08b2b26 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_becfca8d28614106dd942ec967d3daa0 = $(`<div id="html_becfca8d28614106dd942ec967d3daa0" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 4634834&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4427, 3.4247&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; &lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_faa05f5ef0036c9b3ce511d4c08b2b26.setContent(html_becfca8d28614106dd942ec967d3daa0);
+            
+        
+
+        circle_marker_2fa75a85e118f7f454b571bdad9d4d99.bindPopup(popup_faa05f5ef0036c9b3ce511d4c08b2b26)
+        ;
+
+        
+    
+    
+            circle_marker_2fa75a85e118f7f454b571bdad9d4d99.bindTooltip(
+                `<div>
+                     Eti Osa |  (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b26037b6297d34c7e733301da1d62b9a = L.circleMarker(
+                [6.4630857, 3.4349061],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b3c19629e0a558de5b8e43a14da00151);
+        
+    
+        var popup_cc0805bfccaa18954ef7ab7671761408 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b5b6f3ef87df1d350500d610954e72eb = $(`<div id="html_b5b6f3ef87df1d350500d610954e72eb" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5296656&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Ikoyi Mtn - Pickup Station&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4631, 3.4349&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Ikoyi Mtn - Pickup Station&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_cc0805bfccaa18954ef7ab7671761408.setContent(html_b5b6f3ef87df1d350500d610954e72eb);
+            
+        
+
+        circle_marker_b26037b6297d34c7e733301da1d62b9a.bindPopup(popup_cc0805bfccaa18954ef7ab7671761408)
+        ;
+
+        
+    
+    
+            circle_marker_b26037b6297d34c7e733301da1d62b9a.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Ikoyi Mtn - Pickup Station (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9d681e5612b6cb88577a076f3249d72e = L.circleMarker(
+                [6.449636, 3.4127668],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b3c19629e0a558de5b8e43a14da00151);
+        
+    
+        var popup_30f299de28f0c07334da4d1bb5e4720d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_336dee37b8d47969b03962b9e96149f0 = $(`<div id="html_336dee37b8d47969b03962b9e96149f0" style="width: 100.0%; height: 100.0%;">&lt;div style=&#39;font-family: Arial, sans-serif; font-size: 12px;&#39;&gt;&lt;div style=&#39;font-weight: bold; color: #2ca02c; margin-bottom: 5px;&#39;&gt;Cluster 8&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;CustomerID:&lt;/strong&gt; 5349988&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Ikoyi - Obalende&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;Coordinates:&lt;/strong&gt; 6.4496, 3.4128&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LGA:&lt;/strong&gt; Eti Osa&lt;/div&gt;&lt;div style=&#39;margin: 2px 0;&#39;&gt;&lt;strong&gt;LCDA:&lt;/strong&gt; Eti Osa - Ikoyi - Obalende&lt;/div&gt;&lt;/div&gt;</div>`)[0];
+                popup_30f299de28f0c07334da4d1bb5e4720d.setContent(html_336dee37b8d47969b03962b9e96149f0);
+            
+        
+
+        circle_marker_9d681e5612b6cb88577a076f3249d72e.bindPopup(popup_30f299de28f0c07334da4d1bb5e4720d)
+        ;
+
+        
+    
+    
+            circle_marker_9d681e5612b6cb88577a076f3249d72e.bindTooltip(
+                `<div>
+                     Eti Osa | Eti Osa - Ikoyi - Obalende (Cluster 8)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_b3c19629e0a558de5b8e43a14da00151.addTo(map_f8f32e436e685f391346af51473cfcf9);
+        
+    
+            var layer_control_c4ea11ee53ff4039ef3f60284d383de1_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_1035a048aeb48ac4827f224ab6f1ba67,
+                    "OpenStreetMap" : tile_layer_8dec9eb802c23e9b424f1d5b427028f8,
+                    "Terrain" : tile_layer_938453836f1568a45ca29b302b640d6c,
+                    "Toner" : tile_layer_05561b9b86c8834edf77507be698f2d4,
+                    "CartoDB Dark" : tile_layer_cce07124fd8c0840f64d7757896b71d8,
+                    "CartoDB Light" : tile_layer_1e4b89c7015004854a358707fd230ad0,
+                },
+                overlays :  {
+                    "Cluster 2 - Eti Osa - +10more (20 points)" : feature_group_4063ac81609f6cd952d6e41a3a5110c4,
+                    "Cluster 6 - Eti Osa - OmniShelf LCDA+6more (12 points)" : feature_group_798a6da6b77fef6f0580424fb48f4697,
+                    "Cluster 8 - Eti Osa - +3more (6 points)" : feature_group_b3c19629e0a558de5b8e43a14da00151,
+                },
+            };
+            let layer_control_c4ea11ee53ff4039ef3f60284d383de1 = L.control.layers(
+                layer_control_c4ea11ee53ff4039ef3f60284d383de1_layers.base_layers,
+                layer_control_c4ea11ee53ff4039ef3f60284d383de1_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_f8f32e436e685f391346af51473cfcf9);
+
+        
+    
+            var tile_layer_011a009419f85a12af4bf509ad32fd91 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_75724c9c62875547ea75a4a7d3a727c6 = new L.Control.MiniMap(
+                tile_layer_011a009419f85a12af4bf509ad32fd91,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_f8f32e436e685f391346af51473cfcf9.addControl(mini_map_75724c9c62875547ea75a4a7d3a727c6);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_f8f32e436e685f391346af51473cfcf9);
+        
+    
+            var measure_control_92c26e4234f632d52c1f1d1700f9704c = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_f8f32e436e685f391346af51473cfcf9.addControl(measure_control_92c26e4234f632d52c1f1d1700f9704c);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_3b2458b9f3b638285d3e6852b80da90b = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_3b2458b9f3b638285d3e6852b80da90b.options["latFormatter"] =
+                undefined;
+            mouse_position_3b2458b9f3b638285d3e6852b80da90b.options["lngFormatter"] =
+                undefined;
+            map_f8f32e436e685f391346af51473cfcf9.addControl(mouse_position_3b2458b9f3b638285d3e6852b80da90b);
+        
+    
+            map_f8f32e436e685f391346af51473cfcf9.fitBounds(
+                [[6.413615, 3.3973982], [6.5209753, 3.6272312999999996]],
+                {}
+            );
+        
+    
+            var marker_c66e705d7b3e0d962d843dcb998c722e = L.marker(
+                [6.4701551, 3.5865285],
+                {
+  "size": 10,
+}
+            ).addTo(map_f8f32e436e685f391346af51473cfcf9);
+        
+    
+            var icon_60aaf29a36f0d7990c99d7a6ce15b30d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_c66e705d7b3e0d962d843dcb998c722e.bindTooltip(
+                `<div>
+                     OmniHub Eti Osa Lagos - Motomori
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c66e705d7b3e0d962d843dcb998c722e.setIcon(icon_60aaf29a36f0d7990c99d7a6ce15b30d);
+            
+    
+            var poly_line_39e5363b437b6a21964c2aae2002c59c = L.polyline(
+                [[6.47015, 3.58651], [6.4701, 3.58651], [6.47009, 3.58626], [6.47006, 3.58576], [6.47, 3.58515], [6.46999, 3.58506], [6.46998, 3.58495], [6.46992, 3.58455], [6.46987, 3.5841], [6.46984, 3.58364], [6.46974, 3.58283], [6.4697, 3.58209], [6.46964, 3.58101], [6.46959, 3.57995], [6.4695, 3.57812], [6.46945, 3.57721], [6.46945, 3.57709], [6.4694, 3.57595], [6.46935, 3.5744], [6.46926, 3.57272], [6.4692, 3.5719], [6.46915, 3.57093], [6.46911, 3.57005], [6.46901, 3.56892], [6.469, 3.5686], [6.46896, 3.56759], [6.46891, 3.56724], [6.46884, 3.56695], [6.46877, 3.56671], [6.4687, 3.5665], [6.46857, 3.56621], [6.46836, 3.56583], [6.46782, 3.56499], [6.46666, 3.56315], [6.46639, 3.56273], [6.46586, 3.56179], [6.46573, 3.56159], [6.46592, 3.5615], [6.46589, 3.56145], [6.46592, 3.5615], [6.46616, 3.56189], [6.46635, 3.56219], [6.46659, 3.56205], [6.46635, 3.56219], [6.46616, 3.56189], [6.46592, 3.5615], [6.46573, 3.56159], [6.46506, 3.5605], [6.46476, 3.55997], [6.46436, 3.55916], [6.46404, 3.55861], [6.46373, 3.55818], [6.46294, 3.55705], [6.46314, 3.55694], [6.46266, 3.55625], [6.46279, 3.55616], [6.46266, 3.55625], [6.46314, 3.55694], [6.46294, 3.55705], [6.46263, 3.55659], [6.46246, 3.55638], [6.46228, 3.55619], [6.46204, 3.55599], [6.46195, 3.55597], [6.4615, 3.55567], [6.46124, 3.55552], [6.4611, 3.55546], [6.46098, 3.55543], [6.46091, 3.55544], [6.46068, 3.55552], [6.46087, 3.55557], [6.46122, 3.55571], [6.46206, 3.55626], [6.46246, 3.55667], [6.46268, 3.55698], [6.46301, 3.55754], [6.46333, 3.5581], [6.46371, 3.55875], [6.46453, 3.5599], [6.46542, 3.5613], [6.46509, 3.56153], [6.46494, 3.56163], [6.46483, 3.56172], [6.46478, 3.56181], [6.46475, 3.56182], [6.46466, 3.56189], [6.46454, 3.56197], [6.46423, 3.56212], [6.46409, 3.56213], [6.46402, 3.56214], [6.46245, 3.56234], [6.46097, 3.56253], [6.45874, 3.56285], [6.45747, 3.563], [6.45755, 3.56398], [6.45758, 3.56418], [6.45771, 3.56516], [6.45638, 3.56533], [6.45646, 3.56607], [6.45675, 3.56861], [6.45685, 3.56951], [6.45709, 3.57166], [6.4572, 3.57245], [6.45688, 3.57251], [6.45624, 3.57258], [6.45688, 3.57251], [6.4572, 3.57245], [6.45709, 3.57166], [6.45685, 3.56951], [6.45773, 3.56942], [6.45776, 3.56967], [6.45773, 3.56942], [6.45685, 3.56951], [6.45675, 3.56861], [6.45584, 3.56872], [6.45536, 3.56878], [6.45466, 3.56886], [6.45374, 3.56895], [6.4537, 3.56852], [6.45366, 3.56802], [6.45278, 3.5681], [6.45105, 3.56826], [6.44996, 3.56837], [6.44945, 3.56838], [6.44849, 3.56844], [6.44801, 3.56846], [6.44791, 3.56847], [6.44775, 3.56849], [6.4478, 3.56887], [6.44775, 3.56849], [6.44766, 3.56762], [6.44764, 3.56747], [6.4475, 3.56618], [6.44723, 3.56398], [6.44735, 3.56397], [6.44751, 3.56396], [6.44756, 3.56395], [6.44814, 3.56391], [6.44955, 3.56379], [6.45008, 3.56373], [6.45033, 3.5637], [6.45091, 3.56363], [6.45107, 3.56362], [6.4518, 3.56356], [6.45277, 3.56347], [6.45465, 3.56326], [6.45495, 3.56324], [6.45593, 3.56314], [6.45747, 3.563], [6.45874, 3.56285], [6.46097, 3.56253], [6.46245, 3.56234], [6.46402, 3.56214], [6.46409, 3.56213], [6.46423, 3.56212], [6.46454, 3.56197], [6.46466, 3.56189], [6.46475, 3.56182], [6.46478, 3.56181], [6.46489, 3.56182], [6.46503, 3.56177], [6.46518, 3.56167], [6.46536, 3.56153], [6.46551, 3.56143], [6.46575, 3.56188], [6.4662, 3.56276], [6.46727, 3.56448], [6.46769, 3.56517], [6.46806, 3.56577], [6.46827, 3.56607], [6.4685, 3.5665], [6.46856, 3.56664], [6.46864, 3.56686], [6.46875, 3.56732], [6.4688, 3.56769], [6.46886, 3.56931], [6.46898, 3.57051], [6.469, 3.57073], [6.46905, 3.57193], [6.46893, 3.57196], [6.46795, 3.57205], [6.46777, 3.57203], [6.46768, 3.57201], [6.46759, 3.57204], [6.46748, 3.57211], [6.46634, 3.57223], [6.46634, 3.57225], [6.46636, 3.57236], [6.46751, 3.57224], [6.46759, 3.57226], [6.46768, 3.5723], [6.46778, 3.57227], [6.46796, 3.57217], [6.46906, 3.57207], [6.4693, 3.57755], [6.46936, 3.57815], [6.46943, 3.57975], [6.46944, 3.57994], [6.46948, 3.58073], [6.4695, 3.58102], [6.46953, 3.58161], [6.46953, 3.58173], [6.46956, 3.5821], [6.46957, 3.58239], [6.46963, 3.5834], [6.46964, 3.58371], [6.46966, 3.58394], [6.46967, 3.58412], [6.46975, 3.58508], [6.46975, 3.58515], [6.46976, 3.58521], [6.4698, 3.58555], [6.46983, 3.58571], [6.46993, 3.58675], [6.47, 3.5873], [6.47007, 3.58774], [6.47019, 3.58831], [6.4703, 3.58875], [6.4715, 3.59282], [6.4716, 3.59315], [6.47165, 3.59332], [6.47184, 3.59406], [6.47195, 3.59443], [6.47203, 3.59471], [6.47227, 3.59556], [6.47245, 3.59616], [6.47269, 3.59701], [6.47278, 3.5973], [6.47304, 3.59821], [6.47308, 3.59837], [6.47324, 3.59892], [6.47328, 3.59905], [6.47386, 3.60101], [6.47409, 3.60182], [6.47415, 3.60202], [6.47428, 3.60248], [6.47422, 3.60254], [6.47411, 3.60257], [6.47394, 3.60259], [6.47338, 3.60266], [6.47054, 3.60302], [6.47338, 3.60266], [6.47394, 3.60259], [6.47411, 3.60257], [6.47422, 3.60254], [6.47428, 3.60248], [6.47433, 3.60265], [6.47436, 3.60275], [6.47474, 3.60408], [6.47497, 3.6049], [6.47501, 3.60523], [6.47505, 3.60575], [6.47509, 3.60694], [6.47509, 3.60744], [6.47509, 3.60762], [6.4751, 3.60798], [6.4751, 3.60817], [6.4744, 3.60815], [6.47288, 3.60814], [6.47212, 3.60816], [6.47135, 3.60819], [6.47212, 3.60816], [6.47288, 3.60814], [6.4744, 3.60815], [6.4751, 3.60817], [6.4751, 3.6089], [6.4751, 3.609], [6.47519, 3.609], [6.47518, 3.60857], [6.47518, 3.60809], [6.47518, 3.60798], [6.47518, 3.60779], [6.47517, 3.60735], [6.47515, 3.60603], [6.47515, 3.60586], [6.47514, 3.60557], [6.47513, 3.6052], [6.47506, 3.60482], [6.47498, 3.6045], [6.47478, 3.60381], [6.47477, 3.60375], [6.47466, 3.60339], [6.47458, 3.60309], [6.4744, 3.60249], [6.47419, 3.60177], [6.47383, 3.60052], [6.4737, 3.60006], [6.47364, 3.59987], [6.47334, 3.59878], [6.4729, 3.59725], [6.47282, 3.59696], [6.47161, 3.59281], [6.4707, 3.58969], [6.47043, 3.58871], [6.47021, 3.58775], [6.4701, 3.58651], [6.47015, 3.58651]],
+                {"bubblingMouseEvents": true, "color": "#1f77b4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#1f77b4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_f8f32e436e685f391346af51473cfcf9);
+        
+</script>
+</html>
