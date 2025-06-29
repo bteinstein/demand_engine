@@ -1,0 +1,2218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_eb4672d891ba97e1be8c49a50645dce5 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 5 clusters | 47 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+                    <div id="cluster-legend" style="position: fixed; 
+                                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                                background-color: rgba(255, 255, 255, 0.95); 
+                                border: 2px solid #ccc; z-index: 999; 
+                                font-size: 11px; padding: 12px; border-radius: 8px;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                backdrop-filter: blur(5px);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #333;">Cluster Legend</strong>
+                        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+                    </div>
+                    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+                        5 clusters | Sorted by size | Showing top 15
+                    </div>
+                    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+                    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 1 
+                <br><span style="color: #666; font-size: 9px;">20 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">10 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">10 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #d62728; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#4</strong> Cluster 4 
+                <br><span style="color: #666; font-size: 9px;">4 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #9467bd; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#5</strong> Cluster 5 
+                <br><span style="color: #666; font-size: 9px;">3 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_eb4672d891ba97e1be8c49a50645dce5" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_eb4672d891ba97e1be8c49a50645dce5 = L.map(
+                "map_eb4672d891ba97e1be8c49a50645dce5",
+                {
+                    center: [5.3664456000000005, 8.45534124999995],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_eb4672d891ba97e1be8c49a50645dce5);
+
+            
+
+        
+    
+            var tile_layer_daa2729ed189b908c168b8b40f8c48f3 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_daa2729ed189b908c168b8b40f8c48f3.addTo(map_eb4672d891ba97e1be8c49a50645dce5);
+        
+    
+            var tile_layer_873117aa4862a336db2607b39139aaa2 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_873117aa4862a336db2607b39139aaa2.addTo(map_eb4672d891ba97e1be8c49a50645dce5);
+        
+    
+            var tile_layer_6bc0b01fffabd077b137bbab5fa6efbe = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_6bc0b01fffabd077b137bbab5fa6efbe.addTo(map_eb4672d891ba97e1be8c49a50645dce5);
+        
+    
+            var tile_layer_1c9c79a70c4e8cebe2e75dacd2fea2f5 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_1c9c79a70c4e8cebe2e75dacd2fea2f5.addTo(map_eb4672d891ba97e1be8c49a50645dce5);
+        
+    
+            var tile_layer_2e8813da571dc15c0f4f52b752a0234b = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_2e8813da571dc15c0f4f52b752a0234b.addTo(map_eb4672d891ba97e1be8c49a50645dce5);
+        
+    
+            var tile_layer_3b3ec1b14f098e754dd648d7ab12351e = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_3b3ec1b14f098e754dd648d7ab12351e.addTo(map_eb4672d891ba97e1be8c49a50645dce5);
+        
+    
+            var feature_group_6d49c965cedf5f3932fd47b545938528 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_a4370b2c5bbbc2ffea4d87bdbfcd9ba6 = L.circleMarker(
+                [4.957021999999999, 8.3167467],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_8d12683ab2ed9bcad81cc09aa39d8d28 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_ac4d402285414889e98ca1c79742e5c0 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM4NDY0MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEVHRVJUT048L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNC45NTcwLCA4LjMxNjc8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgU291dGg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFR0VSVE9OPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8d12683ab2ed9bcad81cc09aa39d8d28.setContent(i_frame_ac4d402285414889e98ca1c79742e5c0);
+            
+        
+
+        circle_marker_a4370b2c5bbbc2ffea4d87bdbfcd9ba6.bindPopup(popup_8d12683ab2ed9bcad81cc09aa39d8d28)
+        ;
+
+        
+    
+    
+            circle_marker_a4370b2c5bbbc2ffea4d87bdbfcd9ba6.bindTooltip(
+                `<div>
+                     Calabar South | EGERTON (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d425028bcfdcf60b1b58bf47b7895b89 = L.circleMarker(
+                [4.9588368, 8.3223561],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_17ce23d30acd76b6089452f4032dbeda = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_9c3d2cda47ff0402866bca53d7fac7cd = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM1NTI1NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFdhdHQgTWFya2V0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTU4OCwgOC4zMjI0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIFNvdXRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gV2F0dCBNYXJrZXQ8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_17ce23d30acd76b6089452f4032dbeda.setContent(i_frame_9c3d2cda47ff0402866bca53d7fac7cd);
+            
+        
+
+        circle_marker_d425028bcfdcf60b1b58bf47b7895b89.bindPopup(popup_17ce23d30acd76b6089452f4032dbeda)
+        ;
+
+        
+    
+    
+            circle_marker_d425028bcfdcf60b1b58bf47b7895b89.bindTooltip(
+                `<div>
+                     Calabar South | Watt Market (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dc17b028e8f7b7a6e1f51dcd28adc668 = L.circleMarker(
+                [4.9427921, 8.3176576],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_81d2ed565f772e92a8eae0cb0c3ee0ed = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_d1adce486cc7f28ce6a95472d33ab0d5 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyMDQzOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk0MjgsIDguMzE3NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_81d2ed565f772e92a8eae0cb0c3ee0ed.setContent(i_frame_d1adce486cc7f28ce6a95472d33ab0d5);
+            
+        
+
+        circle_marker_dc17b028e8f7b7a6e1f51dcd28adc668.bindPopup(popup_81d2ed565f772e92a8eae0cb0c3ee0ed)
+        ;
+
+        
+    
+    
+            circle_marker_dc17b028e8f7b7a6e1f51dcd28adc668.bindTooltip(
+                `<div>
+                     Calabar South | MAYNE AVENUE (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fa3ee058a9f35b74247d4547d4d219af = L.circleMarker(
+                [4.9584757, 8.3230328],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_12427b8d1bf5655643456b7e33ed6cfa = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_4cf7e826c6426c2ba89fed4e44a2ed59 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNTgzMjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFdhdHQgTWFya2V0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTU4NSwgOC4zMjMwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIFNvdXRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gV2F0dCBNYXJrZXQ8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_12427b8d1bf5655643456b7e33ed6cfa.setContent(i_frame_4cf7e826c6426c2ba89fed4e44a2ed59);
+            
+        
+
+        circle_marker_fa3ee058a9f35b74247d4547d4d219af.bindPopup(popup_12427b8d1bf5655643456b7e33ed6cfa)
+        ;
+
+        
+    
+    
+            circle_marker_fa3ee058a9f35b74247d4547d4d219af.bindTooltip(
+                `<div>
+                     Calabar South | Watt Market (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8970dd688bf4c7c95634ac1d881197b1 = L.circleMarker(
+                [4.9532734, 8.3225091],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_bf0229e5da7f49c16b44f75ecd13ecc5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_c0d1dbbdc40557984d47dc1b2836bfde = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQwNTMxMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IENoYW1ibGV5IFN0cmVldC48L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNC45NTMzLCA4LjMyMjU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgU291dGg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBDaGFtYmxleSBTdHJlZXQuPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_bf0229e5da7f49c16b44f75ecd13ecc5.setContent(i_frame_c0d1dbbdc40557984d47dc1b2836bfde);
+            
+        
+
+        circle_marker_8970dd688bf4c7c95634ac1d881197b1.bindPopup(popup_bf0229e5da7f49c16b44f75ecd13ecc5)
+        ;
+
+        
+    
+    
+            circle_marker_8970dd688bf4c7c95634ac1d881197b1.bindTooltip(
+                `<div>
+                     Calabar South | Chambley Street. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_efbd68f0dadd9be3a25ef287d8484eb8 = L.circleMarker(
+                [4.9318221, 8.3146278],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_3d31eb312cf952d7c832d65ac375486b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_3077b8d0e2ea6646e71b1b28f9cb2daa = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQxMDUyODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1CVUtQQTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0LjkzMTgsIDguMzE0NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1CVUtQQTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_3d31eb312cf952d7c832d65ac375486b.setContent(i_frame_3077b8d0e2ea6646e71b1b28f9cb2daa);
+            
+        
+
+        circle_marker_efbd68f0dadd9be3a25ef287d8484eb8.bindPopup(popup_3d31eb312cf952d7c832d65ac375486b)
+        ;
+
+        
+    
+    
+            circle_marker_efbd68f0dadd9be3a25ef287d8484eb8.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7098fd0a6b590a3abbf185a852afd9b7 = L.circleMarker(
+                [4.9492401, 8.3157597],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_0dec10075dd85dbbfe3927650e1830a1 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_15d2ac61d5cb2d3476ed83665a2e8f95 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNTk4NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEVHRVJUT048L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNC45NDkyLCA4LjMxNTg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgU291dGg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFR0VSVE9OPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0dec10075dd85dbbfe3927650e1830a1.setContent(i_frame_15d2ac61d5cb2d3476ed83665a2e8f95);
+            
+        
+
+        circle_marker_7098fd0a6b590a3abbf185a852afd9b7.bindPopup(popup_0dec10075dd85dbbfe3927650e1830a1)
+        ;
+
+        
+    
+    
+            circle_marker_7098fd0a6b590a3abbf185a852afd9b7.bindTooltip(
+                `<div>
+                     Calabar South | EGERTON (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_55e11a06a918ee932b772bb4aa5cb43d = L.circleMarker(
+                [4.9301667, 8.3118810999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_f3d3aa41c06eb4c09d5d5c28e83a945a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_3916a70fbfc313f2658bb2198b308530 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM4NTQxODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1CVUtQQTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0LjkzMDIsIDguMzExOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1CVUtQQTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f3d3aa41c06eb4c09d5d5c28e83a945a.setContent(i_frame_3916a70fbfc313f2658bb2198b308530);
+            
+        
+
+        circle_marker_55e11a06a918ee932b772bb4aa5cb43d.bindPopup(popup_f3d3aa41c06eb4c09d5d5c28e83a945a)
+        ;
+
+        
+    
+    
+            circle_marker_55e11a06a918ee932b772bb4aa5cb43d.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_da35bfc5b3b9cd13f435f1748dc0bab6 = L.circleMarker(
+                [4.9723716, 8.3407533],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_88c3f53f7f7334b599794b62539ccafb = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_094a6af22dec272a645458c9b2011c70 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM2MDM1MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFpcnBvcnQgUm9hZC48L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNC45NzI0LCA4LjM0MDg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgU291dGg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBaXJwb3J0IFJvYWQuPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_88c3f53f7f7334b599794b62539ccafb.setContent(i_frame_094a6af22dec272a645458c9b2011c70);
+            
+        
+
+        circle_marker_da35bfc5b3b9cd13f435f1748dc0bab6.bindPopup(popup_88c3f53f7f7334b599794b62539ccafb)
+        ;
+
+        
+    
+    
+            circle_marker_da35bfc5b3b9cd13f435f1748dc0bab6.bindTooltip(
+                `<div>
+                     Calabar South | Airport Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5cdcfadaa932c2d705b10f81d64f2631 = L.circleMarker(
+                [4.945574, 8.3230625],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_3946fee6040bc24134c777c61188e8d0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a3a61588b20a056492d0ea9d99982e8a = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNTYyNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk0NTYsIDguMzIzMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_3946fee6040bc24134c777c61188e8d0.setContent(i_frame_a3a61588b20a056492d0ea9d99982e8a);
+            
+        
+
+        circle_marker_5cdcfadaa932c2d705b10f81d64f2631.bindPopup(popup_3946fee6040bc24134c777c61188e8d0)
+        ;
+
+        
+    
+    
+            circle_marker_5cdcfadaa932c2d705b10f81d64f2631.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a8d3ea8d411e9ee2b8a3e146f61b6306 = L.circleMarker(
+                [4.9535698883505, 8.3620005100965],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_9313974cf8f2bc74d67ca4434a1ae361 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_8ce2d19e4e8041087ca3d68bc84b7bbe = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM4NDQ2MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk1MzYsIDguMzYyMDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_9313974cf8f2bc74d67ca4434a1ae361.setContent(i_frame_8ce2d19e4e8041087ca3d68bc84b7bbe);
+            
+        
+
+        circle_marker_a8d3ea8d411e9ee2b8a3e146f61b6306.bindPopup(popup_9313974cf8f2bc74d67ca4434a1ae361)
+        ;
+
+        
+    
+    
+            circle_marker_a8d3ea8d411e9ee2b8a3e146f61b6306.bindTooltip(
+                `<div>
+                     Calabar Municipal | Esuk Atu Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e5c20f873867cd00173780d52ab164e9 = L.circleMarker(
+                [4.957635499999999, 8.321505799999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_ae81a24ba9dfaad9512ac65e2b255982 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_b539accf09c238a67758e232c1539779 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyMTU5NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFdhdHQgTWFya2V0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTU3NiwgOC4zMjE1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIFNvdXRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gV2F0dCBNYXJrZXQ8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_ae81a24ba9dfaad9512ac65e2b255982.setContent(i_frame_b539accf09c238a67758e232c1539779);
+            
+        
+
+        circle_marker_e5c20f873867cd00173780d52ab164e9.bindPopup(popup_ae81a24ba9dfaad9512ac65e2b255982)
+        ;
+
+        
+    
+    
+            circle_marker_e5c20f873867cd00173780d52ab164e9.bindTooltip(
+                `<div>
+                     Calabar South | Watt Market (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a5f7b6c4542dc9c8ced0213d284417c2 = L.circleMarker(
+                [5.8701724, 8.5988014],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_d08922059a9348f99c12e5389c81134e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_0a18d6ae643d521ff117e9f51fa478e4 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM1OTE3MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA1Ljg3MDIsIDguNTk4ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d08922059a9348f99c12e5389c81134e.setContent(i_frame_0a18d6ae643d521ff117e9f51fa478e4);
+            
+        
+
+        circle_marker_a5f7b6c4542dc9c8ced0213d284417c2.bindPopup(popup_d08922059a9348f99c12e5389c81134e)
+        ;
+
+        
+    
+    
+            circle_marker_a5f7b6c4542dc9c8ced0213d284417c2.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0d7fb2f66c108cca81a5ec13dfc448f1 = L.circleMarker(
+                [4.9534087, 8.3264548],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_0c13be7951bfa96f3b141e0e149b1348 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_0ade02bad73fc5e0bb4166d3dc71ee71 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM3Njc5MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk1MzQsIDguMzI2NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0c13be7951bfa96f3b141e0e149b1348.setContent(i_frame_0ade02bad73fc5e0bb4166d3dc71ee71);
+            
+        
+
+        circle_marker_0d7fb2f66c108cca81a5ec13dfc448f1.bindPopup(popup_0c13be7951bfa96f3b141e0e149b1348)
+        ;
+
+        
+    
+    
+            circle_marker_0d7fb2f66c108cca81a5ec13dfc448f1.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_767b86d9bf97a24546732a90775c0a28 = L.circleMarker(
+                [4.9595766, 8.3243963],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_505765953082335617d6708774288e47 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_0996aa57694429e114ed62b45a210e2c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNTI1MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEV0aW0gRWRlbSBTdHJlZXQuPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTU5NiwgOC4zMjQ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIFNvdXRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRXRpbSBFZGVtIFN0cmVldC48L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_505765953082335617d6708774288e47.setContent(i_frame_0996aa57694429e114ed62b45a210e2c);
+            
+        
+
+        circle_marker_767b86d9bf97a24546732a90775c0a28.bindPopup(popup_505765953082335617d6708774288e47)
+        ;
+
+        
+    
+    
+            circle_marker_767b86d9bf97a24546732a90775c0a28.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6c9087fa889488fd8195e7706ab546e2 = L.circleMarker(
+                [4.9466151, 8.323002],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_fd06c85dcb0f16b9d257011e27abf6cd = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_109ed9280b3974f1d745fb6b2423c095 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM1OTA3NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk0NjYsIDguMzIzMDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_fd06c85dcb0f16b9d257011e27abf6cd.setContent(i_frame_109ed9280b3974f1d745fb6b2423c095);
+            
+        
+
+        circle_marker_6c9087fa889488fd8195e7706ab546e2.bindPopup(popup_fd06c85dcb0f16b9d257011e27abf6cd)
+        ;
+
+        
+    
+    
+            circle_marker_6c9087fa889488fd8195e7706ab546e2.bindTooltip(
+                `<div>
+                     Calabar South | MAYNE AVENUE (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c4847765fc77d88af94ed3f76ffcf4ca = L.circleMarker(
+                [4.8627188, 8.3307468],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_0f3739de032f0618921530966472166e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_3a7334701f33b74ce886c1892d0ed76e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNTUyNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEVHRVJUT048L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNC44NjI3LCA4LjMzMDc8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgU291dGg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFR0VSVE9OPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0f3739de032f0618921530966472166e.setContent(i_frame_3a7334701f33b74ce886c1892d0ed76e);
+            
+        
+
+        circle_marker_c4847765fc77d88af94ed3f76ffcf4ca.bindPopup(popup_0f3739de032f0618921530966472166e)
+        ;
+
+        
+    
+    
+            circle_marker_c4847765fc77d88af94ed3f76ffcf4ca.bindTooltip(
+                `<div>
+                     Calabar South | EGERTON (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a3594bb34ca7896d81567f1336534491 = L.circleMarker(
+                [5.8701724, 8.5988014],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_043a6db171ac9d3d7f2b32fba1652a8c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_c0bd09dbf89fe4ff387736976f6c4795 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM4NzAxODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA1Ljg3MDIsIDguNTk4ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_043a6db171ac9d3d7f2b32fba1652a8c.setContent(i_frame_c0bd09dbf89fe4ff387736976f6c4795);
+            
+        
+
+        circle_marker_a3594bb34ca7896d81567f1336534491.bindPopup(popup_043a6db171ac9d3d7f2b32fba1652a8c)
+        ;
+
+        
+    
+    
+            circle_marker_a3594bb34ca7896d81567f1336534491.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cf1a1148b79a4c262b5558b0fe5a922f = L.circleMarker(
+                [4.9513967, 8.320145],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_74b6367f64be416cb0d696689b4f08a3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_dd19f582f192b36e65d3574a94624130 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNDQ4MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEVHRVJUT048L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNC45NTE0LCA4LjMyMDE8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgU291dGg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFR0VSVE9OPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_74b6367f64be416cb0d696689b4f08a3.setContent(i_frame_dd19f582f192b36e65d3574a94624130);
+            
+        
+
+        circle_marker_cf1a1148b79a4c262b5558b0fe5a922f.bindPopup(popup_74b6367f64be416cb0d696689b4f08a3)
+        ;
+
+        
+    
+    
+            circle_marker_cf1a1148b79a4c262b5558b0fe5a922f.bindTooltip(
+                `<div>
+                     Calabar South | EGERTON (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f710fc58768c75fde37dc0d100e32113 = L.circleMarker(
+                [4.9589615, 8.3232697],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_6d49c965cedf5f3932fd47b545938528);
+        
+    
+        var popup_33e6cc27b1442b35e9eae2b28cb6daf2 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_b5defcda4cc716cb1be2e3491688952a = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM0NDk1ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEV0aW0gRWRlbSBTdHJlZXQuPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTU5MCwgOC4zMjMzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIFNvdXRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRXRpbSBFZGVtIFN0cmVldC48L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_33e6cc27b1442b35e9eae2b28cb6daf2.setContent(i_frame_b5defcda4cc716cb1be2e3491688952a);
+            
+        
+
+        circle_marker_f710fc58768c75fde37dc0d100e32113.bindPopup(popup_33e6cc27b1442b35e9eae2b28cb6daf2)
+        ;
+
+        
+    
+    
+            circle_marker_f710fc58768c75fde37dc0d100e32113.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_6d49c965cedf5f3932fd47b545938528.addTo(map_eb4672d891ba97e1be8c49a50645dce5);
+        
+    
+            var feature_group_a329b8780607d2cf36e9263ac48be0d0 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_011ffc8a2ac7da18653d3a8752436e33 = L.circleMarker(
+                [4.9493931, 8.3230294],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a329b8780607d2cf36e9263ac48be0d0);
+        
+    
+        var popup_484e56e75f6fd19ecf68ac512948a606 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_0fe9e1ab9730e5c3e3ef0223d5617281 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNDc1MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk0OTQsIDguMzIzMDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_484e56e75f6fd19ecf68ac512948a606.setContent(i_frame_0fe9e1ab9730e5c3e3ef0223d5617281);
+            
+        
+
+        circle_marker_011ffc8a2ac7da18653d3a8752436e33.bindPopup(popup_484e56e75f6fd19ecf68ac512948a606)
+        ;
+
+        
+    
+    
+            circle_marker_011ffc8a2ac7da18653d3a8752436e33.bindTooltip(
+                `<div>
+                     Calabar South | MAYNE AVENUE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_988f9b6f4f4c999b2007ce58853f651b = L.circleMarker(
+                [4.9463199, 8.3233224],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a329b8780607d2cf36e9263ac48be0d0);
+        
+    
+        var popup_25f38b3fbf5fe44d38bb59df0c584f5a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_42a8bc1466a4dc6ebc4971996ecf9800 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM1OTA2ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk0NjMsIDguMzIzMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_25f38b3fbf5fe44d38bb59df0c584f5a.setContent(i_frame_42a8bc1466a4dc6ebc4971996ecf9800);
+            
+        
+
+        circle_marker_988f9b6f4f4c999b2007ce58853f651b.bindPopup(popup_25f38b3fbf5fe44d38bb59df0c584f5a)
+        ;
+
+        
+    
+    
+            circle_marker_988f9b6f4f4c999b2007ce58853f651b.bindTooltip(
+                `<div>
+                     Calabar South | MAYNE AVENUE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_eb1fa7475ecfc0966fe0d45072e72147 = L.circleMarker(
+                [4.9456462, 8.3260084],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a329b8780607d2cf36e9263ac48be0d0);
+        
+    
+        var popup_85e87413a0c8887f476e2a6b53ab64f0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_77e6b6f512aa0403864ab369298abfb3 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyMjY4OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFlFTExPVyBEVUtFPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTQ1NiwgOC4zMjYwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIFNvdXRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gWUVMTE9XIERVS0U8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_85e87413a0c8887f476e2a6b53ab64f0.setContent(i_frame_77e6b6f512aa0403864ab369298abfb3);
+            
+        
+
+        circle_marker_eb1fa7475ecfc0966fe0d45072e72147.bindPopup(popup_85e87413a0c8887f476e2a6b53ab64f0)
+        ;
+
+        
+    
+    
+            circle_marker_eb1fa7475ecfc0966fe0d45072e72147.bindTooltip(
+                `<div>
+                     Calabar South | YELLOW DUKE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_37fb17ab7ee3783297e3ec9172d7803e = L.circleMarker(
+                [4.9456833, 8.3263383],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a329b8780607d2cf36e9263ac48be0d0);
+        
+    
+        var popup_aca12d83309e697937d22b590beed6e7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_1b0cfb2c8f27f7ccf96efa8023d5ee1c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMxNzg1NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk0NTcsIDguMzI2MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_aca12d83309e697937d22b590beed6e7.setContent(i_frame_1b0cfb2c8f27f7ccf96efa8023d5ee1c);
+            
+        
+
+        circle_marker_37fb17ab7ee3783297e3ec9172d7803e.bindPopup(popup_aca12d83309e697937d22b590beed6e7)
+        ;
+
+        
+    
+    
+            circle_marker_37fb17ab7ee3783297e3ec9172d7803e.bindTooltip(
+                `<div>
+                     Calabar South | MAYNE AVENUE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e8e92a46a90e0fd43db0fe1ec0a925f3 = L.circleMarker(
+                [4.9448963, 8.3265084],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a329b8780607d2cf36e9263ac48be0d0);
+        
+    
+        var popup_d82417a20b550bff3c1124f2f15d7082 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_37379c9e5661482fedf5994cf59bed6d = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNDc0NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk0NDksIDguMzI2NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d82417a20b550bff3c1124f2f15d7082.setContent(i_frame_37379c9e5661482fedf5994cf59bed6d);
+            
+        
+
+        circle_marker_e8e92a46a90e0fd43db0fe1ec0a925f3.bindPopup(popup_d82417a20b550bff3c1124f2f15d7082)
+        ;
+
+        
+    
+    
+            circle_marker_e8e92a46a90e0fd43db0fe1ec0a925f3.bindTooltip(
+                `<div>
+                     Calabar South | MAYNE AVENUE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_55fa94ff2832823f60083d8e5f1044a3 = L.circleMarker(
+                [4.9456114, 8.3277273999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a329b8780607d2cf36e9263ac48be0d0);
+        
+    
+        var popup_95f95917c82bc7c8c713975aebb3789b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_bd8461aa27c494c20d4d90bfa00f22f2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ2MDAxODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk0NTYsIDguMzI3NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_95f95917c82bc7c8c713975aebb3789b.setContent(i_frame_bd8461aa27c494c20d4d90bfa00f22f2);
+            
+        
+
+        circle_marker_55fa94ff2832823f60083d8e5f1044a3.bindPopup(popup_95f95917c82bc7c8c713975aebb3789b)
+        ;
+
+        
+    
+    
+            circle_marker_55fa94ff2832823f60083d8e5f1044a3.bindTooltip(
+                `<div>
+                     Calabar South | MAYNE AVENUE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_eee88e24c4c1f7d59c36aee28086d9f7 = L.circleMarker(
+                [4.9482463, 8.330129699999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a329b8780607d2cf36e9263ac48be0d0);
+        
+    
+        var popup_93b3e323b36641f977c9000e5c2b6b26 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_951172ca0e2b1c4b5abe5f07927f6dbe = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM4NTQ2MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk0ODIsIDguMzMwMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1BWU5FIEFWRU5VRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_93b3e323b36641f977c9000e5c2b6b26.setContent(i_frame_951172ca0e2b1c4b5abe5f07927f6dbe);
+            
+        
+
+        circle_marker_eee88e24c4c1f7d59c36aee28086d9f7.bindPopup(popup_93b3e323b36641f977c9000e5c2b6b26)
+        ;
+
+        
+    
+    
+            circle_marker_eee88e24c4c1f7d59c36aee28086d9f7.bindTooltip(
+                `<div>
+                     Calabar South | MAYNE AVENUE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_146b9466ef8a031841db9446eeaa12d7 = L.circleMarker(
+                [4.947102860747, 8.3348018058647],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a329b8780607d2cf36e9263ac48be0d0);
+        
+    
+        var popup_8e1a9d1ff19e01d254e9761d076427f5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_36439cf2d3a44d35ef3f3308f09f440e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ1OTM1NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk0NzEsIDguMzM0ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8e1a9d1ff19e01d254e9761d076427f5.setContent(i_frame_36439cf2d3a44d35ef3f3308f09f440e);
+            
+        
+
+        circle_marker_146b9466ef8a031841db9446eeaa12d7.bindPopup(popup_8e1a9d1ff19e01d254e9761d076427f5)
+        ;
+
+        
+    
+    
+            circle_marker_146b9466ef8a031841db9446eeaa12d7.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4e5981324ca5be18d33ef17881fc0abe = L.circleMarker(
+                [4.9487416, 8.3374977],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a329b8780607d2cf36e9263ac48be0d0);
+        
+    
+        var popup_2eac09601049950726bd7eebfc931d7f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_1c8bdb91db3a4685775b0bf5e43653fd = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMxOTY1NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk0ODcsIDguMzM3NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_2eac09601049950726bd7eebfc931d7f.setContent(i_frame_1c8bdb91db3a4685775b0bf5e43653fd);
+            
+        
+
+        circle_marker_4e5981324ca5be18d33ef17881fc0abe.bindPopup(popup_2eac09601049950726bd7eebfc931d7f)
+        ;
+
+        
+    
+    
+            circle_marker_4e5981324ca5be18d33ef17881fc0abe.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_05517efbc8b497bafe285bab53666ad6 = L.circleMarker(
+                [4.9534763, 8.3297493],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a329b8780607d2cf36e9263ac48be0d0);
+        
+    
+        var popup_9dcdef33f232ac975616c3b415a2bb97 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_f321463bbcec7ab857427898942e5b23 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ2MjI2OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk1MzUsIDguMzI5NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_9dcdef33f232ac975616c3b415a2bb97.setContent(i_frame_f321463bbcec7ab857427898942e5b23);
+            
+        
+
+        circle_marker_05517efbc8b497bafe285bab53666ad6.bindPopup(popup_9dcdef33f232ac975616c3b415a2bb97)
+        ;
+
+        
+    
+    
+            circle_marker_05517efbc8b497bafe285bab53666ad6.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_a329b8780607d2cf36e9263ac48be0d0.addTo(map_eb4672d891ba97e1be8c49a50645dce5);
+        
+    
+            var feature_group_5fee6f6a5b89c561a3e5fc46790702e6 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_84bc053331b70c261216a09cac266fc8 = L.circleMarker(
+                [4.958977, 8.3234349],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5fee6f6a5b89c561a3e5fc46790702e6);
+        
+    
+        var popup_3787a739a3e084e0c4191edc6d09906c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_545ad68d5511df4a3d18a6124741b959 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyMTgyMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEV0aW0gRWRlbSBTdHJlZXQuPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTU5MCwgOC4zMjM0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIFNvdXRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRXRpbSBFZGVtIFN0cmVldC48L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_3787a739a3e084e0c4191edc6d09906c.setContent(i_frame_545ad68d5511df4a3d18a6124741b959);
+            
+        
+
+        circle_marker_84bc053331b70c261216a09cac266fc8.bindPopup(popup_3787a739a3e084e0c4191edc6d09906c)
+        ;
+
+        
+    
+    
+            circle_marker_84bc053331b70c261216a09cac266fc8.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_23cb7bd8168ccbcf1dea840f19ac8e81 = L.circleMarker(
+                [4.9592346, 8.3234341],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5fee6f6a5b89c561a3e5fc46790702e6);
+        
+    
+        var popup_c0e87f560fd3a0e32db9de13ebb574bc = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_fda4bb4cf3269f31a7af7225ea056104 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ1NTI2MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEV0aW0gRWRlbSBTdHJlZXQuPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTU5MiwgOC4zMjM0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIFNvdXRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRXRpbSBFZGVtIFN0cmVldC48L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_c0e87f560fd3a0e32db9de13ebb574bc.setContent(i_frame_fda4bb4cf3269f31a7af7225ea056104);
+            
+        
+
+        circle_marker_23cb7bd8168ccbcf1dea840f19ac8e81.bindPopup(popup_c0e87f560fd3a0e32db9de13ebb574bc)
+        ;
+
+        
+    
+    
+            circle_marker_23cb7bd8168ccbcf1dea840f19ac8e81.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7bde5453ecf0dd2f0c49763af73ff007 = L.circleMarker(
+                [4.9593053, 8.3231489],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5fee6f6a5b89c561a3e5fc46790702e6);
+        
+    
+        var popup_63c67ff6fbf0e21b878be855fc7aa1d8 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_d4bc0fc159abcaaa3bd45a84f46f3552 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyMTc3ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEV0aW0gRWRlbSBTdHJlZXQuPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTU5MywgOC4zMjMxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIFNvdXRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRXRpbSBFZGVtIFN0cmVldC48L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_63c67ff6fbf0e21b878be855fc7aa1d8.setContent(i_frame_d4bc0fc159abcaaa3bd45a84f46f3552);
+            
+        
+
+        circle_marker_7bde5453ecf0dd2f0c49763af73ff007.bindPopup(popup_63c67ff6fbf0e21b878be855fc7aa1d8)
+        ;
+
+        
+    
+    
+            circle_marker_7bde5453ecf0dd2f0c49763af73ff007.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a464a4bb1db13e3481369414c399b4d6 = L.circleMarker(
+                [4.959105, 8.323098],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5fee6f6a5b89c561a3e5fc46790702e6);
+        
+    
+        var popup_a179c19af3b0bb782b360e2e0511d6f8 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_21b9011501b41d38453a3482bafd97cd = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNjEwODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEV0aW0gRWRlbSBTdHJlZXQuPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTU5MSwgOC4zMjMxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIFNvdXRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRXRpbSBFZGVtIFN0cmVldC48L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_a179c19af3b0bb782b360e2e0511d6f8.setContent(i_frame_21b9011501b41d38453a3482bafd97cd);
+            
+        
+
+        circle_marker_a464a4bb1db13e3481369414c399b4d6.bindPopup(popup_a179c19af3b0bb782b360e2e0511d6f8)
+        ;
+
+        
+    
+    
+            circle_marker_a464a4bb1db13e3481369414c399b4d6.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4eb98844713ad663c83df14be762ec04 = L.circleMarker(
+                [4.9593077999999, 8.3228219],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5fee6f6a5b89c561a3e5fc46790702e6);
+        
+    
+        var popup_7664cae4baee11be3078bed33af45e3f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_f59a0e7c126bfb3cdf1147564ad670ad = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQwMDQ4NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk1OTMsIDguMzIyODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_7664cae4baee11be3078bed33af45e3f.setContent(i_frame_f59a0e7c126bfb3cdf1147564ad670ad);
+            
+        
+
+        circle_marker_4eb98844713ad663c83df14be762ec04.bindPopup(popup_7664cae4baee11be3078bed33af45e3f)
+        ;
+
+        
+    
+    
+            circle_marker_4eb98844713ad663c83df14be762ec04.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9c51c26b6574291ee6c335bd0ab950f1 = L.circleMarker(
+                [4.959306499999999, 8.3228074],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5fee6f6a5b89c561a3e5fc46790702e6);
+        
+    
+        var popup_98efd4cc463026891c2fe33f3cf32bae = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_e440685024c3fbe920d4ac211ac6c4a4 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNDczMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEV0aW0gRWRlbSBTdHJlZXQuPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTU5MywgOC4zMjI4PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIFNvdXRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRXRpbSBFZGVtIFN0cmVldC48L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_98efd4cc463026891c2fe33f3cf32bae.setContent(i_frame_e440685024c3fbe920d4ac211ac6c4a4);
+            
+        
+
+        circle_marker_9c51c26b6574291ee6c335bd0ab950f1.bindPopup(popup_98efd4cc463026891c2fe33f3cf32bae)
+        ;
+
+        
+    
+    
+            circle_marker_9c51c26b6574291ee6c335bd0ab950f1.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dacf365d474e5dd064d39c70e9f7496b = L.circleMarker(
+                [4.9591134, 8.3238126],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5fee6f6a5b89c561a3e5fc46790702e6);
+        
+    
+        var popup_618b9629af12c44a255eb2a3248eb020 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_27f8e6d03efd66a6290fd06d61846ecd = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM1OTMxMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEV0aW0gRWRlbSBTdHJlZXQuPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTU5MSwgOC4zMjM4PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIFNvdXRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRXRpbSBFZGVtIFN0cmVldC48L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_618b9629af12c44a255eb2a3248eb020.setContent(i_frame_27f8e6d03efd66a6290fd06d61846ecd);
+            
+        
+
+        circle_marker_dacf365d474e5dd064d39c70e9f7496b.bindPopup(popup_618b9629af12c44a255eb2a3248eb020)
+        ;
+
+        
+    
+    
+            circle_marker_dacf365d474e5dd064d39c70e9f7496b.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6ce15e682eb14c96e161bdd61a08fa09 = L.circleMarker(
+                [4.960554, 8.3243549],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5fee6f6a5b89c561a3e5fc46790702e6);
+        
+    
+        var popup_8353b12c6b923eb2760215461a690e5e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_98522a568b2beb1d5fde3e4391b2ba6b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ1Mjg4NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEV0aW0gRWRlbSBTdHJlZXQuPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTYwNiwgOC4zMjQ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIFNvdXRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRXRpbSBFZGVtIFN0cmVldC48L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8353b12c6b923eb2760215461a690e5e.setContent(i_frame_98522a568b2beb1d5fde3e4391b2ba6b);
+            
+        
+
+        circle_marker_6ce15e682eb14c96e161bdd61a08fa09.bindPopup(popup_8353b12c6b923eb2760215461a690e5e)
+        ;
+
+        
+    
+    
+            circle_marker_6ce15e682eb14c96e161bdd61a08fa09.bindTooltip(
+                `<div>
+                     Calabar South | Etim Edem Street. (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_658897f691e070d8805246699f72e128 = L.circleMarker(
+                [4.9591831, 8.3269205],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5fee6f6a5b89c561a3e5fc46790702e6);
+        
+    
+        var popup_2f11f28a0442139ff23da36e301059d5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_bd41240cd19c40e5fb74231ed13f05b5 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyMjkyMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk1OTIsIDguMzI2OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_2f11f28a0442139ff23da36e301059d5.setContent(i_frame_bd41240cd19c40e5fb74231ed13f05b5);
+            
+        
+
+        circle_marker_658897f691e070d8805246699f72e128.bindPopup(popup_2f11f28a0442139ff23da36e301059d5)
+        ;
+
+        
+    
+    
+            circle_marker_658897f691e070d8805246699f72e128.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bd2be0e8fcded1c0d964b052b9bf84f1 = L.circleMarker(
+                [4.959717299999999, 8.3275401],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5fee6f6a5b89c561a3e5fc46790702e6);
+        
+    
+        var popup_42546a65d5328c74121e51a0947150d6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_05466ee445b8ed7e3dcfd9e9b2f502c0 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMxODE2OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJvZ29iaXJpIFN0cmVldC48L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNC45NTk3LCA4LjMyNzU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgU291dGg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCb2dvYmlyaSBTdHJlZXQuPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_42546a65d5328c74121e51a0947150d6.setContent(i_frame_05466ee445b8ed7e3dcfd9e9b2f502c0);
+            
+        
+
+        circle_marker_bd2be0e8fcded1c0d964b052b9bf84f1.bindPopup(popup_42546a65d5328c74121e51a0947150d6)
+        ;
+
+        
+    
+    
+            circle_marker_bd2be0e8fcded1c0d964b052b9bf84f1.bindTooltip(
+                `<div>
+                     Calabar South | Bogobiri Street. (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_5fee6f6a5b89c561a3e5fc46790702e6.addTo(map_eb4672d891ba97e1be8c49a50645dce5);
+        
+    
+            var feature_group_9d7bd0d26bf8f9adbb1741ec144e9b21 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_3a08fbb253a557c8dfb44b51e1a0e067 = L.circleMarker(
+                [4.9757165, 8.3417006],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9d7bd0d26bf8f9adbb1741ec144e9b21);
+        
+    
+        var popup_e14e290794fdc99efcef83243b41c5fd = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_e8e1e77da773850c0e543c50dfae93ca = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ1MDU2NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1CVUtQQTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk3NTcsIDguMzQxNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE1CVUtQQTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_e14e290794fdc99efcef83243b41c5fd.setContent(i_frame_e8e1e77da773850c0e543c50dfae93ca);
+            
+        
+
+        circle_marker_3a08fbb253a557c8dfb44b51e1a0e067.bindPopup(popup_e14e290794fdc99efcef83243b41c5fd)
+        ;
+
+        
+    
+    
+            circle_marker_3a08fbb253a557c8dfb44b51e1a0e067.bindTooltip(
+                `<div>
+                     Calabar South | MBUKPA (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_81981802e6ee54b92fb75cbd121e15e5 = L.circleMarker(
+                [4.9615255, 8.3570878],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9d7bd0d26bf8f9adbb1741ec144e9b21);
+        
+    
+        var popup_0d4b30ba9416de30f1dfcfb3d03eced8 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_eeda8e041707ffc460ad61ae2ae29fb0 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNjY4NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk2MTUsIDguMzU3MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0d4b30ba9416de30f1dfcfb3d03eced8.setContent(i_frame_eeda8e041707ffc460ad61ae2ae29fb0);
+            
+        
+
+        circle_marker_81981802e6ee54b92fb75cbd121e15e5.bindPopup(popup_0d4b30ba9416de30f1dfcfb3d03eced8)
+        ;
+
+        
+    
+    
+            circle_marker_81981802e6ee54b92fb75cbd121e15e5.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2251385f042c6fddd8bf61a7827ced4d = L.circleMarker(
+                [4.9564319, 8.3551650999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9d7bd0d26bf8f9adbb1741ec144e9b21);
+        
+    
+        var popup_f93586e7325a9bae9a57491284c494ad = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a25ecaaded8dc3a9401e8fb942f5060e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM4NDQ0NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IENhbGFiYXIgUm9hZC48L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNC45NTY0LCA4LjM1NTI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgU291dGg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBDYWxhYmFyIFJvYWQuPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f93586e7325a9bae9a57491284c494ad.setContent(i_frame_a25ecaaded8dc3a9401e8fb942f5060e);
+            
+        
+
+        circle_marker_2251385f042c6fddd8bf61a7827ced4d.bindPopup(popup_f93586e7325a9bae9a57491284c494ad)
+        ;
+
+        
+    
+    
+            circle_marker_2251385f042c6fddd8bf61a7827ced4d.bindTooltip(
+                `<div>
+                     Calabar South | Calabar Road. (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3fc6f59853f2ecdf5e4566bc3658916d = L.circleMarker(
+                [4.9555939, 8.3568082999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9d7bd0d26bf8f9adbb1741ec144e9b21);
+        
+    
+        var popup_e1f2713745524f1c991a3e91892503da = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_148910b723e3aff70e1a8f5682665ac3 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM4NDM5MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk1NTYsIDguMzU2ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_e1f2713745524f1c991a3e91892503da.setContent(i_frame_148910b723e3aff70e1a8f5682665ac3);
+            
+        
+
+        circle_marker_3fc6f59853f2ecdf5e4566bc3658916d.bindPopup(popup_e1f2713745524f1c991a3e91892503da)
+        ;
+
+        
+    
+    
+            circle_marker_3fc6f59853f2ecdf5e4566bc3658916d.bindTooltip(
+                `<div>
+                     Calabar Municipal | Esuk Atu Road. (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_9d7bd0d26bf8f9adbb1741ec144e9b21.addTo(map_eb4672d891ba97e1be8c49a50645dce5);
+        
+    
+            var feature_group_9b295468d62646998c88c10f0e24eab6 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_cdb26a2590d9a3d5c78a81feba0472d5 = L.circleMarker(
+                [4.8627188, 8.3307468],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9b295468d62646998c88c10f0e24eab6);
+        
+    
+        var popup_2ad77421aff8b0fd277485c4a4b5e82d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_ae73179f5546cf09f7cb98dd36da799c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNjE0MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFdoaXRlIEhvdXNlIFMgU3RyZWV0LjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljg2MjcsIDguMzMwNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFdoaXRlIEhvdXNlIFMgU3RyZWV0LjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_2ad77421aff8b0fd277485c4a4b5e82d.setContent(i_frame_ae73179f5546cf09f7cb98dd36da799c);
+            
+        
+
+        circle_marker_cdb26a2590d9a3d5c78a81feba0472d5.bindPopup(popup_2ad77421aff8b0fd277485c4a4b5e82d)
+        ;
+
+        
+    
+    
+            circle_marker_cdb26a2590d9a3d5c78a81feba0472d5.bindTooltip(
+                `<div>
+                     Calabar South | White House S Street. (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3ca922b677e82fba406fb28780bc99c2 = L.circleMarker(
+                [4.8627188, 8.3307468],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9b295468d62646998c88c10f0e24eab6);
+        
+    
+        var popup_99a8b5ade12c556c61d11114489de2e4 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_df6ffb73af02f959cfc48be7dd326db2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ2MjY5MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IFdhdHQgTWFya2V0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODYyNywgOC4zMzA3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIFNvdXRoPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gV2F0dCBNYXJrZXQ8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_99a8b5ade12c556c61d11114489de2e4.setContent(i_frame_df6ffb73af02f959cfc48be7dd326db2);
+            
+        
+
+        circle_marker_3ca922b677e82fba406fb28780bc99c2.bindPopup(popup_99a8b5ade12c556c61d11114489de2e4)
+        ;
+
+        
+    
+    
+            circle_marker_3ca922b677e82fba406fb28780bc99c2.bindTooltip(
+                `<div>
+                     Calabar South | Watt Market (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c73cc850deb055886f88ee950b5fe13e = L.circleMarker(
+                [4.8627188, 8.3307468],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9b295468d62646998c88c10f0e24eab6);
+        
+    
+        var popup_5a182eba496a692655645950f963c103 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_996cb5daebc58420377a3d44e36790f5 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyMjg5MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljg2MjcsIDguMzMwNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBTb3V0aDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEdPTERJRTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_5a182eba496a692655645950f963c103.setContent(i_frame_996cb5daebc58420377a3d44e36790f5);
+            
+        
+
+        circle_marker_c73cc850deb055886f88ee950b5fe13e.bindPopup(popup_5a182eba496a692655645950f963c103)
+        ;
+
+        
+    
+    
+            circle_marker_c73cc850deb055886f88ee950b5fe13e.bindTooltip(
+                `<div>
+                     Calabar South | GOLDIE (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_9b295468d62646998c88c10f0e24eab6.addTo(map_eb4672d891ba97e1be8c49a50645dce5);
+        
+    
+            var layer_control_43fc650266ab5e5a3056bb2ae474759d_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_daa2729ed189b908c168b8b40f8c48f3,
+                    "OpenStreetMap" : tile_layer_873117aa4862a336db2607b39139aaa2,
+                    "Terrain" : tile_layer_6bc0b01fffabd077b137bbab5fa6efbe,
+                    "Toner" : tile_layer_1c9c79a70c4e8cebe2e75dacd2fea2f5,
+                    "CartoDB Dark" : tile_layer_2e8813da571dc15c0f4f52b752a0234b,
+                    "CartoDB Light" : tile_layer_3b3ec1b14f098e754dd648d7ab12351e,
+                },
+                overlays :  {
+                    "Cluster 1 - Calabar South+1more - EGERTON+8more (20 points)" : feature_group_6d49c965cedf5f3932fd47b545938528,
+                    "Cluster 2 - Calabar South - MAYNE AVENUE+2more (10 points)" : feature_group_a329b8780607d2cf36e9263ac48be0d0,
+                    "Cluster 3 - Calabar South - Etim Edem Street.+2more (10 points)" : feature_group_5fee6f6a5b89c561a3e5fc46790702e6,
+                    "Cluster 4 - Calabar South+1more - MBUKPA+3more (4 points)" : feature_group_9d7bd0d26bf8f9adbb1741ec144e9b21,
+                    "Cluster 5 - Calabar South - White House S Street.+2more (3 points)" : feature_group_9b295468d62646998c88c10f0e24eab6,
+                },
+            };
+            let layer_control_43fc650266ab5e5a3056bb2ae474759d = L.control.layers(
+                layer_control_43fc650266ab5e5a3056bb2ae474759d_layers.base_layers,
+                layer_control_43fc650266ab5e5a3056bb2ae474759d_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_eb4672d891ba97e1be8c49a50645dce5);
+
+        
+    
+            var tile_layer_6c5672760a4be8d8647db68e4c6adba1 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_1541441598d8ef237fe897f5235a60eb = new L.Control.MiniMap(
+                tile_layer_6c5672760a4be8d8647db68e4c6adba1,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_eb4672d891ba97e1be8c49a50645dce5.addControl(mini_map_1541441598d8ef237fe897f5235a60eb);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_eb4672d891ba97e1be8c49a50645dce5);
+        
+    
+            var measure_control_5ec4d76943ad6f2a783d147747a14ab5 = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_eb4672d891ba97e1be8c49a50645dce5.addControl(measure_control_5ec4d76943ad6f2a783d147747a14ab5);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_c343192d28609ca3329d1fef69fce747 = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_c343192d28609ca3329d1fef69fce747.options["latFormatter"] =
+                undefined;
+            mouse_position_c343192d28609ca3329d1fef69fce747.options["lngFormatter"] =
+                undefined;
+            map_eb4672d891ba97e1be8c49a50645dce5.addControl(mouse_position_c343192d28609ca3329d1fef69fce747);
+        
+    
+            map_eb4672d891ba97e1be8c49a50645dce5.fitBounds(
+                [[4.8527188, 8.3018810999999], [5.8801724, 8.608801399999999]],
+                {}
+            );
+        
+    
+            var marker_60048ba2da177f654464d6df03a404f9 = L.marker(
+                [4.9548751, 8.3222803],
+                {
+  "size": 10,
+}
+            ).addTo(map_eb4672d891ba97e1be8c49a50645dce5);
+        
+    
+            var icon_3d4afbe9083efaf6f72f74999b4b7883 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_60048ba2da177f654464d6df03a404f9.bindTooltip(
+                `<div>
+                     OmniHub Calabar Municipal Cross River - Eyong Obot
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_60048ba2da177f654464d6df03a404f9.setIcon(icon_3d4afbe9083efaf6f72f74999b4b7883);
+            
+</script>
+</html>

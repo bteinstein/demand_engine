@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_979084cd95893f22292775acde3b6b1a {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 5 clusters | 28 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+                    <div id="cluster-legend" style="position: fixed; 
+                                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                                background-color: rgba(255, 255, 255, 0.95); 
+                                border: 2px solid #ccc; z-index: 999; 
+                                font-size: 11px; padding: 12px; border-radius: 8px;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                backdrop-filter: blur(5px);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #333;">Cluster Legend</strong>
+                        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+                    </div>
+                    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+                        5 clusters | Sorted by size | Showing top 15
+                    </div>
+                    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+                    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 1 
+                <br><span style="color: #666; font-size: 9px;">20 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">4 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">2 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #d62728; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#4</strong> Cluster 4 
+                <br><span style="color: #666; font-size: 9px;">1 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #9467bd; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#5</strong> Cluster 5 
+                <br><span style="color: #666; font-size: 9px;">1 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_979084cd95893f22292775acde3b6b1a" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_979084cd95893f22292775acde3b6b1a = L.map(
+                "map_979084cd95893f22292775acde3b6b1a",
+                {
+                    center: [5.40409905, 7.82082435],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_979084cd95893f22292775acde3b6b1a);
+
+            
+
+        
+    
+            var tile_layer_a9b5dc810876b353fd80b3fcc130eb37 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_a9b5dc810876b353fd80b3fcc130eb37.addTo(map_979084cd95893f22292775acde3b6b1a);
+        
+    
+            var tile_layer_9bcdb17f20e4e10028a0df5e842d7791 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_9bcdb17f20e4e10028a0df5e842d7791.addTo(map_979084cd95893f22292775acde3b6b1a);
+        
+    
+            var tile_layer_953145b461049d5183378205a1160e84 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_953145b461049d5183378205a1160e84.addTo(map_979084cd95893f22292775acde3b6b1a);
+        
+    
+            var tile_layer_1e446b4d15f84d5236bda47536264cce = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_1e446b4d15f84d5236bda47536264cce.addTo(map_979084cd95893f22292775acde3b6b1a);
+        
+    
+            var tile_layer_272cc1d441ea7e719624b23721800342 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_272cc1d441ea7e719624b23721800342.addTo(map_979084cd95893f22292775acde3b6b1a);
+        
+    
+            var tile_layer_c5ad119d9126544bf83a147d6af0902c = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_c5ad119d9126544bf83a147d6af0902c.addTo(map_979084cd95893f22292775acde3b6b1a);
+        
+    
+            var feature_group_d45a24b9762a4b3e872b46314be7eade = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_6e2908fde7a5e7154f860ce79e6f74bb = L.circleMarker(
+                [4.9688699, 8.3291647],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_5bee24d1b67df6805be53aad13a2c71f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_d6d61282a1e3a608e0f3549485b249b9 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMxOTY0MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBOeW9rIEVzdSBTdHJlZXQuPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTY4OSwgOC4zMjkyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIE11bmljaXBhbDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE55b2sgRXN1IFN0cmVldC48L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_5bee24d1b67df6805be53aad13a2c71f.setContent(i_frame_d6d61282a1e3a608e0f3549485b249b9);
+            
+        
+
+        circle_marker_6e2908fde7a5e7154f860ce79e6f74bb.bindPopup(popup_5bee24d1b67df6805be53aad13a2c71f)
+        ;
+
+        
+    
+    
+            circle_marker_6e2908fde7a5e7154f860ce79e6f74bb.bindTooltip(
+                `<div>
+                     Calabar Municipal | Nyok Esu Street. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8c074225d083702f79abfabd37ab400e = L.circleMarker(
+                [4.9975496, 8.3388625],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_8fd9d910e2a1e7201dfc73e2fa3a3d27 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_76178cbeb8a094ca9f91759c7d51883a = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ0OTM4NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBPbGQgT2R1a3BhbmkgUm9hZC48L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNC45OTc1LCA4LjMzODk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgTXVuaWNpcGFsPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gT2xkIE9kdWtwYW5pIFJvYWQuPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8fd9d910e2a1e7201dfc73e2fa3a3d27.setContent(i_frame_76178cbeb8a094ca9f91759c7d51883a);
+            
+        
+
+        circle_marker_8c074225d083702f79abfabd37ab400e.bindPopup(popup_8fd9d910e2a1e7201dfc73e2fa3a3d27)
+        ;
+
+        
+    
+    
+            circle_marker_8c074225d083702f79abfabd37ab400e.bindTooltip(
+                `<div>
+                     Calabar Municipal | Old Odukpani Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bc687bb06f29f1b9ee469d2e79451f8b = L.circleMarker(
+                [4.957155, 8.3570435],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_a5181416eb53c7f17becae4ecab85f08 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_fd6110e7345c0d200f7fc68de8b98470 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ1NTQ0NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk1NzIsIDguMzU3MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_a5181416eb53c7f17becae4ecab85f08.setContent(i_frame_fd6110e7345c0d200f7fc68de8b98470);
+            
+        
+
+        circle_marker_bc687bb06f29f1b9ee469d2e79451f8b.bindPopup(popup_a5181416eb53c7f17becae4ecab85f08)
+        ;
+
+        
+    
+    
+            circle_marker_bc687bb06f29f1b9ee469d2e79451f8b.bindTooltip(
+                `<div>
+                     Calabar Municipal | Esuk Atu Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_70af5a2854cece641a74996aee05abb7 = L.circleMarker(
+                [4.9975496, 8.3388625],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_8c7340da2d59bf2ec94e194f50ee9e77 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_c63e04c27d7c9fbce1ff10b8bdbe7ed3 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQwMTAzNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBPbGQgT2R1a3BhbmkgUm9hZC48L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNC45OTc1LCA4LjMzODk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgTXVuaWNpcGFsPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gT2xkIE9kdWtwYW5pIFJvYWQuPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8c7340da2d59bf2ec94e194f50ee9e77.setContent(i_frame_c63e04c27d7c9fbce1ff10b8bdbe7ed3);
+            
+        
+
+        circle_marker_70af5a2854cece641a74996aee05abb7.bindPopup(popup_8c7340da2d59bf2ec94e194f50ee9e77)
+        ;
+
+        
+    
+    
+            circle_marker_70af5a2854cece641a74996aee05abb7.bindTooltip(
+                `<div>
+                     Calabar Municipal | Old Odukpani Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b88aa6257195b890dcaaaf64611d071a = L.circleMarker(
+                [4.9567316, 8.3558519],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_0fa67462ca772da785b0b472295398e9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_2c90f21c99fde9bf782678eb66b1d77c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ0NzM1ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk1NjcsIDguMzU1OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0fa67462ca772da785b0b472295398e9.setContent(i_frame_2c90f21c99fde9bf782678eb66b1d77c);
+            
+        
+
+        circle_marker_b88aa6257195b890dcaaaf64611d071a.bindPopup(popup_0fa67462ca772da785b0b472295398e9)
+        ;
+
+        
+    
+    
+            circle_marker_b88aa6257195b890dcaaaf64611d071a.bindTooltip(
+                `<div>
+                     Calabar Municipal | Esuk Atu Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e9133d2a216cff5edb42c2011d422cf2 = L.circleMarker(
+                [4.9876657, 8.3501203],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_c07692c8d11c6533d1ed7114043569ff = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_72f7bf214a1f14c8910dd5b22863447d = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyMTQxNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFZGliYSBSb2FkLjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk4NzcsIDguMzUwMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFZGliYSBSb2FkLjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_c07692c8d11c6533d1ed7114043569ff.setContent(i_frame_72f7bf214a1f14c8910dd5b22863447d);
+            
+        
+
+        circle_marker_e9133d2a216cff5edb42c2011d422cf2.bindPopup(popup_c07692c8d11c6533d1ed7114043569ff)
+        ;
+
+        
+    
+    
+            circle_marker_e9133d2a216cff5edb42c2011d422cf2.bindTooltip(
+                `<div>
+                     Calabar Municipal | Ediba Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_50aa6cf013f460ea1c810501cd03c259 = L.circleMarker(
+                [4.957155, 8.3570435],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_50df5ccbbc324674287a54b9ed649633 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_7d69727f0e5feea7c23a6b6d4045e4a1 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM5Njk2NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk1NzIsIDguMzU3MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_50df5ccbbc324674287a54b9ed649633.setContent(i_frame_7d69727f0e5feea7c23a6b6d4045e4a1);
+            
+        
+
+        circle_marker_50aa6cf013f460ea1c810501cd03c259.bindPopup(popup_50df5ccbbc324674287a54b9ed649633)
+        ;
+
+        
+    
+    
+            circle_marker_50aa6cf013f460ea1c810501cd03c259.bindTooltip(
+                `<div>
+                     Calabar Municipal | Esuk Atu Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bd13ff3f41b8b7c4ee86ea21495c5ee5 = L.circleMarker(
+                [4.9380257, 8.311804],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_07200b086d261b1d7d615080df5b04ea = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a1ef47aa195ee9f1eef7e8e793fb3b23 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ0MjE0NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBPbGQgT2R1a3BhbmkgUm9hZC48L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNC45MzgwLCA4LjMxMTg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgTXVuaWNpcGFsPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gT2xkIE9kdWtwYW5pIFJvYWQuPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_07200b086d261b1d7d615080df5b04ea.setContent(i_frame_a1ef47aa195ee9f1eef7e8e793fb3b23);
+            
+        
+
+        circle_marker_bd13ff3f41b8b7c4ee86ea21495c5ee5.bindPopup(popup_07200b086d261b1d7d615080df5b04ea)
+        ;
+
+        
+    
+    
+            circle_marker_bd13ff3f41b8b7c4ee86ea21495c5ee5.bindTooltip(
+                `<div>
+                     Calabar Municipal | Old Odukpani Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b704c8d949eaa8fc7cbf13c7312bfc8b = L.circleMarker(
+                [4.9567908, 8.3558342],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_458dfccbc254527691be79fbbf5921a1 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_dbe703d68e09cd3c6aa4d3e8e945638d = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMxOTYxODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk1NjgsIDguMzU1ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_458dfccbc254527691be79fbbf5921a1.setContent(i_frame_dbe703d68e09cd3c6aa4d3e8e945638d);
+            
+        
+
+        circle_marker_b704c8d949eaa8fc7cbf13c7312bfc8b.bindPopup(popup_458dfccbc254527691be79fbbf5921a1)
+        ;
+
+        
+    
+    
+            circle_marker_b704c8d949eaa8fc7cbf13c7312bfc8b.bindTooltip(
+                `<div>
+                     Calabar Municipal | Esuk Atu Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_14c51f9f7dcacdc65d8942b2a6e520a9 = L.circleMarker(
+                [4.9770093, 8.3414321],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_294c392542e57dc225c602ecb13562f3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_b92bf1817e5e28940e5daf5e56bcfc05 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNDY1NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFZGliYSBSb2FkLjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk3NzAsIDguMzQxNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFZGliYSBSb2FkLjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_294c392542e57dc225c602ecb13562f3.setContent(i_frame_b92bf1817e5e28940e5daf5e56bcfc05);
+            
+        
+
+        circle_marker_14c51f9f7dcacdc65d8942b2a6e520a9.bindPopup(popup_294c392542e57dc225c602ecb13562f3)
+        ;
+
+        
+    
+    
+            circle_marker_14c51f9f7dcacdc65d8942b2a6e520a9.bindTooltip(
+                `<div>
+                     Calabar Municipal | Ediba Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cef9a2a0467505a779a6c0579fedb8e6 = L.circleMarker(
+                [4.9667464, 8.3572625],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_f2d58c9b0f61f1b6df738aa2f4080e01 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_405bab0e100e165df9884b26db687479 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ1MjIwNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBDYWxhYmFyIE11bmljaXBhbCBPZmZpY2U8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNC45NjY3LCA4LjM1NzM8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgTXVuaWNpcGFsPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWwgT2ZmaWNlPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f2d58c9b0f61f1b6df738aa2f4080e01.setContent(i_frame_405bab0e100e165df9884b26db687479);
+            
+        
+
+        circle_marker_cef9a2a0467505a779a6c0579fedb8e6.bindPopup(popup_f2d58c9b0f61f1b6df738aa2f4080e01)
+        ;
+
+        
+    
+    
+            circle_marker_cef9a2a0467505a779a6c0579fedb8e6.bindTooltip(
+                `<div>
+                     Calabar Municipal | Calabar Municipal Office (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d661633aeaeb059dce90ae5e8bbbc2b6 = L.circleMarker(
+                [4.9935573, 8.3383271],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_be0c901d746956f26fe854ad213243aa = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_0652f5ae751b7c6d6a19c76b44c50326 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQwMzAyMjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBPbGQgT2R1a3BhbmkgUm9hZC48L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNC45OTM2LCA4LjMzODM8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgTXVuaWNpcGFsPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gT2xkIE9kdWtwYW5pIFJvYWQuPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_be0c901d746956f26fe854ad213243aa.setContent(i_frame_0652f5ae751b7c6d6a19c76b44c50326);
+            
+        
+
+        circle_marker_d661633aeaeb059dce90ae5e8bbbc2b6.bindPopup(popup_be0c901d746956f26fe854ad213243aa)
+        ;
+
+        
+    
+    
+            circle_marker_d661633aeaeb059dce90ae5e8bbbc2b6.bindTooltip(
+                `<div>
+                     Calabar Municipal | Old Odukpani Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e12e0c2a7aa2ebab5d55d84ccb4587a2 = L.circleMarker(
+                [4.9555939, 8.3568082999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_9e2db657a5b3eff1505b5180d5ea68fa = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_302a77a9c8a108d07b85d0a574800b0b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ0NTIyMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk1NTYsIDguMzU2ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_9e2db657a5b3eff1505b5180d5ea68fa.setContent(i_frame_302a77a9c8a108d07b85d0a574800b0b);
+            
+        
+
+        circle_marker_e12e0c2a7aa2ebab5d55d84ccb4587a2.bindPopup(popup_9e2db657a5b3eff1505b5180d5ea68fa)
+        ;
+
+        
+    
+    
+            circle_marker_e12e0c2a7aa2ebab5d55d84ccb4587a2.bindTooltip(
+                `<div>
+                     Calabar Municipal | Esuk Atu Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_499449b38d6a969b061a4e8bb7f5644c = L.circleMarker(
+                [4.9577450999999, 8.3592993],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_0378e47ecd80912ee02faa35295b20ff = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_fa0f48d3b42df43dd455dc1310fe85ae = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNjQ0MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk1NzcsIDguMzU5MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0378e47ecd80912ee02faa35295b20ff.setContent(i_frame_fa0f48d3b42df43dd455dc1310fe85ae);
+            
+        
+
+        circle_marker_499449b38d6a969b061a4e8bb7f5644c.bindPopup(popup_0378e47ecd80912ee02faa35295b20ff)
+        ;
+
+        
+    
+    
+            circle_marker_499449b38d6a969b061a4e8bb7f5644c.bindTooltip(
+                `<div>
+                     Calabar Municipal | Esuk Atu Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_84808c4166d3606a35bf82f873662e69 = L.circleMarker(
+                [4.9555939, 8.3568082999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_8d5560759ad48c4116d2d62dbb6e24f3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_315bf7d738e1e8ed6f2c2d3bcd76b3e5 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ0NzI3NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk1NTYsIDguMzU2ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8d5560759ad48c4116d2d62dbb6e24f3.setContent(i_frame_315bf7d738e1e8ed6f2c2d3bcd76b3e5);
+            
+        
+
+        circle_marker_84808c4166d3606a35bf82f873662e69.bindPopup(popup_8d5560759ad48c4116d2d62dbb6e24f3)
+        ;
+
+        
+    
+    
+            circle_marker_84808c4166d3606a35bf82f873662e69.bindTooltip(
+                `<div>
+                     Calabar Municipal | Esuk Atu Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ec33a7e51b39dcaf0d5cadc5617cedfe = L.circleMarker(
+                [4.9760686, 8.3393043],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_d8a3761f0e1b359196d91beb17064b3e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_e8b90e4bc9e3e34002ba36020fd9fefc = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNDkyMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNC45NzYxLCA4LjMzOTM8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgTXVuaWNpcGFsPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d8a3761f0e1b359196d91beb17064b3e.setContent(i_frame_e8b90e4bc9e3e34002ba36020fd9fefc);
+            
+        
+
+        circle_marker_ec33a7e51b39dcaf0d5cadc5617cedfe.bindPopup(popup_d8a3761f0e1b359196d91beb17064b3e)
+        ;
+
+        
+    
+    
+            circle_marker_ec33a7e51b39dcaf0d5cadc5617cedfe.bindTooltip(
+                `<div>
+                     Calabar Municipal |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3e2f91104950e6a039721388d56ed98a = L.circleMarker(
+                [4.9565508, 8.3551495999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_0e56ad4c5df03c813aff3c02457cb08b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_8d680c70f6db5d647f17cacd99d7f473 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM2NjYyMjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBYmFuZyBBc2FuZyBTdHJlZXQuPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTU2NiwgOC4zNTUxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIE11bmljaXBhbDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFiYW5nIEFzYW5nIFN0cmVldC48L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0e56ad4c5df03c813aff3c02457cb08b.setContent(i_frame_8d680c70f6db5d647f17cacd99d7f473);
+            
+        
+
+        circle_marker_3e2f91104950e6a039721388d56ed98a.bindPopup(popup_0e56ad4c5df03c813aff3c02457cb08b)
+        ;
+
+        
+    
+    
+            circle_marker_3e2f91104950e6a039721388d56ed98a.bindTooltip(
+                `<div>
+                     Calabar Municipal | Abang Asang Street. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7f760d1b5dbf8d019093fe206e06e93f = L.circleMarker(
+                [4.957155, 8.3570435],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_13d73adbfde2661bb42161416e5e4d33 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_4b52371e65d7350fe8f1a13b1b154612 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQwMjM4ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk1NzIsIDguMzU3MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_13d73adbfde2661bb42161416e5e4d33.setContent(i_frame_4b52371e65d7350fe8f1a13b1b154612);
+            
+        
+
+        circle_marker_7f760d1b5dbf8d019093fe206e06e93f.bindPopup(popup_13d73adbfde2661bb42161416e5e4d33)
+        ;
+
+        
+    
+    
+            circle_marker_7f760d1b5dbf8d019093fe206e06e93f.bindTooltip(
+                `<div>
+                     Calabar Municipal | Esuk Atu Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a76af81be324cdb00160e91639ab4fa4 = L.circleMarker(
+                [4.9577443, 8.3533611],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_3de4f9a53ad2c7cc19d97542c32cf93b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_07a5985954692534fa34a043ce8a3650 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM1NTU5NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljk1NzcsIDguMzUzNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_3de4f9a53ad2c7cc19d97542c32cf93b.setContent(i_frame_07a5985954692534fa34a043ce8a3650);
+            
+        
+
+        circle_marker_a76af81be324cdb00160e91639ab4fa4.bindPopup(popup_3de4f9a53ad2c7cc19d97542c32cf93b)
+        ;
+
+        
+    
+    
+            circle_marker_a76af81be324cdb00160e91639ab4fa4.bindTooltip(
+                `<div>
+                     Calabar Municipal | Esuk Atu Road. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3a87c474d2d31aa58fe2bb6559131536 = L.circleMarker(
+                [5.007226, 8.3613651],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d45a24b9762a4b3e872b46314be7eade);
+        
+    
+        var popup_1efb327b0705f2c0dd69e9d89fe40cb5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_24f197a9994aa2301070a99c67ca34bb = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM4ODIwNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa290IEVmYSBTdHJlZXQuPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDUuMDA3MiwgOC4zNjE0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIE11bmljaXBhbDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3QgRWZhIFN0cmVldC48L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_1efb327b0705f2c0dd69e9d89fe40cb5.setContent(i_frame_24f197a9994aa2301070a99c67ca34bb);
+            
+        
+
+        circle_marker_3a87c474d2d31aa58fe2bb6559131536.bindPopup(popup_1efb327b0705f2c0dd69e9d89fe40cb5)
+        ;
+
+        
+    
+    
+            circle_marker_3a87c474d2d31aa58fe2bb6559131536.bindTooltip(
+                `<div>
+                     Calabar Municipal | Ikot Efa Street. (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_d45a24b9762a4b3e872b46314be7eade.addTo(map_979084cd95893f22292775acde3b6b1a);
+        
+    
+            var feature_group_aae140a70e08bfbe391cf3dd83b607c1 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_4e76251db360afec431ea0973f0f61a8 = L.circleMarker(
+                [5.007439, 8.3380137],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_aae140a70e08bfbe391cf3dd83b607c1);
+        
+    
+        var popup_e233cf882bcf77ba80087c4cd138c675 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_df5d2d44936809a9951d9ec32c653f10 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNTI3NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBc2ltIEl0YSBDbG9zZSBDbG9zZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA1LjAwNzQsIDguMzM4MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBc2ltIEl0YSBDbG9zZSBDbG9zZTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_e233cf882bcf77ba80087c4cd138c675.setContent(i_frame_df5d2d44936809a9951d9ec32c653f10);
+            
+        
+
+        circle_marker_4e76251db360afec431ea0973f0f61a8.bindPopup(popup_e233cf882bcf77ba80087c4cd138c675)
+        ;
+
+        
+    
+    
+            circle_marker_4e76251db360afec431ea0973f0f61a8.bindTooltip(
+                `<div>
+                     Calabar Municipal | Asim Ita Close Close (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_88e61fb529b046c4b0846775a19b484c = L.circleMarker(
+                [5.007681799999999, 8.3352179],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_aae140a70e08bfbe391cf3dd83b607c1);
+        
+    
+        var popup_a6d38e472c51e046d077f29b08305198 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_6903eed6ae985a0192be4fdaf0e574b7 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNDc0OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBc2ltIEl0YSBDbG9zZSBDbG9zZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA1LjAwNzcsIDguMzM1MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBc2ltIEl0YSBDbG9zZSBDbG9zZTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_a6d38e472c51e046d077f29b08305198.setContent(i_frame_6903eed6ae985a0192be4fdaf0e574b7);
+            
+        
+
+        circle_marker_88e61fb529b046c4b0846775a19b484c.bindPopup(popup_a6d38e472c51e046d077f29b08305198)
+        ;
+
+        
+    
+    
+            circle_marker_88e61fb529b046c4b0846775a19b484c.bindTooltip(
+                `<div>
+                     Calabar Municipal | Asim Ita Close Close (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f6ab05670922985830c1c94e2b1fc455 = L.circleMarker(
+                [5.012167, 8.3390415],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_aae140a70e08bfbe391cf3dd83b607c1);
+        
+    
+        var popup_1e92572566ab3742e3150a79c0ba21d6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_3e9d514c5defcc7a00abdd2f25d73460 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM3OTIxMjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBPbGQgT2R1a3BhbmkgUm9hZC48L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNS4wMTIyLCA4LjMzOTA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgTXVuaWNpcGFsPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gT2xkIE9kdWtwYW5pIFJvYWQuPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_1e92572566ab3742e3150a79c0ba21d6.setContent(i_frame_3e9d514c5defcc7a00abdd2f25d73460);
+            
+        
+
+        circle_marker_f6ab05670922985830c1c94e2b1fc455.bindPopup(popup_1e92572566ab3742e3150a79c0ba21d6)
+        ;
+
+        
+    
+    
+            circle_marker_f6ab05670922985830c1c94e2b1fc455.bindTooltip(
+                `<div>
+                     Calabar Municipal | Old Odukpani Road. (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_52684449c087bcb29ffeb140c6e9cdd9 = L.circleMarker(
+                [5.012167, 8.3390415],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_aae140a70e08bfbe391cf3dd83b607c1);
+        
+    
+        var popup_d32ac9ece33463f543eefe9c0094029a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_430bf54447666a2abe44d0ba765d3405 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ1MzkwODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBPbGQgT2R1a3BhbmkgUm9hZC48L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNS4wMTIyLCA4LjMzOTA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgTXVuaWNpcGFsPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gT2xkIE9kdWtwYW5pIFJvYWQuPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d32ac9ece33463f543eefe9c0094029a.setContent(i_frame_430bf54447666a2abe44d0ba765d3405);
+            
+        
+
+        circle_marker_52684449c087bcb29ffeb140c6e9cdd9.bindPopup(popup_d32ac9ece33463f543eefe9c0094029a)
+        ;
+
+        
+    
+    
+            circle_marker_52684449c087bcb29ffeb140c6e9cdd9.bindTooltip(
+                `<div>
+                     Calabar Municipal | Old Odukpani Road. (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_aae140a70e08bfbe391cf3dd83b607c1.addTo(map_979084cd95893f22292775acde3b6b1a);
+        
+    
+            var feature_group_2b6896e94a0ba2981675b8a17f7002bb = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_c873d7b748626a752baa13f2dea2ad2f = L.circleMarker(
+                [5.8701724, 8.5988014],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2b6896e94a0ba2981675b8a17f7002bb);
+        
+    
+        var popup_8cd804cc454f30323497351b46cff47e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_477822ffad0072aa55e98a5496dc62cb = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQzMjYyMjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA1Ljg3MDIsIDguNTk4ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8cd804cc454f30323497351b46cff47e.setContent(i_frame_477822ffad0072aa55e98a5496dc62cb);
+            
+        
+
+        circle_marker_c873d7b748626a752baa13f2dea2ad2f.bindPopup(popup_8cd804cc454f30323497351b46cff47e)
+        ;
+
+        
+    
+    
+            circle_marker_c873d7b748626a752baa13f2dea2ad2f.bindTooltip(
+                `<div>
+                     Calabar Municipal | Esuk Atu Road. (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1208215d70ac352fdaaae5f4aa58327e = L.circleMarker(
+                [5.8701724, 8.5988014],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2b6896e94a0ba2981675b8a17f7002bb);
+        
+    
+        var popup_b9dbc0f5f8926213ded079898815eca1 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_aea9e08ac8988bf83da20ad97f57873f = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNjg0NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA1Ljg3MDIsIDguNTk4ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBFc3VrIEF0dSBSb2FkLjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_b9dbc0f5f8926213ded079898815eca1.setContent(i_frame_aea9e08ac8988bf83da20ad97f57873f);
+            
+        
+
+        circle_marker_1208215d70ac352fdaaae5f4aa58327e.bindPopup(popup_b9dbc0f5f8926213ded079898815eca1)
+        ;
+
+        
+    
+    
+            circle_marker_1208215d70ac352fdaaae5f4aa58327e.bindTooltip(
+                `<div>
+                     Calabar Municipal | Esuk Atu Road. (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_2b6896e94a0ba2981675b8a17f7002bb.addTo(map_979084cd95893f22292775acde3b6b1a);
+        
+    
+            var feature_group_0257af1ed71533e0998dc0d7bce4fd73 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_a523881e36ad85f86a2f15ff97e6b588 = L.circleMarker(
+                [5.4907961, 7.0428473],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0257af1ed71533e0998dc0d7bce4fd73);
+        
+    
+        var popup_f0bffa02e6519531555b8f28a81c165a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_088fe59b21cbc9555fa5c1870103e26f = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMxODI1OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBNY2MgUm9hZC48L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNS40OTA4LCA3LjA0Mjg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IENhbGFiYXIgTXVuaWNpcGFsPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gTWNjIFJvYWQuPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f0bffa02e6519531555b8f28a81c165a.setContent(i_frame_088fe59b21cbc9555fa5c1870103e26f);
+            
+        
+
+        circle_marker_a523881e36ad85f86a2f15ff97e6b588.bindPopup(popup_f0bffa02e6519531555b8f28a81c165a)
+        ;
+
+        
+    
+    
+            circle_marker_a523881e36ad85f86a2f15ff97e6b588.bindTooltip(
+                `<div>
+                     Calabar Municipal | Mcc Road. (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_0257af1ed71533e0998dc0d7bce4fd73.addTo(map_979084cd95893f22292775acde3b6b1a);
+        
+    
+            var feature_group_690e980d55275affe10da99c168ef46b = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_37e6f716791831ae59e50663549f2cec = L.circleMarker(
+                [4.9491412, 8.3956374],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_690e980d55275affe10da99c168ef46b);
+        
+    
+        var popup_b80e93ff46b717d6c88da462829ef358 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a8313bb2cc7765d4b0f06caeae48182f = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMzMDY2NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQ2FsYWJhciBNdW5pY2lwYWw8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBdGltYm8gTG4uPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuOTQ5MSwgOC4zOTU2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBDYWxhYmFyIE11bmljaXBhbDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEF0aW1ibyBMbi48L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_b80e93ff46b717d6c88da462829ef358.setContent(i_frame_a8313bb2cc7765d4b0f06caeae48182f);
+            
+        
+
+        circle_marker_37e6f716791831ae59e50663549f2cec.bindPopup(popup_b80e93ff46b717d6c88da462829ef358)
+        ;
+
+        
+    
+    
+            circle_marker_37e6f716791831ae59e50663549f2cec.bindTooltip(
+                `<div>
+                     Calabar Municipal | Atimbo Ln. (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_690e980d55275affe10da99c168ef46b.addTo(map_979084cd95893f22292775acde3b6b1a);
+        
+    
+            var layer_control_4c9fb7238dbcd78c05367f4bba339776_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_a9b5dc810876b353fd80b3fcc130eb37,
+                    "OpenStreetMap" : tile_layer_9bcdb17f20e4e10028a0df5e842d7791,
+                    "Terrain" : tile_layer_953145b461049d5183378205a1160e84,
+                    "Toner" : tile_layer_1e446b4d15f84d5236bda47536264cce,
+                    "CartoDB Dark" : tile_layer_272cc1d441ea7e719624b23721800342,
+                    "CartoDB Light" : tile_layer_c5ad119d9126544bf83a147d6af0902c,
+                },
+                overlays :  {
+                    "Cluster 1 - Calabar Municipal - Nyok Esu Street.+7more (20 points)" : feature_group_d45a24b9762a4b3e872b46314be7eade,
+                    "Cluster 2 - Calabar Municipal - Asim Ita Close Close+1more (4 points)" : feature_group_aae140a70e08bfbe391cf3dd83b607c1,
+                    "Cluster 3 - Calabar Municipal - Esuk Atu Road. (2 points)" : feature_group_2b6896e94a0ba2981675b8a17f7002bb,
+                    "Cluster 4 - Calabar Municipal - Mcc Road. (1 points)" : feature_group_0257af1ed71533e0998dc0d7bce4fd73,
+                    "Cluster 5 - Calabar Municipal - Atimbo Ln. (1 points)" : feature_group_690e980d55275affe10da99c168ef46b,
+                },
+            };
+            let layer_control_4c9fb7238dbcd78c05367f4bba339776 = L.control.layers(
+                layer_control_4c9fb7238dbcd78c05367f4bba339776_layers.base_layers,
+                layer_control_4c9fb7238dbcd78c05367f4bba339776_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_979084cd95893f22292775acde3b6b1a);
+
+        
+    
+            var tile_layer_13e5ee9bb10917df2a9ba119ced3124a = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_7d116c09b0a533836de97378ad878468 = new L.Control.MiniMap(
+                tile_layer_13e5ee9bb10917df2a9ba119ced3124a,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_979084cd95893f22292775acde3b6b1a.addControl(mini_map_7d116c09b0a533836de97378ad878468);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_979084cd95893f22292775acde3b6b1a);
+        
+    
+            var measure_control_cb5ef937fda7b6a47e14b711de7ddc7c = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_979084cd95893f22292775acde3b6b1a.addControl(measure_control_cb5ef937fda7b6a47e14b711de7ddc7c);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_dbc9503d33b8fd9e8635f8dd6325c406 = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_dbc9503d33b8fd9e8635f8dd6325c406.options["latFormatter"] =
+                undefined;
+            mouse_position_dbc9503d33b8fd9e8635f8dd6325c406.options["lngFormatter"] =
+                undefined;
+            map_979084cd95893f22292775acde3b6b1a.addControl(mouse_position_dbc9503d33b8fd9e8635f8dd6325c406);
+        
+    
+            map_979084cd95893f22292775acde3b6b1a.fitBounds(
+                [[4.9280257, 7.0328473], [5.8801724, 8.608801399999999]],
+                {}
+            );
+        
+    
+            var marker_77c33beb7ff2e8ca778814434ca64dc8 = L.marker(
+                [4.9801468, 8.3459585],
+                {
+  "size": 10,
+}
+            ).addTo(map_979084cd95893f22292775acde3b6b1a);
+        
+    
+            var icon_ece12d309715406d6583ed736dfdfce2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_77c33beb7ff2e8ca778814434ca64dc8.bindTooltip(
+                `<div>
+                     OmniHub Calabar Municipal Cross River - Alpha Grafix
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_77c33beb7ff2e8ca778814434ca64dc8.setIcon(icon_ece12d309715406d6583ed736dfdfce2);
+            
+</script>
+</html>
