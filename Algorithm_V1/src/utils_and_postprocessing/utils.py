@@ -171,9 +171,9 @@ def cluster_summary_and_selection(push_recommendation,
         )
     sel_cluster_tuple = df_high_value_cluster_summary.cluster[0:sel_trip_cluster].to_list()
     sel_total_customer_count = df_high_value_cluster_summary.head(sel_trip_cluster).ncustomer.sum()
-    logger.info(f'''Select ClusterIDs: {sel_cluster_tuple}''')
-    logger.info(f'''Total Number of Customers: {sel_total_customer_count}''')
-    logger.info(df_high_value_cluster_summary.head(sel_trip_cluster).to_string(index=True))
+    logger.debug(f'''Select ClusterIDs: {sel_cluster_tuple}''')
+    logger.debug(f'''Total Number of Customers: {sel_total_customer_count}''')
+    logger.debug(df_high_value_cluster_summary.head(sel_trip_cluster).to_string(index=True))
 
     return cluster_summary, df_high_value_cluster_summary, sel_cluster_tuple, sel_total_customer_count
 

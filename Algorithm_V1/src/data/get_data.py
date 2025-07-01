@@ -307,3 +307,29 @@ def get_customer_score(
 
     return df_customer_score
 
+
+# -------------------------------------------------------------------------------
+# MAIN FUNCTION
+# -------------------------------------------------------------------------------
+
+def get_all_input_data(logger=logging.getLogger(__name__)):
+    # Get the data recommendation, customer dimension with affinity score, and stockpoint dimension
+    df_customer_sku_recommendation_raw,  df_customer_dim_with_affinity_score_raw, df_stockpoint_dim_raw =   get_data_reco_custdim_spdim(logger=logger) # 1mins # 3mins  
+    
+    # Get KYC customers ------------------------
+    df_kyc_customer = get_kyc_customers(logger=logger) 
+    logger.info(f"KYC customers DataFrame shape: {df_kyc_customer.shape}")
+    
+    # Get customer scores ---------------------------------------------
+    df_customer_score = get_customer_score(logger=logger) # ETA: 40 mins
+    
+    df_customer_days_since_last_order = df_customer_score.groupby('CustomerID').days_since_last_order.min().reset_index()
+    # Update df_customer_score with df_customer_days_since_last_order
+    df_customer_score.drop(columns=['days_since_last_order'], inplace=True, errors='ignore')
+    df_customer_score = df_customer_score.merge(df_customer_days_since_last_order, on='CustomerID', suffixes=('', '_min'))
+    logger.info(f"Customer scores DataFrame shape: {df_customer_score.shape}")
+     
+    
+    return df_customer_sku_recommendation_raw, df_customer_dim_with_affinity_score_raw, df_stockpoint_dim_raw, df_kyc_customer, df_customer_score
+
+
