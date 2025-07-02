@@ -6,6 +6,8 @@ from typing import Optional, Tuple # <--- Import Tuple here
 from pathlib import Path 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
+from ..utils_and_postprocessing.utils import filter_kwargs
+
 
 current_script_path_obj_pathlib = Path(__file__).resolve()
 INPUT_DIR =   current_script_path_obj_pathlib.parent.parent.parent / 'input'
@@ -343,11 +345,14 @@ def get_all_input_data( logger=logging.getLogger(__name__),
     df_customer_sku_recommendation_raw,  df_customer_dim_with_affinity_score_raw, df_stockpoint_dim_raw =   get_data_reco_custdim_spdim(logger=logger, **kwargs) # 1mins # 3mins  
     
     # 2. Get KYC customers ------------------------
-    df_kyc_customer = get_kyc_customers(logger=logger, **kwargs) 
+    df_kyc_customer = get_kyc_customers(logger=logger, 
+                                        **filter_kwargs(get_kyc_customers, kwargs)
+                                        ) 
     logger.info(f"KYC customers DataFrame shape: {df_kyc_customer.shape}")
     
     # 3. Get customer scores ---------------------------------------------
-    df_customer_score = get_customer_score(logger=logger, **kwargs) # ETA: 40 mins
+    df_customer_score = get_customer_score(logger=logger, 
+                                            **filter_kwargs(get_customer_score, kwargs)) # ETA: 40 mins
     
     df_customer_days_since_last_order = df_customer_score.groupby('CustomerID').days_since_last_order.min().reset_index()
     # Update df_customer_score with df_customer_days_since_last_order
@@ -357,6 +362,8 @@ def get_all_input_data( logger=logging.getLogger(__name__),
      
     
     return df_customer_sku_recommendation_raw, df_customer_dim_with_affinity_score_raw, df_stockpoint_dim_raw, df_kyc_customer, df_customer_score
+    # empty_df = pd.DataFrame()
+    # return  empty_df, empty_df, empty_df, df_kyc_customer, df_customer_score
 
 
 

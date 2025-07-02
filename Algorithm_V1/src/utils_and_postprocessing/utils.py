@@ -6,8 +6,16 @@ from pathlib import Path
 from datetime import date
 from typing import Optional, Dict  # <-- import this  
 import shutil 
+import inspect
 
 INDEX_HTML = 'index.html'
+
+
+def filter_kwargs(func, kwargs):
+    """Filter kwargs to only include arguments accepted by the given function."""
+    sig = inspect.signature(func)
+    accepted_params = sig.parameters
+    return {k: v for k, v in kwargs.items() if k in accepted_params}
 
 
 def setup_logger(
