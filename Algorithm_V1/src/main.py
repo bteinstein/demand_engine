@@ -78,6 +78,12 @@ def run_push_recommendation(df_customer_sku_recommendation,
                             clustering_method = 'divisive',
                             skip_route_optimization = False,
                             save_to_disk = False,
+                            # Global variables
+                            valhalla_manager = None,
+                            CURRENT_DATE = None,
+                            SELECTED_TRIP_PATH = None,
+                            ALL_CLUSTER_PATH = None,
+                            LOCAL_EXCEL_PATH = None,
                             logger=logging.getLogger(__name__)):
     """
     Main execution function demonstrating complete route optimization workflow

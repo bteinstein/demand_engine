@@ -4,6 +4,9 @@ from pathlib import Path
 import logging 
 from typing import Optional, Tuple # <--- Import Tuple here
 from pathlib import Path 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import logging
+
 current_script_path_obj_pathlib = Path(__file__).resolve()
 INPUT_DIR =   current_script_path_obj_pathlib.parent.parent.parent / 'input'
     
@@ -11,7 +14,7 @@ INPUT_DIR =   current_script_path_obj_pathlib.parent.parent.parent / 'input'
     
 
 # @contextmanager
-def execute_stored_procedure():
+def execute_fetch_reco_custdim_spdim_stored_procedure():
     # Get a database connection
     conn = get_connection()
     cursor = conn.cursor()
@@ -49,6 +52,7 @@ def execute_stored_procedure():
 def get_data_reco_custdim_spdim(
         save_local: bool = False,
         input_dir_path: Optional[Path] = None, # Changed here!
+        reload_recommendation_data: bool = False,  # Added parameter to control data reloading
         logger: logging.Logger = logging.getLogger(__name__)
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
@@ -78,12 +82,38 @@ def get_data_reco_custdim_spdim(
     customer_dim_with_affinity_score = pd.DataFrame()
     stockpoint_dim = pd.DataFrame()
 
+    if reload_recommendation_data:
+        logger.info("Reloading recommendation data is enabled. Fetching fresh data...")
+        conn = None  # Initialize conn to None
+        cursor = None # Initialize cursor to None 
+
+        try:
+            logger.info("Connecting to database and Reloading Recommendation")
+            logger.info("Running EXEC getCustomerSKURecommendationChecks ...")
+            
+            conn = get_connection()
+            cursor = conn.cursor() 
+            
+            cursor.execute("EXEC getCustomerSKURecommendationChecks") 
+            logger.info("||>>>>>>>> RECOMMENDATION DATA RELOADED <<<<<<||")
+        except Exception as e: 
+            logger.exception(f"An error occurred while fetching customer score data. {e}") 
+
+        finally:
+            # Ensure cursor and connection are closed in all cases
+            if cursor: # Check if cursor object was successfully created
+                cursor.close()
+                logger.debug("Database cursor closed.")
+            if conn: # Check if connection object was successfully created
+                conn.close()
+                logger.debug("Database connection closed.")
+    else:
+        pass  # If no reload is needed, we can skip the data fetching
+    
     try:
         # Log instead of print for better control and output management
-        logger.info("Executing stored procedure(s) to fetch data...")
-        # Assume execute_stored_procedure() handles its own database connection/cursor management internally,
-        # or it should be modified to use try-finally for connection closing as discussed previously.
-        customer_sku_recommendation, customer_dim_with_affinity_score, stockpoint_dim = execute_stored_procedure()
+        logger.info("Executing stored procedure(s) to fetch data...") 
+        customer_sku_recommendation, customer_dim_with_affinity_score, stockpoint_dim = execute_fetch_reco_custdim_spdim_stored_procedure()
         logger.info("Data fetch complete.")
 
     except Exception as e:
@@ -252,29 +282,23 @@ def get_customer_score(
 
     try:
         logger.info("Connecting to database and fetching customer score data...")
+        logger.info("EXEC usp_GetPushCustomersScore")
+        
         conn = get_connection()
-        cursor = conn.cursor()
-
-        # It's generally better practice to use stored procedure execution if that's the intent,
-        # rather than selecting directly from a "poc_stockpoint_customer_score" object.
-        # If 'poc_stockpoint_customer_score' is a view or a table, then SELECT * is fine.
-        # If it's a stored procedure, the 'EXEC' syntax is usually preferred.
-        # Assuming it's a view/table based on your current query.
-        cursor.execute("SELECT * FROM VConnectMasterDWR..poc_stockpoint_customer_score")
+        cursor = conn.cursor() 
+        
+        cursor.execute("EXEC usp_GetPushCustomersScore")
         rows = cursor.fetchall()
 
-        if rows: # Check if any rows were returned
+        if rows:  
             columns = [col[0] for col in cursor.description]
             df_customer_score = pd.DataFrame.from_records(rows, columns=columns)
             logger.info(f"Successfully fetched customer score data. Shape: {df_customer_score.shape}")
         else:
             logger.info("No customer score data found.")
 
-    except Exception as e:
-        # Catch any exceptions that occur during database operations
-        logger.exception("An error occurred while fetching customer score data.")
-        # Optionally re-raise the exception if you want the caller to handle it
-        # raise # Uncomment this line if you want the error to propagate
+    except Exception as e: 
+        logger.exception(f"An error occurred while fetching customer score data. {e}") 
 
     finally:
         # Ensure cursor and connection are closed in all cases
@@ -312,16 +336,18 @@ def get_customer_score(
 # MAIN FUNCTION
 # -------------------------------------------------------------------------------
 
-def get_all_input_data(logger=logging.getLogger(__name__)):
-    # Get the data recommendation, customer dimension with affinity score, and stockpoint dimension
-    df_customer_sku_recommendation_raw,  df_customer_dim_with_affinity_score_raw, df_stockpoint_dim_raw =   get_data_reco_custdim_spdim(logger=logger) # 1mins # 3mins  
+def get_all_input_data( logger=logging.getLogger(__name__),
+                        **kwargs
+                       ):
+    # 1. Get the data recommendation, customer dimension with affinity score, and stockpoint dimension
+    df_customer_sku_recommendation_raw,  df_customer_dim_with_affinity_score_raw, df_stockpoint_dim_raw =   get_data_reco_custdim_spdim(logger=logger, **kwargs) # 1mins # 3mins  
     
-    # Get KYC customers ------------------------
-    df_kyc_customer = get_kyc_customers(logger=logger) 
+    # 2. Get KYC customers ------------------------
+    df_kyc_customer = get_kyc_customers(logger=logger, **kwargs) 
     logger.info(f"KYC customers DataFrame shape: {df_kyc_customer.shape}")
     
-    # Get customer scores ---------------------------------------------
-    df_customer_score = get_customer_score(logger=logger) # ETA: 40 mins
+    # 3. Get customer scores ---------------------------------------------
+    df_customer_score = get_customer_score(logger=logger, **kwargs) # ETA: 40 mins
     
     df_customer_days_since_last_order = df_customer_score.groupby('CustomerID').days_since_last_order.min().reset_index()
     # Update df_customer_score with df_customer_days_since_last_order
@@ -333,3 +359,47 @@ def get_all_input_data(logger=logging.getLogger(__name__)):
     return df_customer_sku_recommendation_raw, df_customer_dim_with_affinity_score_raw, df_stockpoint_dim_raw, df_kyc_customer, df_customer_score
 
 
+
+
+def get_all_input_data_(logger=logging.getLogger(__name__), **kwargs):
+    results = {}
+
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        futures = {
+            executor.submit(get_data_reco_custdim_spdim, logger=logger, **kwargs): 'reco_custdim_spdim',
+            executor.submit(get_kyc_customers, logger=logger, **kwargs): 'kyc_customers',
+            executor.submit(get_customer_score, logger=logger, **kwargs): 'customer_score',
+        }
+
+        for future in as_completed(futures):
+            key = futures[future]
+            try:
+                result = future.result()
+                results[key] = result
+                logger.info(f"{key} fetched successfully.")
+            except Exception as e:
+                logger.exception(f"Error fetching {key}: {e}")
+                raise
+
+    # Unpack results
+    df_customer_sku_recommendation_raw, df_customer_dim_with_affinity_score_raw, df_stockpoint_dim_raw = results['reco_custdim_spdim']
+    df_kyc_customer = results['kyc_customers']
+    df_customer_score = results['customer_score']
+
+    # Post-processing
+    df_customer_days_since_last_order = df_customer_score.groupby('CustomerID').days_since_last_order.min().reset_index()
+    df_customer_score.drop(columns=['days_since_last_order'], inplace=True, errors='ignore')
+    df_customer_score = df_customer_score.merge(
+        df_customer_days_since_last_order,
+        on='CustomerID',
+        suffixes=('', '_min')
+    )
+    logger.info(f"Customer scores DataFrame shape: {df_customer_score.shape}")
+
+    return (
+        df_customer_sku_recommendation_raw,
+        df_customer_dim_with_affinity_score_raw,
+        df_stockpoint_dim_raw,
+        df_kyc_customer,
+        df_customer_score
+    )
