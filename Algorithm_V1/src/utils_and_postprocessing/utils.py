@@ -63,7 +63,7 @@ def setup_directories(base_dir: Path,
     
     CURRENT_DATE = current_date or date.today()
 
-    RECOMMENDATION_DIR = base_dir / 'recommendation_output' / str(current_date)
+    RECOMMENDATION_DIR = base_dir / 'recommendation_output' #/ str(current_date)
     BASE_DIR = base_dir.resolve()  # Ensure BASE_DIR is an absolute path
     INPUT_DIR = base_dir / 'input'
     SELECTED_TRIP_DIR = RECOMMENDATION_DIR / 'selected_trip_map'
