@@ -30,7 +30,7 @@ logger.warning("This is a warning")
 # BASE_DIR = Path(__file__).resolve().parent
 BASE_DIR = Path('').resolve()#.parent 
 INDEX_HTML = 'index.html'
-CURRENT_DATE = datetime.today().date() #+ timedelta(days=1)
+CURRENT_DATE = datetime.today().date() + timedelta(days=1)
 
 INPUT_DIR, SELECTED_TRIP_PATH, ALL_CLUSTER_PATH, LOCAL_EXCEL_PATH = setup_directories(base_dir = BASE_DIR, current_date = CURRENT_DATE, logger = logger) 
  
