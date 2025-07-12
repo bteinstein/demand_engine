@@ -1,10 +1,6 @@
-USE VCONNECTMASTERDWR;
--- SP DIM
--- DROP TABLE IF EXISTS #SP_DIM;
 SELECT 
 	sp.Stock_Point_ID, sp.Stock_point_Name, 
-	bm.lattitude, bm.longitude
--- INTO #SP_DIM
+	bm.Lattitude, bm.Longitude 
 FROM Stock_Point_Master sp WITH (NOLOCK)  
 INNER JOIN BusinessMaster bm WITH (NOLOCK) ON sp.Stock_Point_ID = bm.Contentid
 WHERE sp.Fulfilement_Center_ID = 76
