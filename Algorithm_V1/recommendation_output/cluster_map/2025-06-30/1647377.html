@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_3fcf91acfdd22085e29294ff3393ba26 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 5 clusters | 36 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+                    <div id="cluster-legend" style="position: fixed; 
+                                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                                background-color: rgba(255, 255, 255, 0.95); 
+                                border: 2px solid #ccc; z-index: 999; 
+                                font-size: 11px; padding: 12px; border-radius: 8px;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                backdrop-filter: blur(5px);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #333;">Cluster Legend</strong>
+                        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+                    </div>
+                    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+                        5 clusters | Sorted by size | Showing top 15
+                    </div>
+                    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+                    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 1 
+                <br><span style="color: #666; font-size: 9px;">13 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #d62728; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 4 
+                <br><span style="color: #666; font-size: 9px;">10 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">5 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#4</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">4 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #9467bd; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#5</strong> Cluster 5 
+                <br><span style="color: #666; font-size: 9px;">4 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_3fcf91acfdd22085e29294ff3393ba26" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_3fcf91acfdd22085e29294ff3393ba26 = L.map(
+                "map_3fcf91acfdd22085e29294ff3393ba26",
+                {
+                    center: [6.60572805, 3.52226125],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_3fcf91acfdd22085e29294ff3393ba26);
+
+            
+
+        
+    
+            var tile_layer_e523044fc4fdbc83eb50bf36313f954f = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e523044fc4fdbc83eb50bf36313f954f.addTo(map_3fcf91acfdd22085e29294ff3393ba26);
+        
+    
+            var tile_layer_2a0a7ed9a690b0acfd00a0379d6e7eef = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_2a0a7ed9a690b0acfd00a0379d6e7eef.addTo(map_3fcf91acfdd22085e29294ff3393ba26);
+        
+    
+            var tile_layer_5fb121e8bdbefbebb135b50bb527168f = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_5fb121e8bdbefbebb135b50bb527168f.addTo(map_3fcf91acfdd22085e29294ff3393ba26);
+        
+    
+            var tile_layer_c23c58b65eedfd003ed1f5cc91f5a20b = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_c23c58b65eedfd003ed1f5cc91f5a20b.addTo(map_3fcf91acfdd22085e29294ff3393ba26);
+        
+    
+            var tile_layer_5241a8b382c84ffddbf38c5e91f784b8 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_5241a8b382c84ffddbf38c5e91f784b8.addTo(map_3fcf91acfdd22085e29294ff3393ba26);
+        
+    
+            var tile_layer_27a422c1f46ba89031a02b0a41946173 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_27a422c1f46ba89031a02b0a41946173.addTo(map_3fcf91acfdd22085e29294ff3393ba26);
+        
+    
+            var feature_group_0488fd08a543494b1a0676262d32d918 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_09fcd1ad7ad52c24f75403c24b0a7a39 = L.circleMarker(
+                [6.6148058, 3.4945913],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0488fd08a543494b1a0676262d32d918);
+        
+    
+        var popup_6b57db37b28d8b367cd54fc2d4f75679 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_128d32f20f6298effb2d5cd65065e950 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI0MDI4NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBBZ3Vmb3llPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjE0OCwgMy40OTQ2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJa29yb2R1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWtvcm9kdSAtIEFndWZveWU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_6b57db37b28d8b367cd54fc2d4f75679.setContent(i_frame_128d32f20f6298effb2d5cd65065e950);
+            
+        
+
+        circle_marker_09fcd1ad7ad52c24f75403c24b0a7a39.bindPopup(popup_6b57db37b28d8b367cd54fc2d4f75679)
+        ;
+
+        
+    
+    
+            circle_marker_09fcd1ad7ad52c24f75403c24b0a7a39.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agufoye (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5b4d631b97e089bd4967d0bcdbcefa04 = L.circleMarker(
+                [6.5588679, 3.5396299],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0488fd08a543494b1a0676262d32d918);
+        
+    
+        var popup_88fc0f86f15e53174de058e3c06f2c7c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_90e4616f537c5f134ddf208295c48826 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMzNDk1MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBBZ3Vmb3llPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTU4OSwgMy41Mzk2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJa29yb2R1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWtvcm9kdSAtIEFndWZveWU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_88fc0f86f15e53174de058e3c06f2c7c.setContent(i_frame_90e4616f537c5f134ddf208295c48826);
+            
+        
+
+        circle_marker_5b4d631b97e089bd4967d0bcdbcefa04.bindPopup(popup_88fc0f86f15e53174de058e3c06f2c7c)
+        ;
+
+        
+    
+    
+            circle_marker_5b4d631b97e089bd4967d0bcdbcefa04.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agufoye (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_37a13ffe330f60d8b72cf03b7f015972 = L.circleMarker(
+                [6.5638443, 3.5455157],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0488fd08a543494b1a0676262d32d918);
+        
+    
+        var popup_277e6601631dbf714eff67988b45b232 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_7dc851e9b59f24cbdf5434b599f4916f = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQwNzQ1MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBCYXlla3U8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41NjM4LCAzLjU0NTU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrb3JvZHU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa29yb2R1IC0gQmF5ZWt1PC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_277e6601631dbf714eff67988b45b232.setContent(i_frame_7dc851e9b59f24cbdf5434b599f4916f);
+            
+        
+
+        circle_marker_37a13ffe330f60d8b72cf03b7f015972.bindPopup(popup_277e6601631dbf714eff67988b45b232)
+        ;
+
+        
+    
+    
+            circle_marker_37a13ffe330f60d8b72cf03b7f015972.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Bayeku (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1f3ba9ac6605c8e2217d6a804fb8a96e = L.circleMarker(
+                [6.6515331, 3.4914825],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0488fd08a543494b1a0676262d32d918);
+        
+    
+        var popup_bc2df946cc18cf145ea2b27cd4f3e683 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_8a6ea0c26f47544cd54400dc4d34e53d = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNzk2MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBBZ3Vmb3llPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjUxNSwgMy40OTE1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJa29yb2R1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWtvcm9kdSAtIEFndWZveWU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_bc2df946cc18cf145ea2b27cd4f3e683.setContent(i_frame_8a6ea0c26f47544cd54400dc4d34e53d);
+            
+        
+
+        circle_marker_1f3ba9ac6605c8e2217d6a804fb8a96e.bindPopup(popup_bc2df946cc18cf145ea2b27cd4f3e683)
+        ;
+
+        
+    
+    
+            circle_marker_1f3ba9ac6605c8e2217d6a804fb8a96e.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agufoye (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dccf930045e298d99145cb64c10b6daf = L.circleMarker(
+                [6.5894753, 3.565652],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0488fd08a543494b1a0676262d32d918);
+        
+    
+        var popup_286c294d5a4f2a9589b9838ee50fe2f9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_feb1a1ede61d49f737f93b4ef117e148 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIxNjM5OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBPcmV5byAtIElnYmU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41ODk1LCAzLjU2NTc8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrb3JvZHU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa29yb2R1IC0gT3JleW8gLSBJZ2JlPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_286c294d5a4f2a9589b9838ee50fe2f9.setContent(i_frame_feb1a1ede61d49f737f93b4ef117e148);
+            
+        
+
+        circle_marker_dccf930045e298d99145cb64c10b6daf.bindPopup(popup_286c294d5a4f2a9589b9838ee50fe2f9)
+        ;
+
+        
+    
+    
+            circle_marker_dccf930045e298d99145cb64c10b6daf.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Oreyo - Igbe (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c580d1aa9ca3c7d15ab96fef3f4d3f19 = L.circleMarker(
+                [6.6108962, 3.5136146],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0488fd08a543494b1a0676262d32d918);
+        
+    
+        var popup_a60226951d133ffd877834f8071e66f6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_5c88c19e1930a5332129bab33c0d1f25 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI5NTMxMDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBPcmV5byAtIElnYmU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42MTA5LCAzLjUxMzY8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrb3JvZHU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa29yb2R1IC0gT3JleW8gLSBJZ2JlPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_a60226951d133ffd877834f8071e66f6.setContent(i_frame_5c88c19e1930a5332129bab33c0d1f25);
+            
+        
+
+        circle_marker_c580d1aa9ca3c7d15ab96fef3f4d3f19.bindPopup(popup_a60226951d133ffd877834f8071e66f6)
+        ;
+
+        
+    
+    
+            circle_marker_c580d1aa9ca3c7d15ab96fef3f4d3f19.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Oreyo - Igbe (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fa011c332e3f2e6aab4cc51cd702fe32 = L.circleMarker(
+                [6.6135386, 3.5386334],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0488fd08a543494b1a0676262d32d918);
+        
+    
+        var popup_d3d745565b8b1cc85a7b4262e5c41ca9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_f4919d88b7dfdf9204d236b47d41779e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQzOTg5MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBPcmV5byAtIElnYmU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42MTM1LCAzLjUzODY8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrb3JvZHU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa29yb2R1IC0gT3JleW8gLSBJZ2JlPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d3d745565b8b1cc85a7b4262e5c41ca9.setContent(i_frame_f4919d88b7dfdf9204d236b47d41779e);
+            
+        
+
+        circle_marker_fa011c332e3f2e6aab4cc51cd702fe32.bindPopup(popup_d3d745565b8b1cc85a7b4262e5c41ca9)
+        ;
+
+        
+    
+    
+            circle_marker_fa011c332e3f2e6aab4cc51cd702fe32.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Oreyo - Igbe (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_faab163c8c4ab100dd995222b2c3c13d = L.circleMarker(
+                [6.5823532, 3.525617],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0488fd08a543494b1a0676262d32d918);
+        
+    
+        var popup_2d89d70cd8cd7d563e8f12561d531c71 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_120cf38ef2ce07fbed06590b48a96bd0 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI0NzA3NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBJZ2JvZ2JvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTgyNCwgMy41MjU2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJa29yb2R1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWtvcm9kdSAtIElnYm9nYm88L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_2d89d70cd8cd7d563e8f12561d531c71.setContent(i_frame_120cf38ef2ce07fbed06590b48a96bd0);
+            
+        
+
+        circle_marker_faab163c8c4ab100dd995222b2c3c13d.bindPopup(popup_2d89d70cd8cd7d563e8f12561d531c71)
+        ;
+
+        
+    
+    
+            circle_marker_faab163c8c4ab100dd995222b2c3c13d.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Igbogbo (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c0156afa60ce05921bc304bdac9ceb64 = L.circleMarker(
+                [6.5394035, 3.5024259],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0488fd08a543494b1a0676262d32d918);
+        
+    
+        var popup_86063c74559716751605761ca16aca91 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_8b268cb8387f1e24e22358282c3ea336 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM3MDY4MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBPZmZpbjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjUzOTQsIDMuNTAyNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBPZmZpbjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_86063c74559716751605761ca16aca91.setContent(i_frame_8b268cb8387f1e24e22358282c3ea336);
+            
+        
+
+        circle_marker_c0156afa60ce05921bc304bdac9ceb64.bindPopup(popup_86063c74559716751605761ca16aca91)
+        ;
+
+        
+    
+    
+            circle_marker_c0156afa60ce05921bc304bdac9ceb64.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Offin (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5b97eca3526c65b9f9a440cc6701685d = L.circleMarker(
+                [6.5944652, 3.5663737],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0488fd08a543494b1a0676262d32d918);
+        
+    
+        var popup_0fffde18a560b1e204238cab409748c9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a06a92ad2924e6c99def34833f4b8fd9 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI2ODM0ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBPcmV5byAtIElnYmU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41OTQ1LCAzLjU2NjQ8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrb3JvZHU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa29yb2R1IC0gT3JleW8gLSBJZ2JlPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0fffde18a560b1e204238cab409748c9.setContent(i_frame_a06a92ad2924e6c99def34833f4b8fd9);
+            
+        
+
+        circle_marker_5b97eca3526c65b9f9a440cc6701685d.bindPopup(popup_0fffde18a560b1e204238cab409748c9)
+        ;
+
+        
+    
+    
+            circle_marker_5b97eca3526c65b9f9a440cc6701685d.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Oreyo - Igbe (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_287b47bdbb950fd3cc711ccccfe95236 = L.circleMarker(
+                [6.6010752, 3.5186878],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0488fd08a543494b1a0676262d32d918);
+        
+    
+        var popup_97523831af5747f11991445cca151f4f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_63f44f5358b9e55f9d451aa715060a80 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM3MTgxODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBJZ2JvZ2JvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjAxMSwgMy41MTg3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJa29yb2R1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWtvcm9kdSAtIElnYm9nYm88L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_97523831af5747f11991445cca151f4f.setContent(i_frame_63f44f5358b9e55f9d451aa715060a80);
+            
+        
+
+        circle_marker_287b47bdbb950fd3cc711ccccfe95236.bindPopup(popup_97523831af5747f11991445cca151f4f)
+        ;
+
+        
+    
+    
+            circle_marker_287b47bdbb950fd3cc711ccccfe95236.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Igbogbo (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7f2b324c56b967d8dd071487723692a9 = L.circleMarker(
+                [6.5944652, 3.5663737],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0488fd08a543494b1a0676262d32d918);
+        
+    
+        var popup_72ba2eb61f239822f1bfe9d18b10772f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_4b3fede014c2516c525cd09b44623bfa = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQzMTI0MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBPcmV5byAtIElnYmU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41OTQ1LCAzLjU2NjQ8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrb3JvZHU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa29yb2R1IC0gT3JleW8gLSBJZ2JlPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_72ba2eb61f239822f1bfe9d18b10772f.setContent(i_frame_4b3fede014c2516c525cd09b44623bfa);
+            
+        
+
+        circle_marker_7f2b324c56b967d8dd071487723692a9.bindPopup(popup_72ba2eb61f239822f1bfe9d18b10772f)
+        ;
+
+        
+    
+    
+            circle_marker_7f2b324c56b967d8dd071487723692a9.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Oreyo - Igbe (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_aa62263fb815a50be187b14ce733a728 = L.circleMarker(
+                [6.585757099999999, 3.5179007],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_0488fd08a543494b1a0676262d32d918);
+        
+    
+        var popup_289a308cb42913e9066abde4e87f37a7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_5ae0c9089028583e670f87c367303c56 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMjA0NTQ1MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBPd29kZSAtIEliZXNlPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTg1OCwgMy41MTc5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJa29yb2R1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWtvcm9kdSAtIE93b2RlIC0gSWJlc2U8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_289a308cb42913e9066abde4e87f37a7.setContent(i_frame_5ae0c9089028583e670f87c367303c56);
+            
+        
+
+        circle_marker_aa62263fb815a50be187b14ce733a728.bindPopup(popup_289a308cb42913e9066abde4e87f37a7)
+        ;
+
+        
+    
+    
+            circle_marker_aa62263fb815a50be187b14ce733a728.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Owode - Ibese (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_0488fd08a543494b1a0676262d32d918.addTo(map_3fcf91acfdd22085e29294ff3393ba26);
+        
+    
+            var feature_group_d75c653b9dfa3dd872e251f108bee370 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_997dae829f6e3037c85d8928bab7a13f = L.circleMarker(
+                [6.6150877, 3.4944941],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d75c653b9dfa3dd872e251f108bee370);
+        
+    
+        var popup_40e4c6480745c943717d6d91d3982529 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_19f91ae1e2c314b839dcfe6e16c3b0de = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNjYwNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBJZ2JvZ2JvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjE1MSwgMy40OTQ1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJa29yb2R1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWtvcm9kdSAtIElnYm9nYm88L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_40e4c6480745c943717d6d91d3982529.setContent(i_frame_19f91ae1e2c314b839dcfe6e16c3b0de);
+            
+        
+
+        circle_marker_997dae829f6e3037c85d8928bab7a13f.bindPopup(popup_40e4c6480745c943717d6d91d3982529)
+        ;
+
+        
+    
+    
+            circle_marker_997dae829f6e3037c85d8928bab7a13f.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Igbogbo (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3a5554dcf0571f1bc23e2e614f41f061 = L.circleMarker(
+                [6.6150877, 3.4944941],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d75c653b9dfa3dd872e251f108bee370);
+        
+    
+        var popup_4b9222db1cc812c5d0bd93122824e51e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_953a18dd94f0639a5075f9b9a50b06bd = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMxNTQ5NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBJZ2JvZ2JvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjE1MSwgMy40OTQ1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJa29yb2R1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWtvcm9kdSAtIElnYm9nYm88L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_4b9222db1cc812c5d0bd93122824e51e.setContent(i_frame_953a18dd94f0639a5075f9b9a50b06bd);
+            
+        
+
+        circle_marker_3a5554dcf0571f1bc23e2e614f41f061.bindPopup(popup_4b9222db1cc812c5d0bd93122824e51e)
+        ;
+
+        
+    
+    
+            circle_marker_3a5554dcf0571f1bc23e2e614f41f061.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Igbogbo (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e042a1985bd87ca6842c64fcc815b5a2 = L.circleMarker(
+                [6.619410999999999, 3.5104388],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d75c653b9dfa3dd872e251f108bee370);
+        
+    
+        var popup_f3924edf7a4da9e2b2c2a0f0827b7f65 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_49f1c6a60d44adcacc3ea5162f7114ff = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI1ODI2OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBPcmV5byAtIElnYmU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42MTk0LCAzLjUxMDQ8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrb3JvZHU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa29yb2R1IC0gT3JleW8gLSBJZ2JlPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f3924edf7a4da9e2b2c2a0f0827b7f65.setContent(i_frame_49f1c6a60d44adcacc3ea5162f7114ff);
+            
+        
+
+        circle_marker_e042a1985bd87ca6842c64fcc815b5a2.bindPopup(popup_f3924edf7a4da9e2b2c2a0f0827b7f65)
+        ;
+
+        
+    
+    
+            circle_marker_e042a1985bd87ca6842c64fcc815b5a2.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Oreyo - Igbe (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8f310a1841fd1c061f969d1c198a4b33 = L.circleMarker(
+                [6.619410999999999, 3.5104388],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d75c653b9dfa3dd872e251f108bee370);
+        
+    
+        var popup_0d960ad2517a5c1458cce334856461f7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_fcbae15a15670c12a9e44dd1d3da28f3 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE5NDI5MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjYxOTQsIDMuNTEwNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0d960ad2517a5c1458cce334856461f7.setContent(i_frame_fcbae15a15670c12a9e44dd1d3da28f3);
+            
+        
+
+        circle_marker_8f310a1841fd1c061f969d1c198a4b33.bindPopup(popup_0d960ad2517a5c1458cce334856461f7)
+        ;
+
+        
+    
+    
+            circle_marker_8f310a1841fd1c061f969d1c198a4b33.bindTooltip(
+                `<div>
+                     Ikorodu |  (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_01eca6e3119f78614fa2250e1908e6ac = L.circleMarker(
+                [6.6194131, 3.5104537],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d75c653b9dfa3dd872e251f108bee370);
+        
+    
+        var popup_6c181c610bfa4a017946125ff7890f0e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_3215ef035ef9b591109b4092141ffcdf = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI0NDY4NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBPcmV5byAtIElnYmU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42MTk0LCAzLjUxMDU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrb3JvZHU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa29yb2R1IC0gT3JleW8gLSBJZ2JlPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_6c181c610bfa4a017946125ff7890f0e.setContent(i_frame_3215ef035ef9b591109b4092141ffcdf);
+            
+        
+
+        circle_marker_01eca6e3119f78614fa2250e1908e6ac.bindPopup(popup_6c181c610bfa4a017946125ff7890f0e)
+        ;
+
+        
+    
+    
+            circle_marker_01eca6e3119f78614fa2250e1908e6ac.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Oreyo - Igbe (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_868c87de7aeb0a1225b7a11b9ef88344 = L.circleMarker(
+                [6.6194131, 3.5104537],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d75c653b9dfa3dd872e251f108bee370);
+        
+    
+        var popup_92304b69b87fdc282d04340c2d6ffadd = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_5409da9ddf732c5599c9beac45a2d3ef = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDczNjQyMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBPcmV5byAtIElnYmU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42MTk0LCAzLjUxMDU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrb3JvZHU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa29yb2R1IC0gT3JleW8gLSBJZ2JlPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_92304b69b87fdc282d04340c2d6ffadd.setContent(i_frame_5409da9ddf732c5599c9beac45a2d3ef);
+            
+        
+
+        circle_marker_868c87de7aeb0a1225b7a11b9ef88344.bindPopup(popup_92304b69b87fdc282d04340c2d6ffadd)
+        ;
+
+        
+    
+    
+            circle_marker_868c87de7aeb0a1225b7a11b9ef88344.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Oreyo - Igbe (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1d780a6c7bb22f7c7aab729a526fb3ff = L.circleMarker(
+                [6.6194131, 3.5104537],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d75c653b9dfa3dd872e251f108bee370);
+        
+    
+        var popup_f3905bccdfcbca1f25bcf42531ac46ab = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_5d29049b6455a984d837fc56ba61fb06 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI0NTM1MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBPcmV5byAtIElnYmU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42MTk0LCAzLjUxMDU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrb3JvZHU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa29yb2R1IC0gT3JleW8gLSBJZ2JlPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f3905bccdfcbca1f25bcf42531ac46ab.setContent(i_frame_5d29049b6455a984d837fc56ba61fb06);
+            
+        
+
+        circle_marker_1d780a6c7bb22f7c7aab729a526fb3ff.bindPopup(popup_f3905bccdfcbca1f25bcf42531ac46ab)
+        ;
+
+        
+    
+    
+            circle_marker_1d780a6c7bb22f7c7aab729a526fb3ff.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Oreyo - Igbe (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1194248691f9eca55787a3ca64c88af9 = L.circleMarker(
+                [6.6178005, 3.5155411],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d75c653b9dfa3dd872e251f108bee370);
+        
+    
+        var popup_e615474b2e027af374b3a2884eb7e95c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_d7a1c6008a9b4e89b69cb54800e6c014 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI4NjE3NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBJZ2JvZ2JvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjE3OCwgMy41MTU1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJa29yb2R1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWtvcm9kdSAtIElnYm9nYm88L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_e615474b2e027af374b3a2884eb7e95c.setContent(i_frame_d7a1c6008a9b4e89b69cb54800e6c014);
+            
+        
+
+        circle_marker_1194248691f9eca55787a3ca64c88af9.bindPopup(popup_e615474b2e027af374b3a2884eb7e95c)
+        ;
+
+        
+    
+    
+            circle_marker_1194248691f9eca55787a3ca64c88af9.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Igbogbo (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3f94609be0afc179449d5da9220baca2 = L.circleMarker(
+                [6.6193863, 3.5182995],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d75c653b9dfa3dd872e251f108bee370);
+        
+    
+        var popup_74c63a63ccf4e5f2a09f449ff743502d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_c85f369b825d9ae41af4adbdc7363d45 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTgwNzU2MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBJZ2JvZ2JvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjE5NCwgMy41MTgzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJa29yb2R1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWtvcm9kdSAtIElnYm9nYm88L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_74c63a63ccf4e5f2a09f449ff743502d.setContent(i_frame_c85f369b825d9ae41af4adbdc7363d45);
+            
+        
+
+        circle_marker_3f94609be0afc179449d5da9220baca2.bindPopup(popup_74c63a63ccf4e5f2a09f449ff743502d)
+        ;
+
+        
+    
+    
+            circle_marker_3f94609be0afc179449d5da9220baca2.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Igbogbo (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9e9744f6cf7d651c615727f4ab1a960c = L.circleMarker(
+                [6.6193863, 3.5182995],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d75c653b9dfa3dd872e251f108bee370);
+        
+    
+        var popup_7f87b46746576f5de47d3d35f680fbe5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a62383e23242f8469e36a3afed701d46 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMjYyODk0NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjYxOTQsIDMuNTE4MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_7f87b46746576f5de47d3d35f680fbe5.setContent(i_frame_a62383e23242f8469e36a3afed701d46);
+            
+        
+
+        circle_marker_9e9744f6cf7d651c615727f4ab1a960c.bindPopup(popup_7f87b46746576f5de47d3d35f680fbe5)
+        ;
+
+        
+    
+    
+            circle_marker_9e9744f6cf7d651c615727f4ab1a960c.bindTooltip(
+                `<div>
+                     Ikorodu |  (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_d75c653b9dfa3dd872e251f108bee370.addTo(map_3fcf91acfdd22085e29294ff3393ba26);
+        
+    
+            var feature_group_c547f6c5ced2730ab5caf7a60c6b67ee = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_146deee6cda89fbabbe89eb1bcd1001e = L.circleMarker(
+                [6.6468919999999, 3.4854823],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c547f6c5ced2730ab5caf7a60c6b67ee);
+        
+    
+        var popup_d05c34967e49113a968ae298d97d0c29 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_ba829d6b03c598488334c63fcffb7340 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTc4Nzk1MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBBZ3Vmb3llPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjQ2OSwgMy40ODU1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJa29yb2R1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWtvcm9kdSAtIEFndWZveWU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d05c34967e49113a968ae298d97d0c29.setContent(i_frame_ba829d6b03c598488334c63fcffb7340);
+            
+        
+
+        circle_marker_146deee6cda89fbabbe89eb1bcd1001e.bindPopup(popup_d05c34967e49113a968ae298d97d0c29)
+        ;
+
+        
+    
+    
+            circle_marker_146deee6cda89fbabbe89eb1bcd1001e.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Agufoye (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_76a682c43b71a3f0f243025d6cdee9e6 = L.circleMarker(
+                [6.646964, 3.4861536],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c547f6c5ced2730ab5caf7a60c6b67ee);
+        
+    
+        var popup_84178db2c464a5fa11fd5f9803738e66 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_255980094055d6cfeb7afa7b1289e099 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI2ODgyOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBPZmZpbjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY0NzAsIDMuNDg2MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBPZmZpbjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_84178db2c464a5fa11fd5f9803738e66.setContent(i_frame_255980094055d6cfeb7afa7b1289e099);
+            
+        
+
+        circle_marker_76a682c43b71a3f0f243025d6cdee9e6.bindPopup(popup_84178db2c464a5fa11fd5f9803738e66)
+        ;
+
+        
+    
+    
+            circle_marker_76a682c43b71a3f0f243025d6cdee9e6.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Offin (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2e58568ebe8b00a183d3546058626dc6 = L.circleMarker(
+                [6.6725821, 3.4781488],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c547f6c5ced2730ab5caf7a60c6b67ee);
+        
+    
+        var popup_e494482c69eddb32e46c62ddec8c32ba = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_59d9f87dc10315b2db326010b3742819 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI3NTIwMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY3MjYsIDMuNDc4MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_e494482c69eddb32e46c62ddec8c32ba.setContent(i_frame_59d9f87dc10315b2db326010b3742819);
+            
+        
+
+        circle_marker_2e58568ebe8b00a183d3546058626dc6.bindPopup(popup_e494482c69eddb32e46c62ddec8c32ba)
+        ;
+
+        
+    
+    
+            circle_marker_2e58568ebe8b00a183d3546058626dc6.bindTooltip(
+                `<div>
+                     Ikorodu |  (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6328e0aca33395e2079007e0c3240a2a = L.circleMarker(
+                [6.6575117, 3.5145937],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c547f6c5ced2730ab5caf7a60c6b67ee);
+        
+    
+        var popup_391befa59b3af94829490f5122241a3a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_2eeaeb7560532847808ead4390565f59 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI1NjMzNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBPcmV5byAtIElnYmU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NTc1LCAzLjUxNDY8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrb3JvZHU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa29yb2R1IC0gT3JleW8gLSBJZ2JlPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_391befa59b3af94829490f5122241a3a.setContent(i_frame_2eeaeb7560532847808ead4390565f59);
+            
+        
+
+        circle_marker_6328e0aca33395e2079007e0c3240a2a.bindPopup(popup_391befa59b3af94829490f5122241a3a)
+        ;
+
+        
+    
+    
+            circle_marker_6328e0aca33395e2079007e0c3240a2a.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Oreyo - Igbe (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4ce8343cd4ef58e98eaee887ac710b20 = L.circleMarker(
+                [6.6575117, 3.5145937],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c547f6c5ced2730ab5caf7a60c6b67ee);
+        
+    
+        var popup_0d800f4e8d8710af6f0d7eda7bd0f0d2 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_25d459475e1568da864a55c27a1bf5a8 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMwNjM5NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY1NzUsIDMuNTE0NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0d800f4e8d8710af6f0d7eda7bd0f0d2.setContent(i_frame_25d459475e1568da864a55c27a1bf5a8);
+            
+        
+
+        circle_marker_4ce8343cd4ef58e98eaee887ac710b20.bindPopup(popup_0d800f4e8d8710af6f0d7eda7bd0f0d2)
+        ;
+
+        
+    
+    
+            circle_marker_4ce8343cd4ef58e98eaee887ac710b20.bindTooltip(
+                `<div>
+                     Ikorodu |  (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_c547f6c5ced2730ab5caf7a60c6b67ee.addTo(map_3fcf91acfdd22085e29294ff3393ba26);
+        
+    
+            var feature_group_95f6dddbb008bdea300c111f83bc6434 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_6aece4c83250d7e03eca8548297dda0c = L.circleMarker(
+                [6.6235931, 3.5236116],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_95f6dddbb008bdea300c111f83bc6434);
+        
+    
+        var popup_f71039bbadefeaedc59d61ebc1bf9f40 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_e389c0043bfd43472b9774a7a321a9de = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMwNTEyNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBJZ2JvZ2JvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjIzNiwgMy41MjM2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJa29yb2R1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWtvcm9kdSAtIElnYm9nYm88L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f71039bbadefeaedc59d61ebc1bf9f40.setContent(i_frame_e389c0043bfd43472b9774a7a321a9de);
+            
+        
+
+        circle_marker_6aece4c83250d7e03eca8548297dda0c.bindPopup(popup_f71039bbadefeaedc59d61ebc1bf9f40)
+        ;
+
+        
+    
+    
+            circle_marker_6aece4c83250d7e03eca8548297dda0c.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Igbogbo (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0eb892104e22ce69abbb936bd8cbd3a3 = L.circleMarker(
+                [6.6235823, 3.5243549],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_95f6dddbb008bdea300c111f83bc6434);
+        
+    
+        var popup_d95e39474e4b3f2230b21b560355da1c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_aa642dfa790f3627248c774d2d7f59dd = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTgwNTY4NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBJZ2JvZ2JvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjIzNiwgMy41MjQ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJa29yb2R1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWtvcm9kdSAtIElnYm9nYm88L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d95e39474e4b3f2230b21b560355da1c.setContent(i_frame_aa642dfa790f3627248c774d2d7f59dd);
+            
+        
+
+        circle_marker_0eb892104e22ce69abbb936bd8cbd3a3.bindPopup(popup_d95e39474e4b3f2230b21b560355da1c)
+        ;
+
+        
+    
+    
+            circle_marker_0eb892104e22ce69abbb936bd8cbd3a3.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Igbogbo (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_595c30d363f5965e319c3c229ca024c6 = L.circleMarker(
+                [6.625482, 3.5269971],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_95f6dddbb008bdea300c111f83bc6434);
+        
+    
+        var popup_02f62c988363e1aaa577af1ffa3c81fe = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_7cce9c276813cebfe13ec6f80c4316b2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDAwNjUzMDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjYyNTUsIDMuNTI3MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_02f62c988363e1aaa577af1ffa3c81fe.setContent(i_frame_7cce9c276813cebfe13ec6f80c4316b2);
+            
+        
+
+        circle_marker_595c30d363f5965e319c3c229ca024c6.bindPopup(popup_02f62c988363e1aaa577af1ffa3c81fe)
+        ;
+
+        
+    
+    
+            circle_marker_595c30d363f5965e319c3c229ca024c6.bindTooltip(
+                `<div>
+                     Ikorodu |  (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7ef2ef7603c563042fc16e6d93af760c = L.circleMarker(
+                [6.626339, 3.5500242],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_95f6dddbb008bdea300c111f83bc6434);
+        
+    
+        var popup_3c696b0fde37a47959374d5739b26b71 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_4c0c0a47ed3a360f324afcead1054095 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzg2NTA5MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBJZ2JvZ2JvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjI2MywgMy41NTAwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJa29yb2R1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWtvcm9kdSAtIElnYm9nYm88L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_3c696b0fde37a47959374d5739b26b71.setContent(i_frame_4c0c0a47ed3a360f324afcead1054095);
+            
+        
+
+        circle_marker_7ef2ef7603c563042fc16e6d93af760c.bindPopup(popup_3c696b0fde37a47959374d5739b26b71)
+        ;
+
+        
+    
+    
+            circle_marker_7ef2ef7603c563042fc16e6d93af760c.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Igbogbo (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_95f6dddbb008bdea300c111f83bc6434.addTo(map_3fcf91acfdd22085e29294ff3393ba26);
+        
+    
+            var feature_group_ede576de5e450d8cab35edcedc666dc7 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_bb0b0d6d8f96e512568a867f1a2594b4 = L.circleMarker(
+                [6.5517867403165, 3.5375806409898],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ede576de5e450d8cab35edcedc666dc7);
+        
+    
+        var popup_d76a37e031408ab6579bb97d334084cc = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_9b5352dc5935a67b7d104dbf64665895 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM2NzE3MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBCYXlla3U8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41NTE4LCAzLjUzNzY8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrb3JvZHU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa29yb2R1IC0gQmF5ZWt1PC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d76a37e031408ab6579bb97d334084cc.setContent(i_frame_9b5352dc5935a67b7d104dbf64665895);
+            
+        
+
+        circle_marker_bb0b0d6d8f96e512568a867f1a2594b4.bindPopup(popup_d76a37e031408ab6579bb97d334084cc)
+        ;
+
+        
+    
+    
+            circle_marker_bb0b0d6d8f96e512568a867f1a2594b4.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Bayeku (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bdff6432c4d19d9338f15a087cf11836 = L.circleMarker(
+                [6.5533109, 3.5393572],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ede576de5e450d8cab35edcedc666dc7);
+        
+    
+        var popup_b95b9305fa866598872b95bfa9503ef7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_1f328c71d6abe3e1836610ff55980440 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTgyOTkwNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBCYXlla3U8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41NTMzLCAzLjUzOTQ8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrb3JvZHU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa29yb2R1IC0gQmF5ZWt1PC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_b95b9305fa866598872b95bfa9503ef7.setContent(i_frame_1f328c71d6abe3e1836610ff55980440);
+            
+        
+
+        circle_marker_bdff6432c4d19d9338f15a087cf11836.bindPopup(popup_b95b9305fa866598872b95bfa9503ef7)
+        ;
+
+        
+    
+    
+            circle_marker_bdff6432c4d19d9338f15a087cf11836.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Bayeku (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c61eb54360f6c9f689ef0073fb7e9386 = L.circleMarker(
+                [6.5547558, 3.5389793],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ede576de5e450d8cab35edcedc666dc7);
+        
+    
+        var popup_8e1a187f1aefa764957318bbf35f3f98 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_03229450fe0a11ca622b44a996c3760b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM3NzQzMDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBCYXlla3U8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41NTQ4LCAzLjUzOTA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrb3JvZHU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa29yb2R1IC0gQmF5ZWt1PC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8e1a187f1aefa764957318bbf35f3f98.setContent(i_frame_03229450fe0a11ca622b44a996c3760b);
+            
+        
+
+        circle_marker_c61eb54360f6c9f689ef0073fb7e9386.bindPopup(popup_8e1a187f1aefa764957318bbf35f3f98)
+        ;
+
+        
+    
+    
+            circle_marker_c61eb54360f6c9f689ef0073fb7e9386.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Bayeku (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d68795ac19d684589fabb3562ffaef74 = L.circleMarker(
+                [6.538874, 3.554103],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ede576de5e450d8cab35edcedc666dc7);
+        
+    
+        var popup_3f60dff7f9edfb20a51c0cfb2650f576 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_e8b61598f7f3efd94de914dafd1f01f7 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM4MTgzMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtvcm9kdTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrb3JvZHUgLSBCYXlla3U8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41Mzg5LCAzLjU1NDE8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrb3JvZHU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa29yb2R1IC0gQmF5ZWt1PC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_3f60dff7f9edfb20a51c0cfb2650f576.setContent(i_frame_e8b61598f7f3efd94de914dafd1f01f7);
+            
+        
+
+        circle_marker_d68795ac19d684589fabb3562ffaef74.bindPopup(popup_3f60dff7f9edfb20a51c0cfb2650f576)
+        ;
+
+        
+    
+    
+            circle_marker_d68795ac19d684589fabb3562ffaef74.bindTooltip(
+                `<div>
+                     Ikorodu | Ikorodu - Bayeku (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_ede576de5e450d8cab35edcedc666dc7.addTo(map_3fcf91acfdd22085e29294ff3393ba26);
+        
+    
+            var layer_control_7d01c572105c9122181cc27e9b740856_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_e523044fc4fdbc83eb50bf36313f954f,
+                    "OpenStreetMap" : tile_layer_2a0a7ed9a690b0acfd00a0379d6e7eef,
+                    "Terrain" : tile_layer_5fb121e8bdbefbebb135b50bb527168f,
+                    "Toner" : tile_layer_c23c58b65eedfd003ed1f5cc91f5a20b,
+                    "CartoDB Dark" : tile_layer_5241a8b382c84ffddbf38c5e91f784b8,
+                    "CartoDB Light" : tile_layer_27a422c1f46ba89031a02b0a41946173,
+                },
+                overlays :  {
+                    "Cluster 1 - Ikorodu - Ikorodu - Agufoye+5more (13 points)" : feature_group_0488fd08a543494b1a0676262d32d918,
+                    "Cluster 4 - Ikorodu - Ikorodu - Igbogbo+2more (10 points)" : feature_group_d75c653b9dfa3dd872e251f108bee370,
+                    "Cluster 3 - Ikorodu - Ikorodu - Agufoye+3more (5 points)" : feature_group_c547f6c5ced2730ab5caf7a60c6b67ee,
+                    "Cluster 2 - Ikorodu - Ikorodu - Igbogbo+1more (4 points)" : feature_group_95f6dddbb008bdea300c111f83bc6434,
+                    "Cluster 5 - Ikorodu - Ikorodu - Bayeku (4 points)" : feature_group_ede576de5e450d8cab35edcedc666dc7,
+                },
+            };
+            let layer_control_7d01c572105c9122181cc27e9b740856 = L.control.layers(
+                layer_control_7d01c572105c9122181cc27e9b740856_layers.base_layers,
+                layer_control_7d01c572105c9122181cc27e9b740856_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_3fcf91acfdd22085e29294ff3393ba26);
+
+        
+    
+            var tile_layer_f4c21900ab6bc63e5edf8fc81a5778fa = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_82d5b00340476c61f340432af11facd0 = new L.Control.MiniMap(
+                tile_layer_f4c21900ab6bc63e5edf8fc81a5778fa,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_3fcf91acfdd22085e29294ff3393ba26.addControl(mini_map_82d5b00340476c61f340432af11facd0);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_3fcf91acfdd22085e29294ff3393ba26);
+        
+    
+            var measure_control_57f7d6d2778ea5a2114a5927a07bd082 = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_3fcf91acfdd22085e29294ff3393ba26.addControl(measure_control_57f7d6d2778ea5a2114a5927a07bd082);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_97a38f4ce9d1d279b841fc8833bd08cc = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_97a38f4ce9d1d279b841fc8833bd08cc.options["latFormatter"] =
+                undefined;
+            mouse_position_97a38f4ce9d1d279b841fc8833bd08cc.options["lngFormatter"] =
+                undefined;
+            map_3fcf91acfdd22085e29294ff3393ba26.addControl(mouse_position_97a38f4ce9d1d279b841fc8833bd08cc);
+        
+    
+            map_3fcf91acfdd22085e29294ff3393ba26.fitBounds(
+                [[6.528874, 3.4681488000000003], [6.682582099999999, 3.5763737]],
+                {}
+            );
+        
+    
+            var marker_6a82e77212fd45b4c4a43836d1d4a238 = L.marker(
+                [6.5456246, 3.30802],
+                {
+  "size": 10,
+}
+            ).addTo(map_3fcf91acfdd22085e29294ff3393ba26);
+        
+    
+            var icon_2944feac7ad666c23d867b6fdb212011 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_6a82e77212fd45b4c4a43836d1d4a238.bindTooltip(
+                `<div>
+                     OmniHub Ikorodu Lagos - Sitrest
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6a82e77212fd45b4c4a43836d1d4a238.setIcon(icon_2944feac7ad666c23d867b6fdb212011);
+            
+</script>
+</html>

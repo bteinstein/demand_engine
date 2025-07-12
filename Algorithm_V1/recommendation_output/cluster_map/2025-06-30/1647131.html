@@ -1,0 +1,2086 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_890d4ce931b45004a0234bd06ecca577 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 5 clusters | 43 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+                    <div id="cluster-legend" style="position: fixed; 
+                                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                                background-color: rgba(255, 255, 255, 0.95); 
+                                border: 2px solid #ccc; z-index: 999; 
+                                font-size: 11px; padding: 12px; border-radius: 8px;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                backdrop-filter: blur(5px);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #333;">Cluster Legend</strong>
+                        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+                    </div>
+                    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+                        5 clusters | Sorted by size | Showing top 15
+                    </div>
+                    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+                    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #d62728; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 4 
+                <br><span style="color: #666; font-size: 9px;">11 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #9467bd; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 5 
+                <br><span style="color: #666; font-size: 9px;">11 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 1 
+                <br><span style="color: #666; font-size: 9px;">10 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#4</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">9 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#5</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">2 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_890d4ce931b45004a0234bd06ecca577" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_890d4ce931b45004a0234bd06ecca577 = L.map(
+                "map_890d4ce931b45004a0234bd06ecca577",
+                {
+                    center: [6.5622179, 3.3230097499999998],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_890d4ce931b45004a0234bd06ecca577);
+
+            
+
+        
+    
+            var tile_layer_c75a8e4216c3f5f8c7107786c06fe311 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_c75a8e4216c3f5f8c7107786c06fe311.addTo(map_890d4ce931b45004a0234bd06ecca577);
+        
+    
+            var tile_layer_3c218d71dbe26b9a0ae80fd410174364 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_3c218d71dbe26b9a0ae80fd410174364.addTo(map_890d4ce931b45004a0234bd06ecca577);
+        
+    
+            var tile_layer_f84a4c5fe50afa1430c7f1ce24045621 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_f84a4c5fe50afa1430c7f1ce24045621.addTo(map_890d4ce931b45004a0234bd06ecca577);
+        
+    
+            var tile_layer_521319114ae58466550c0e761a1db80d = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_521319114ae58466550c0e761a1db80d.addTo(map_890d4ce931b45004a0234bd06ecca577);
+        
+    
+            var tile_layer_507d119e2013d3ee3902a17f271b361f = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_507d119e2013d3ee3902a17f271b361f.addTo(map_890d4ce931b45004a0234bd06ecca577);
+        
+    
+            var tile_layer_e3b0bcceb0d0fe966a10c07694057cbc = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e3b0bcceb0d0fe966a10c07694057cbc.addTo(map_890d4ce931b45004a0234bd06ecca577);
+        
+    
+            var feature_group_11378b10b3e46e4f2b9c9ef315484cdf = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_6ceed618a7537b076d57bc8e16879be2 = L.circleMarker(
+                [6.6627837, 3.2852246],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_11378b10b3e46e4f2b9c9ef315484cdf);
+        
+    
+        var popup_cd1a3dbeec9db15e9cbfa7efb74caf96 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_2f26c47863dac6af65f91d3436110789 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQzMDQ5MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY2MjgsIDMuMjg1MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_cd1a3dbeec9db15e9cbfa7efb74caf96.setContent(i_frame_2f26c47863dac6af65f91d3436110789);
+            
+        
+
+        circle_marker_6ceed618a7537b076d57bc8e16879be2.bindPopup(popup_cd1a3dbeec9db15e9cbfa7efb74caf96)
+        ;
+
+        
+    
+    
+            circle_marker_6ceed618a7537b076d57bc8e16879be2.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (agbado Ijaye Road) (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e4b2f567640e8ba012d11405d4e3cfb2 = L.circleMarker(
+                [6.6650997, 3.2859779],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_11378b10b3e46e4f2b9c9ef315484cdf);
+        
+    
+        var popup_026fe63f63e4a1980862aa695a90c4bd = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_ad02ed87022cc3103655f57f500bd3b4 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTgxNzIyMDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY2NTEsIDMuMjg2MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_026fe63f63e4a1980862aa695a90c4bd.setContent(i_frame_ad02ed87022cc3103655f57f500bd3b4);
+            
+        
+
+        circle_marker_e4b2f567640e8ba012d11405d4e3cfb2.bindPopup(popup_026fe63f63e4a1980862aa695a90c4bd)
+        ;
+
+        
+    
+    
+            circle_marker_e4b2f567640e8ba012d11405d4e3cfb2.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (agbado Ijaye Road) (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c3e6d6d54e58bb1553fb62907d28f3b9 = L.circleMarker(
+                [6.6650997, 3.2859779],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_11378b10b3e46e4f2b9c9ef315484cdf);
+        
+    
+        var popup_3f61359d20220715ec04bbcd1f1ea812 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_b9b9f2e2d71cbe59a0f429dda9a0ba4e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTgzMDE0MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY2NTEsIDMuMjg2MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_3f61359d20220715ec04bbcd1f1ea812.setContent(i_frame_b9b9f2e2d71cbe59a0f429dda9a0ba4e);
+            
+        
+
+        circle_marker_c3e6d6d54e58bb1553fb62907d28f3b9.bindPopup(popup_3f61359d20220715ec04bbcd1f1ea812)
+        ;
+
+        
+    
+    
+            circle_marker_c3e6d6d54e58bb1553fb62907d28f3b9.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (agbado Ijaye Road) (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d01fc9c0092d6e43ee794282d0ac2512 = L.circleMarker(
+                [6.664009, 3.282118],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_11378b10b3e46e4f2b9c9ef315484cdf);
+        
+    
+        var popup_3467078c461afb439987b845967a4722 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_1419ef54341f3344c336d106d42d5655 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE1NTI0NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NjQwLCAzLjI4MjE8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_3467078c461afb439987b845967a4722.setContent(i_frame_1419ef54341f3344c336d106d42d5655);
+            
+        
+
+        circle_marker_d01fc9c0092d6e43ee794282d0ac2512.bindPopup(popup_3467078c461afb439987b845967a4722)
+        ;
+
+        
+    
+    
+            circle_marker_d01fc9c0092d6e43ee794282d0ac2512.bindTooltip(
+                `<div>
+                     Alimosho |  (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a176ada58cf6ee070bf522cc0ea59c56 = L.circleMarker(
+                [6.660182199999999, 3.2840453],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_11378b10b3e46e4f2b9c9ef315484cdf);
+        
+    
+        var popup_de4b2fdd43ed25551d0825229c2cf0f1 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_8824e2b346d27b1bcc2b71291eab88a5 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE2NjM4NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG1laXJhbiBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY2MDIsIDMuMjg0MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG1laXJhbiBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_de4b2fdd43ed25551d0825229c2cf0f1.setContent(i_frame_8824e2b346d27b1bcc2b71291eab88a5);
+            
+        
+
+        circle_marker_a176ada58cf6ee070bf522cc0ea59c56.bindPopup(popup_de4b2fdd43ed25551d0825229c2cf0f1)
+        ;
+
+        
+    
+    
+            circle_marker_a176ada58cf6ee070bf522cc0ea59c56.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (meiran Road) (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8ab68ae1855083e6606ab809dc79fa67 = L.circleMarker(
+                [6.6592367, 3.2772533],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_11378b10b3e46e4f2b9c9ef315484cdf);
+        
+    
+        var popup_ae8861a02a3a80dfde3a8caeb79875d9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_55ef0293de785900d5c0677c8804c9a8 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzgyMDIyNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG1laXJhbiBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY1OTIsIDMuMjc3MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG1laXJhbiBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_ae8861a02a3a80dfde3a8caeb79875d9.setContent(i_frame_55ef0293de785900d5c0677c8804c9a8);
+            
+        
+
+        circle_marker_8ab68ae1855083e6606ab809dc79fa67.bindPopup(popup_ae8861a02a3a80dfde3a8caeb79875d9)
+        ;
+
+        
+    
+    
+            circle_marker_8ab68ae1855083e6606ab809dc79fa67.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (meiran Road) (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dc78e30afb63acb2a01f5667e0e74ac2 = L.circleMarker(
+                [6.661655, 3.2761533],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_11378b10b3e46e4f2b9c9ef315484cdf);
+        
+    
+        var popup_9b4770866c0b07d5b1733cb6f3194188 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_c495851db467964bb75d4cebc296c760 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMwNDUyODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG1laXJhbiBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY2MTcsIDMuMjc2MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG1laXJhbiBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_9b4770866c0b07d5b1733cb6f3194188.setContent(i_frame_c495851db467964bb75d4cebc296c760);
+            
+        
+
+        circle_marker_dc78e30afb63acb2a01f5667e0e74ac2.bindPopup(popup_9b4770866c0b07d5b1733cb6f3194188)
+        ;
+
+        
+    
+    
+            circle_marker_dc78e30afb63acb2a01f5667e0e74ac2.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (meiran Road) (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ac7630dfda0a0d9fa864b0d69a5cd5dc = L.circleMarker(
+                [6.6725905, 3.270366],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_11378b10b3e46e4f2b9c9ef315484cdf);
+        
+    
+        var popup_cc05fcba48cca8e43a834225ca0a74f2 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_37b36f7d3b2f0f291b2f4372cff9cc0a = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzg5Nzg2NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFsYWdiYWRvKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY3MjYsIDMuMjcwNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFsYWdiYWRvKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_cc05fcba48cca8e43a834225ca0a74f2.setContent(i_frame_37b36f7d3b2f0f291b2f4372cff9cc0a);
+            
+        
+
+        circle_marker_ac7630dfda0a0d9fa864b0d69a5cd5dc.bindPopup(popup_cc05fcba48cca8e43a834225ca0a74f2)
+        ;
+
+        
+    
+    
+            circle_marker_ac7630dfda0a0d9fa864b0d69a5cd5dc.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (alagbado) (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9a0f25d6a33e5e3f6804c0d9b2f5f752 = L.circleMarker(
+                [6.6706692, 3.2884693],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_11378b10b3e46e4f2b9c9ef315484cdf);
+        
+    
+        var popup_f9bdf49d56b45388fe18b20b9a795ee2 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_befea762ddd526eb5c19c9e207baf780 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzgyMzI3MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY3MDcsIDMuMjg4NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f9bdf49d56b45388fe18b20b9a795ee2.setContent(i_frame_befea762ddd526eb5c19c9e207baf780);
+            
+        
+
+        circle_marker_9a0f25d6a33e5e3f6804c0d9b2f5f752.bindPopup(popup_f9bdf49d56b45388fe18b20b9a795ee2)
+        ;
+
+        
+    
+    
+            circle_marker_9a0f25d6a33e5e3f6804c0d9b2f5f752.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (agbado Ijaye Road) (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1e3cb3a816be6d2013634f2f97b5bb94 = L.circleMarker(
+                [6.6732326, 3.2921919],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_11378b10b3e46e4f2b9c9ef315484cdf);
+        
+    
+        var popup_252a649378242ca533a14005ac572395 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_33c7d78b8f6d66a33f711edff9fa4f2b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzgwMzU1MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NzMyLCAzLjI5MjI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_252a649378242ca533a14005ac572395.setContent(i_frame_33c7d78b8f6d66a33f711edff9fa4f2b);
+            
+        
+
+        circle_marker_1e3cb3a816be6d2013634f2f97b5bb94.bindPopup(popup_252a649378242ca533a14005ac572395)
+        ;
+
+        
+    
+    
+            circle_marker_1e3cb3a816be6d2013634f2f97b5bb94.bindTooltip(
+                `<div>
+                     Alimosho |  (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c1506971c51fc56df0c269eb2cfab7de = L.circleMarker(
+                [6.649349000000001, 3.2780111],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_11378b10b3e46e4f2b9c9ef315484cdf);
+        
+    
+        var popup_51dd46809381db728ad33c30c7b98517 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a884fcc7371d654eacc3c9871f8a82ef = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMwNTA1MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGVrb3JvIFJvYWQpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjQ5MywgMy4yNzgwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gQWJ1bGUgRWdiYSAoZWtvcm8gUm9hZCk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_51dd46809381db728ad33c30c7b98517.setContent(i_frame_a884fcc7371d654eacc3c9871f8a82ef);
+            
+        
+
+        circle_marker_c1506971c51fc56df0c269eb2cfab7de.bindPopup(popup_51dd46809381db728ad33c30c7b98517)
+        ;
+
+        
+    
+    
+            circle_marker_c1506971c51fc56df0c269eb2cfab7de.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (ekoro Road) (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_11378b10b3e46e4f2b9c9ef315484cdf.addTo(map_890d4ce931b45004a0234bd06ecca577);
+        
+    
+            var feature_group_d39d913cb4ff2cd23386a8d203ffb720 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_ee7c5353754df8dda8bed41ec22b24b4 = L.circleMarker(
+                [6.6524513999999, 3.2870722],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d39d913cb4ff2cd23386a8d203ffb720);
+        
+    
+        var popup_49ba201fa5f2c8cb60700eab3eb98c56 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_0857518b23bdb274763fab3c0358dba8 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNzUyNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGVrb3JvIFJvYWQpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjUyNSwgMy4yODcxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gQWJ1bGUgRWdiYSAoZWtvcm8gUm9hZCk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_49ba201fa5f2c8cb60700eab3eb98c56.setContent(i_frame_0857518b23bdb274763fab3c0358dba8);
+            
+        
+
+        circle_marker_ee7c5353754df8dda8bed41ec22b24b4.bindPopup(popup_49ba201fa5f2c8cb60700eab3eb98c56)
+        ;
+
+        
+    
+    
+            circle_marker_ee7c5353754df8dda8bed41ec22b24b4.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (ekoro Road) (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_10dabfe6765fbeeb7a83b23e31a4e011 = L.circleMarker(
+                [6.6494114, 3.2865347],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d39d913cb4ff2cd23386a8d203ffb720);
+        
+    
+        var popup_c3a0d42ac7c4a2e63e44162b0e75ef05 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_6d56f7d4f7e10b7e68cc37841baa936b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDA0NDQxOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NDk0LCAzLjI4NjU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_c3a0d42ac7c4a2e63e44162b0e75ef05.setContent(i_frame_6d56f7d4f7e10b7e68cc37841baa936b);
+            
+        
+
+        circle_marker_10dabfe6765fbeeb7a83b23e31a4e011.bindPopup(popup_c3a0d42ac7c4a2e63e44162b0e75ef05)
+        ;
+
+        
+    
+    
+            circle_marker_10dabfe6765fbeeb7a83b23e31a4e011.bindTooltip(
+                `<div>
+                     Alimosho |  (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c46df4a4c670ea01b40c71e82648824e = L.circleMarker(
+                [6.6469622, 3.2853235],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d39d913cb4ff2cd23386a8d203ffb720);
+        
+    
+        var popup_988acb689299c39567d1989f33ac6c9c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_113240db7b2567230f4b9da9f9fb8626 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI2MzgxMjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG9sZCBPdHRhIFJvYWQpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjQ3MCwgMy4yODUzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gQWJ1bGUgRWdiYSAob2xkIE90dGEgUm9hZCk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_988acb689299c39567d1989f33ac6c9c.setContent(i_frame_113240db7b2567230f4b9da9f9fb8626);
+            
+        
+
+        circle_marker_c46df4a4c670ea01b40c71e82648824e.bindPopup(popup_988acb689299c39567d1989f33ac6c9c)
+        ;
+
+        
+    
+    
+            circle_marker_c46df4a4c670ea01b40c71e82648824e.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (old Otta Road) (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d31e7744a5c36aed116a897254fe533b = L.circleMarker(
+                [6.644951600000001, 3.2879715],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d39d913cb4ff2cd23386a8d203ffb720);
+        
+    
+        var popup_46f60b9c68f11658d6b6c58c86d34f02 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_6ce16b7cbeef98f0089c85ee878ab87c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzkwNzUwODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGVrb3JvIFJvYWQpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjQ1MCwgMy4yODgwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gQWJ1bGUgRWdiYSAoZWtvcm8gUm9hZCk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_46f60b9c68f11658d6b6c58c86d34f02.setContent(i_frame_6ce16b7cbeef98f0089c85ee878ab87c);
+            
+        
+
+        circle_marker_d31e7744a5c36aed116a897254fe533b.bindPopup(popup_46f60b9c68f11658d6b6c58c86d34f02)
+        ;
+
+        
+    
+    
+            circle_marker_d31e7744a5c36aed116a897254fe533b.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (ekoro Road) (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_39b460344dc114c325ac35544bb1eb69 = L.circleMarker(
+                [6.6437949, 3.2890453],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d39d913cb4ff2cd23386a8d203ffb720);
+        
+    
+        var popup_214d3752ec27e37996d746e065b9df5f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_4947d3e1115f0e0a15e3f8227ab3e414 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzUwODQ5NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGVrb3JvIFJvYWQpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjQzOCwgMy4yODkwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gQWJ1bGUgRWdiYSAoZWtvcm8gUm9hZCk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_214d3752ec27e37996d746e065b9df5f.setContent(i_frame_4947d3e1115f0e0a15e3f8227ab3e414);
+            
+        
+
+        circle_marker_39b460344dc114c325ac35544bb1eb69.bindPopup(popup_214d3752ec27e37996d746e065b9df5f)
+        ;
+
+        
+    
+    
+            circle_marker_39b460344dc114c325ac35544bb1eb69.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (ekoro Road) (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_aeafe2eb1bf3d4ec2c795d679f0cc337 = L.circleMarker(
+                [6.6486795999999, 3.2813616],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d39d913cb4ff2cd23386a8d203ffb720);
+        
+    
+        var popup_096b03179f80fc913bed47cb00b44f54 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a334c46b1fc498c6f958d74f99e4b25e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE0MjI1NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGVrb3JvIFJvYWQpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjQ4NywgMy4yODE0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gQWJ1bGUgRWdiYSAoZWtvcm8gUm9hZCk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_096b03179f80fc913bed47cb00b44f54.setContent(i_frame_a334c46b1fc498c6f958d74f99e4b25e);
+            
+        
+
+        circle_marker_aeafe2eb1bf3d4ec2c795d679f0cc337.bindPopup(popup_096b03179f80fc913bed47cb00b44f54)
+        ;
+
+        
+    
+    
+            circle_marker_aeafe2eb1bf3d4ec2c795d679f0cc337.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (ekoro Road) (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9516add36c61ecb09f71f23cc55a4464 = L.circleMarker(
+                [6.6483728, 3.2991753],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d39d913cb4ff2cd23386a8d203ffb720);
+        
+    
+        var popup_cd8aaa082b15b84a3d28aa3cd35893ff = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_43c5d8dcc2f6c78cafb2d66e76802a58 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI1ODgxNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY0ODQsIDMuMjk5MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_cd8aaa082b15b84a3d28aa3cd35893ff.setContent(i_frame_43c5d8dcc2f6c78cafb2d66e76802a58);
+            
+        
+
+        circle_marker_9516add36c61ecb09f71f23cc55a4464.bindPopup(popup_cd8aaa082b15b84a3d28aa3cd35893ff)
+        ;
+
+        
+    
+    
+            circle_marker_9516add36c61ecb09f71f23cc55a4464.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (agbado Ijaye Road) (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a1925e7372d18bb12fb77578ae5f439e = L.circleMarker(
+                [6.6468883, 3.3016384],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d39d913cb4ff2cd23386a8d203ffb720);
+        
+    
+        var popup_39e3aaeb2f6f9e3cd0f2c80c726a9a14 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_5b91de5fd452cbc4b07dc4da11222c9c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzg2OTk0NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NDY5LCAzLjMwMTY8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_39e3aaeb2f6f9e3cd0f2c80c726a9a14.setContent(i_frame_5b91de5fd452cbc4b07dc4da11222c9c);
+            
+        
+
+        circle_marker_a1925e7372d18bb12fb77578ae5f439e.bindPopup(popup_39e3aaeb2f6f9e3cd0f2c80c726a9a14)
+        ;
+
+        
+    
+    
+            circle_marker_a1925e7372d18bb12fb77578ae5f439e.bindTooltip(
+                `<div>
+                     Alimosho |  (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_637af003c0357b971202113cb1320b87 = L.circleMarker(
+                [6.651457499999999, 3.3016813],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d39d913cb4ff2cd23386a8d203ffb720);
+        
+    
+        var popup_f145ddfc699ee023f0789b9023b54598 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_17fe0d7fc4a05b3233581c7730925fa1 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI1ODI2ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NTE1LCAzLjMwMTc8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f145ddfc699ee023f0789b9023b54598.setContent(i_frame_17fe0d7fc4a05b3233581c7730925fa1);
+            
+        
+
+        circle_marker_637af003c0357b971202113cb1320b87.bindPopup(popup_f145ddfc699ee023f0789b9023b54598)
+        ;
+
+        
+    
+    
+            circle_marker_637af003c0357b971202113cb1320b87.bindTooltip(
+                `<div>
+                     Alimosho |  (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e341edf367544718a1cfceeed4e34c21 = L.circleMarker(
+                [6.6416524, 3.3040302],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d39d913cb4ff2cd23386a8d203ffb720);
+        
+    
+        var popup_a85a16b41514c3e47444334ca068277b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_61a6e3ae7528799181710f799461efd6 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzg4MTQ3NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFsYWdiYWRvKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY0MTcsIDMuMzA0MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFsYWdiYWRvKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_a85a16b41514c3e47444334ca068277b.setContent(i_frame_61a6e3ae7528799181710f799461efd6);
+            
+        
+
+        circle_marker_e341edf367544718a1cfceeed4e34c21.bindPopup(popup_a85a16b41514c3e47444334ca068277b)
+        ;
+
+        
+    
+    
+            circle_marker_e341edf367544718a1cfceeed4e34c21.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (alagbado) (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fe9a8fa6b64fe6d538aefb10dc32af89 = L.circleMarker(
+                [6.6357908, 3.3013533],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d39d913cb4ff2cd23386a8d203ffb720);
+        
+    
+        var popup_84016497aaa2fc59f3a84a371e855725 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_e15dcbdda7ae59dccd3d5f0730fb4df4 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzkwNDA0NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFnYmFkby9va2Vfb2RvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjM1OCwgMy4zMDE0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gQWdiYWRvL29rZV9vZG88L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_84016497aaa2fc59f3a84a371e855725.setContent(i_frame_e15dcbdda7ae59dccd3d5f0730fb4df4);
+            
+        
+
+        circle_marker_fe9a8fa6b64fe6d538aefb10dc32af89.bindPopup(popup_84016497aaa2fc59f3a84a371e855725)
+        ;
+
+        
+    
+    
+            circle_marker_fe9a8fa6b64fe6d538aefb10dc32af89.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Agbado/oke_odo (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_d39d913cb4ff2cd23386a8d203ffb720.addTo(map_890d4ce931b45004a0234bd06ecca577);
+        
+    
+            var feature_group_5cb1c182682e1d3f41838de867f09391 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_fa40d5473be223252d951fce4653ff52 = L.circleMarker(
+                [6.6650997, 3.2859779],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5cb1c182682e1d3f41838de867f09391);
+        
+    
+        var popup_0407040b31528df82db3ec76495c0647 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_c409226bc117c3ef65cda1b17664d7dd = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI3OTM2NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NjUxLCAzLjI4NjA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0407040b31528df82db3ec76495c0647.setContent(i_frame_c409226bc117c3ef65cda1b17664d7dd);
+            
+        
+
+        circle_marker_fa40d5473be223252d951fce4653ff52.bindPopup(popup_0407040b31528df82db3ec76495c0647)
+        ;
+
+        
+    
+    
+            circle_marker_fa40d5473be223252d951fce4653ff52.bindTooltip(
+                `<div>
+                     Alimosho |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f2ac3bcdc83fc961639d38c835b1f946 = L.circleMarker(
+                [6.6483728, 3.2991753],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5cb1c182682e1d3f41838de867f09391);
+        
+    
+        var popup_8aa15aa574892fdb7790113cfe18a9be = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_b2532340089825c4f0bd46ef34e03ff9 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTkzODA5NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NDg0LCAzLjI5OTI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8aa15aa574892fdb7790113cfe18a9be.setContent(i_frame_b2532340089825c4f0bd46ef34e03ff9);
+            
+        
+
+        circle_marker_f2ac3bcdc83fc961639d38c835b1f946.bindPopup(popup_8aa15aa574892fdb7790113cfe18a9be)
+        ;
+
+        
+    
+    
+            circle_marker_f2ac3bcdc83fc961639d38c835b1f946.bindTooltip(
+                `<div>
+                     Alimosho |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6c92157c0284ed354321b72c1d174f34 = L.circleMarker(
+                [6.514872, 3.2522455],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5cb1c182682e1d3f41838de867f09391);
+        
+    
+        var popup_d50fff3e19741732b44ff4c56804281d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_06d9861a3d0b78b15b6de88a5238654c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMwMzIxMjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41MTQ5LCAzLjI1MjI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d50fff3e19741732b44ff4c56804281d.setContent(i_frame_06d9861a3d0b78b15b6de88a5238654c);
+            
+        
+
+        circle_marker_6c92157c0284ed354321b72c1d174f34.bindPopup(popup_d50fff3e19741732b44ff4c56804281d)
+        ;
+
+        
+    
+    
+            circle_marker_6c92157c0284ed354321b72c1d174f34.bindTooltip(
+                `<div>
+                     Alimosho |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f43f76f9edccae502983199c537ab525 = L.circleMarker(
+                [6.6399845, 3.2779659],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5cb1c182682e1d3f41838de867f09391);
+        
+    
+        var popup_3d31dde7efc582fe176dd7c99b3aebe0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_f72d1724c938627388711459e20dca81 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTAwNzY1NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NDAwLCAzLjI3ODA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_3d31dde7efc582fe176dd7c99b3aebe0.setContent(i_frame_f72d1724c938627388711459e20dca81);
+            
+        
+
+        circle_marker_f43f76f9edccae502983199c537ab525.bindPopup(popup_3d31dde7efc582fe176dd7c99b3aebe0)
+        ;
+
+        
+    
+    
+            circle_marker_f43f76f9edccae502983199c537ab525.bindTooltip(
+                `<div>
+                     Alimosho |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_156cd063eb0bef419bdc35bee354af2e = L.circleMarker(
+                [6.6668007, 3.2616644],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5cb1c182682e1d3f41838de867f09391);
+        
+    
+        var popup_957007c4a8a2a2a6583605c0ffab5d96 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_e440a17b9611e7a4100868e749c0149f = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMxNTc5OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY2NjgsIDMuMjYxNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_957007c4a8a2a2a6583605c0ffab5d96.setContent(i_frame_e440a17b9611e7a4100868e749c0149f);
+            
+        
+
+        circle_marker_156cd063eb0bef419bdc35bee354af2e.bindPopup(popup_957007c4a8a2a2a6583605c0ffab5d96)
+        ;
+
+        
+    
+    
+            circle_marker_156cd063eb0bef419bdc35bee354af2e.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (agbado Ijaye Road) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9fac9dc765ace0fab91840e2cf4f5152 = L.circleMarker(
+                [6.635551899999999, 3.3007296],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5cb1c182682e1d3f41838de867f09391);
+        
+    
+        var popup_58f45f92744a83b153fe4b7535cb4749 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a49ed7a5743920e4ccaf3cc0ed68a2ee = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzkwNTE5NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFnYmFkby9va2Vfb2RvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjM1NiwgMy4zMDA3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gQWdiYWRvL29rZV9vZG88L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_58f45f92744a83b153fe4b7535cb4749.setContent(i_frame_a49ed7a5743920e4ccaf3cc0ed68a2ee);
+            
+        
+
+        circle_marker_9fac9dc765ace0fab91840e2cf4f5152.bindPopup(popup_58f45f92744a83b153fe4b7535cb4749)
+        ;
+
+        
+    
+    
+            circle_marker_9fac9dc765ace0fab91840e2cf4f5152.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Agbado/oke_odo (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c224d361067ae8ebd6a623eaaf02e1e9 = L.circleMarker(
+                [6.6507111, 3.2465774],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5cb1c182682e1d3f41838de867f09391);
+        
+    
+        var popup_f432937483ba4dd63bfc982d1ec516bf = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_76d495048993b8e827a6cc47717b0ea8 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTg1NTg2MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFsYWdiYWRvKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY1MDcsIDMuMjQ2NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFsYWdiYWRvKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f432937483ba4dd63bfc982d1ec516bf.setContent(i_frame_76d495048993b8e827a6cc47717b0ea8);
+            
+        
+
+        circle_marker_c224d361067ae8ebd6a623eaaf02e1e9.bindPopup(popup_f432937483ba4dd63bfc982d1ec516bf)
+        ;
+
+        
+    
+    
+            circle_marker_c224d361067ae8ebd6a623eaaf02e1e9.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (alagbado) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1c7923251bff88dff2a78ce7c44f860a = L.circleMarker(
+                [6.6691132, 3.3067985],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5cb1c182682e1d3f41838de867f09391);
+        
+    
+        var popup_d781a956f954acde43075a5ce5dee9c3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_d9acbd5b81d74cfff3fc3214c82409af = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzgyNzIxNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY2OTEsIDMuMzA2ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d781a956f954acde43075a5ce5dee9c3.setContent(i_frame_d9acbd5b81d74cfff3fc3214c82409af);
+            
+        
+
+        circle_marker_1c7923251bff88dff2a78ce7c44f860a.bindPopup(popup_d781a956f954acde43075a5ce5dee9c3)
+        ;
+
+        
+    
+    
+            circle_marker_1c7923251bff88dff2a78ce7c44f860a.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (agbado Ijaye Road) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_df7eb0c7b578d6d0d3989f79b5d45f1b = L.circleMarker(
+                [6.6462411, 3.3014593],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5cb1c182682e1d3f41838de867f09391);
+        
+    
+        var popup_53c9b5c4eb7adda06dbd994b619e8a95 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a74833c7a4bea0628e962a82ae70eb28 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNjQxODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NDYyLCAzLjMwMTU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_53c9b5c4eb7adda06dbd994b619e8a95.setContent(i_frame_a74833c7a4bea0628e962a82ae70eb28);
+            
+        
+
+        circle_marker_df7eb0c7b578d6d0d3989f79b5d45f1b.bindPopup(popup_53c9b5c4eb7adda06dbd994b619e8a95)
+        ;
+
+        
+    
+    
+            circle_marker_df7eb0c7b578d6d0d3989f79b5d45f1b.bindTooltip(
+                `<div>
+                     Alimosho |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b586dded5fa9b71e58747fa1b3c94dc8 = L.circleMarker(
+                [6.6600948, 3.3137055],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5cb1c182682e1d3f41838de867f09391);
+        
+    
+        var popup_60436ccd4673019463d6f3c60aafba08 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_e65ec49a2346b92dcd8053000d070807 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNjE0NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG1laXJhbiBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY2MDEsIDMuMzEzNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG1laXJhbiBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_60436ccd4673019463d6f3c60aafba08.setContent(i_frame_e65ec49a2346b92dcd8053000d070807);
+            
+        
+
+        circle_marker_b586dded5fa9b71e58747fa1b3c94dc8.bindPopup(popup_60436ccd4673019463d6f3c60aafba08)
+        ;
+
+        
+    
+    
+            circle_marker_b586dded5fa9b71e58747fa1b3c94dc8.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (meiran Road) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_5cb1c182682e1d3f41838de867f09391.addTo(map_890d4ce931b45004a0234bd06ecca577);
+        
+    
+            var feature_group_3fb86befca76912a67255defce5591ec = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_c70038f6017f981e49727fe93cacf16e = L.circleMarker(
+                [6.6711779, 3.2954061],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_3fb86befca76912a67255defce5591ec);
+        
+    
+        var popup_bd892b335c34c8763019c2f9ca9c32e8 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_4df5c9ead0b6d38d9e275ca7e4db439e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTgwNDM5NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY3MTIsIDMuMjk1NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_bd892b335c34c8763019c2f9ca9c32e8.setContent(i_frame_4df5c9ead0b6d38d9e275ca7e4db439e);
+            
+        
+
+        circle_marker_c70038f6017f981e49727fe93cacf16e.bindPopup(popup_bd892b335c34c8763019c2f9ca9c32e8)
+        ;
+
+        
+    
+    
+            circle_marker_c70038f6017f981e49727fe93cacf16e.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (agbado Ijaye Road) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6672beda0d9c08b35d787e56eef2da64 = L.circleMarker(
+                [6.6650441387545, 3.3045659959316],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_3fb86befca76912a67255defce5591ec);
+        
+    
+        var popup_b88159b830e06537c5464f4aedc260dc = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_981b4e29ee051b37c801c345c4dc3198 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDAyNTY0OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2diYSAtIElmYWtvIC0gSWRpYWdib248L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NjUwLCAzLjMwNDY8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElmYWtvIElqYWl5ZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElmYWtvIElqYWl5ZSAtIE9nYmEgLSBJZmFrbyAtIElkaWFnYm9uPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_b88159b830e06537c5464f4aedc260dc.setContent(i_frame_981b4e29ee051b37c801c345c4dc3198);
+            
+        
+
+        circle_marker_6672beda0d9c08b35d787e56eef2da64.bindPopup(popup_b88159b830e06537c5464f4aedc260dc)
+        ;
+
+        
+    
+    
+            circle_marker_6672beda0d9c08b35d787e56eef2da64.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ogba - Ifako - Idiagbon (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b4d1df2f148d2975e6582e234282d9e8 = L.circleMarker(
+                [6.6678194, 3.3069762],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_3fb86befca76912a67255defce5591ec);
+        
+    
+        var popup_711b4389ba4d6cb2ea2aa01589859ddc = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_dc88437e7dbde0d6e8ce165c1584d14f = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTEzODAyMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG5ldyBPa28gT2JhKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY2NzgsIDMuMzA3MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG5ldyBPa28gT2JhKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_711b4389ba4d6cb2ea2aa01589859ddc.setContent(i_frame_dc88437e7dbde0d6e8ce165c1584d14f);
+            
+        
+
+        circle_marker_b4d1df2f148d2975e6582e234282d9e8.bindPopup(popup_711b4389ba4d6cb2ea2aa01589859ddc)
+        ;
+
+        
+    
+    
+            circle_marker_b4d1df2f148d2975e6582e234282d9e8.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (new Oko Oba) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f40243e2c7c611e0e2f6dfd7af43dd84 = L.circleMarker(
+                [6.6613884999999, 3.3125518],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_3fb86befca76912a67255defce5591ec);
+        
+    
+        var popup_8877570b78b91902951fce932d6afa59 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_40767623e5a08dc7f9bdbd308fea8e76 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzE0MDgwMDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG5ldyBPa28gT2JhKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY2MTQsIDMuMzEyNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG5ldyBPa28gT2JhKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8877570b78b91902951fce932d6afa59.setContent(i_frame_40767623e5a08dc7f9bdbd308fea8e76);
+            
+        
+
+        circle_marker_f40243e2c7c611e0e2f6dfd7af43dd84.bindPopup(popup_8877570b78b91902951fce932d6afa59)
+        ;
+
+        
+    
+    
+            circle_marker_f40243e2c7c611e0e2f6dfd7af43dd84.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (new Oko Oba) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_619957d3fa8ec1d5024c8401b15f74c4 = L.circleMarker(
+                [6.6600948, 3.3137055],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_3fb86befca76912a67255defce5591ec);
+        
+    
+        var popup_1d892a1114bc7a063cd26c7924f2a219 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_fbb7bd31ab3207540564c899028e74e2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNjcyMjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NjAxLCAzLjMxMzc8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_1d892a1114bc7a063cd26c7924f2a219.setContent(i_frame_fbb7bd31ab3207540564c899028e74e2);
+            
+        
+
+        circle_marker_619957d3fa8ec1d5024c8401b15f74c4.bindPopup(popup_1d892a1114bc7a063cd26c7924f2a219)
+        ;
+
+        
+    
+    
+            circle_marker_619957d3fa8ec1d5024c8401b15f74c4.bindTooltip(
+                `<div>
+                     Alimosho |  (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_046ad11b7033e6670f75858b64231a62 = L.circleMarker(
+                [6.656904399999999, 3.3097673],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_3fb86befca76912a67255defce5591ec);
+        
+    
+        var popup_b589e29a1caa1647bfc9905d034d22e3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_3b3837dd2e8af3a32c2b6b88108b7611 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzA0NjY2NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NTY5LCAzLjMwOTg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_b589e29a1caa1647bfc9905d034d22e3.setContent(i_frame_3b3837dd2e8af3a32c2b6b88108b7611);
+            
+        
+
+        circle_marker_046ad11b7033e6670f75858b64231a62.bindPopup(popup_b589e29a1caa1647bfc9905d034d22e3)
+        ;
+
+        
+    
+    
+            circle_marker_046ad11b7033e6670f75858b64231a62.bindTooltip(
+                `<div>
+                     Alimosho |  (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_184f086162f9beb3b2e83433077c11dc = L.circleMarker(
+                [6.6569911, 3.3060034],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_3fb86befca76912a67255defce5591ec);
+        
+    
+        var popup_9c5c371ee6972ff46b6a0cef29b3f6c5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_63d57467c93442f0bd97f7dad4b5e698 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTgzOTY4MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY1NzAsIDMuMzA2MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_9c5c371ee6972ff46b6a0cef29b3f6c5.setContent(i_frame_63d57467c93442f0bd97f7dad4b5e698);
+            
+        
+
+        circle_marker_184f086162f9beb3b2e83433077c11dc.bindPopup(popup_9c5c371ee6972ff46b6a0cef29b3f6c5)
+        ;
+
+        
+    
+    
+            circle_marker_184f086162f9beb3b2e83433077c11dc.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (agbado Ijaye Road) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e98ad3d8482ceaee08719bdaaf137677 = L.circleMarker(
+                [6.6506796, 3.3057179],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_3fb86befca76912a67255defce5591ec);
+        
+    
+        var popup_61406cdeab2d0f48a5682cb949f8d32b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_51c3af7aae15c9169628d1c8fe991997 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyOTA0NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG5ldyBPa28gT2JhKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY1MDcsIDMuMzA1NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG5ldyBPa28gT2JhKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_61406cdeab2d0f48a5682cb949f8d32b.setContent(i_frame_51c3af7aae15c9169628d1c8fe991997);
+            
+        
+
+        circle_marker_e98ad3d8482ceaee08719bdaaf137677.bindPopup(popup_61406cdeab2d0f48a5682cb949f8d32b)
+        ;
+
+        
+    
+    
+            circle_marker_e98ad3d8482ceaee08719bdaaf137677.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (new Oko Oba) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_90f58f1bfecb3497fb01eae4bbedcc27 = L.circleMarker(
+                [6.669835399999999, 3.3232834],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_3fb86befca76912a67255defce5591ec);
+        
+    
+        var popup_87a7ad7c617c0619bd0d91eda0720e54 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_73da1cc79de4cdbcf44ee055d662f1d1 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTc4OTQwNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42Njk4LCAzLjMyMzM8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_87a7ad7c617c0619bd0d91eda0720e54.setContent(i_frame_73da1cc79de4cdbcf44ee055d662f1d1);
+            
+        
+
+        circle_marker_90f58f1bfecb3497fb01eae4bbedcc27.bindPopup(popup_87a7ad7c617c0619bd0d91eda0720e54)
+        ;
+
+        
+    
+    
+            circle_marker_90f58f1bfecb3497fb01eae4bbedcc27.bindTooltip(
+                `<div>
+                     Alimosho |  (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_3fb86befca76912a67255defce5591ec.addTo(map_890d4ce931b45004a0234bd06ecca577);
+        
+    
+            var feature_group_ed15aae5ed367533e280a1685043e719 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_70af58766457605e0b0901a3484b0405 = L.circleMarker(
+                [6.460194, 3.3849941],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ed15aae5ed367533e280a1685043e719);
+        
+    
+        var popup_d5d5cb068b690df9f825fc9dec2b69bb = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_07956867ef2967cc88707345894278a2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzA0NjY5NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ2MDIsIDMuMzg1MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKGFnYmFkbyBJamF5ZSBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d5d5cb068b690df9f825fc9dec2b69bb.setContent(i_frame_07956867ef2967cc88707345894278a2);
+            
+        
+
+        circle_marker_70af58766457605e0b0901a3484b0405.bindPopup(popup_d5d5cb068b690df9f825fc9dec2b69bb)
+        ;
+
+        
+    
+    
+            circle_marker_70af58766457605e0b0901a3484b0405.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (agbado Ijaye Road) (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d51d7e5924cd6545b4657dd90c99c797 = L.circleMarker(
+                [6.4512032, 3.3994421],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_ed15aae5ed367533e280a1685043e719);
+        
+    
+        var popup_2db53518b401f8a83004bb6601491405 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_5886533210e1b369736e07e44ea8ff6a = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDQ5NzU2MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG1laXJhbiBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ1MTIsIDMuMzk5NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEFidWxlIEVnYmEgKG1laXJhbiBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_2db53518b401f8a83004bb6601491405.setContent(i_frame_5886533210e1b369736e07e44ea8ff6a);
+            
+        
+
+        circle_marker_d51d7e5924cd6545b4657dd90c99c797.bindPopup(popup_2db53518b401f8a83004bb6601491405)
+        ;
+
+        
+    
+    
+            circle_marker_d51d7e5924cd6545b4657dd90c99c797.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Abule Egba (meiran Road) (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_ed15aae5ed367533e280a1685043e719.addTo(map_890d4ce931b45004a0234bd06ecca577);
+        
+    
+            var layer_control_db53bac95eac75c284dedc397e43a80b_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_c75a8e4216c3f5f8c7107786c06fe311,
+                    "OpenStreetMap" : tile_layer_3c218d71dbe26b9a0ae80fd410174364,
+                    "Terrain" : tile_layer_f84a4c5fe50afa1430c7f1ce24045621,
+                    "Toner" : tile_layer_521319114ae58466550c0e761a1db80d,
+                    "CartoDB Dark" : tile_layer_507d119e2013d3ee3902a17f271b361f,
+                    "CartoDB Light" : tile_layer_e3b0bcceb0d0fe966a10c07694057cbc,
+                },
+                overlays :  {
+                    "Cluster 4 - Alimosho - Alimosho - Abule Egba (agbado Ijaye Road)+4more (11 points)" : feature_group_11378b10b3e46e4f2b9c9ef315484cdf,
+                    "Cluster 5 - Alimosho - Alimosho - Abule Egba (ekoro Road)+5more (11 points)" : feature_group_d39d913cb4ff2cd23386a8d203ffb720,
+                    "Cluster 1 - Alimosho - +4more (10 points)" : feature_group_5cb1c182682e1d3f41838de867f09391,
+                    "Cluster 2 - Alimosho+1more - Alimosho - Abule Egba (agbado Ijaye Road)+3more (9 points)" : feature_group_3fb86befca76912a67255defce5591ec,
+                    "Cluster 3 - Alimosho - Alimosho - Abule Egba (agbado Ijaye Road)+1more (2 points)" : feature_group_ed15aae5ed367533e280a1685043e719,
+                },
+            };
+            let layer_control_db53bac95eac75c284dedc397e43a80b = L.control.layers(
+                layer_control_db53bac95eac75c284dedc397e43a80b_layers.base_layers,
+                layer_control_db53bac95eac75c284dedc397e43a80b_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_890d4ce931b45004a0234bd06ecca577);
+
+        
+    
+            var tile_layer_a0590288d032d2d0a72ac6383ef164f3 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_982e9aa93518f9a430e80acdeca3350d = new L.Control.MiniMap(
+                tile_layer_a0590288d032d2d0a72ac6383ef164f3,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_890d4ce931b45004a0234bd06ecca577.addControl(mini_map_982e9aa93518f9a430e80acdeca3350d);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_890d4ce931b45004a0234bd06ecca577);
+        
+    
+            var measure_control_4e78a662fa1edab270a834d1b6854245 = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_890d4ce931b45004a0234bd06ecca577.addControl(measure_control_4e78a662fa1edab270a834d1b6854245);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_6b8528cb83da497154c2b015a87b18fa = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_6b8528cb83da497154c2b015a87b18fa.options["latFormatter"] =
+                undefined;
+            mouse_position_6b8528cb83da497154c2b015a87b18fa.options["lngFormatter"] =
+                undefined;
+            map_890d4ce931b45004a0234bd06ecca577.addControl(mouse_position_6b8528cb83da497154c2b015a87b18fa);
+        
+    
+            map_890d4ce931b45004a0234bd06ecca577.fitBounds(
+                [[6.4412032, 3.2365774000000003], [6.6832326, 3.4094420999999997]],
+                {}
+            );
+        
+    
+            var marker_71fec572735db594e77e5086c802ec4b = L.marker(
+                [6.662548699999999, 3.2853888],
+                {
+  "size": 10,
+}
+            ).addTo(map_890d4ce931b45004a0234bd06ecca577);
+        
+    
+            var icon_63d60bd1cb9417dd85137887f742ddd9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_71fec572735db594e77e5086c802ec4b.bindTooltip(
+                `<div>
+                     OmniHub Alimosho Lagos - Pafeak
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_71fec572735db594e77e5086c802ec4b.setIcon(icon_63d60bd1cb9417dd85137887f742ddd9);
+            
+</script>
+</html>

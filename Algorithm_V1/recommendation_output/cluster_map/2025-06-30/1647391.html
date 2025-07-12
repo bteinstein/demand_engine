@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_a38063b972cfd2cd698932e63ba5290e {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 5 clusters | 32 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+                    <div id="cluster-legend" style="position: fixed; 
+                                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                                background-color: rgba(255, 255, 255, 0.95); 
+                                border: 2px solid #ccc; z-index: 999; 
+                                font-size: 11px; padding: 12px; border-radius: 8px;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                backdrop-filter: blur(5px);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #333;">Cluster Legend</strong>
+                        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+                    </div>
+                    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+                        5 clusters | Sorted by size | Showing top 15
+                    </div>
+                    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+                    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 1 
+                <br><span style="color: #666; font-size: 9px;">20 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #d62728; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 4 
+                <br><span style="color: #666; font-size: 9px;">7 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">3 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#4</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">1 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #9467bd; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#5</strong> Cluster 5 
+                <br><span style="color: #666; font-size: 9px;">1 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_a38063b972cfd2cd698932e63ba5290e" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_a38063b972cfd2cd698932e63ba5290e = L.map(
+                "map_a38063b972cfd2cd698932e63ba5290e",
+                {
+                    center: [6.465024, 3.66362845],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_a38063b972cfd2cd698932e63ba5290e);
+
+            
+
+        
+    
+            var tile_layer_a52a002fde8b0e18c3cb3d0fca9eae63 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_a52a002fde8b0e18c3cb3d0fca9eae63.addTo(map_a38063b972cfd2cd698932e63ba5290e);
+        
+    
+            var tile_layer_d95096e3b427bf90211be15753b1fc68 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_d95096e3b427bf90211be15753b1fc68.addTo(map_a38063b972cfd2cd698932e63ba5290e);
+        
+    
+            var tile_layer_847165dab8282c37da0bff6dc1b1de39 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_847165dab8282c37da0bff6dc1b1de39.addTo(map_a38063b972cfd2cd698932e63ba5290e);
+        
+    
+            var tile_layer_36613e800236725375ad26fbf464d3cf = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_36613e800236725375ad26fbf464d3cf.addTo(map_a38063b972cfd2cd698932e63ba5290e);
+        
+    
+            var tile_layer_46a2fda67b89262666db88a05d83beca = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_46a2fda67b89262666db88a05d83beca.addTo(map_a38063b972cfd2cd698932e63ba5290e);
+        
+    
+            var tile_layer_e354638fee7443ed5a1d2bf254a76be8 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e354638fee7443ed5a1d2bf254a76be8.addTo(map_a38063b972cfd2cd698932e63ba5290e);
+        
+    
+            var feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_a96941eb54dc79e1e970764cc274c74c = L.circleMarker(
+                [6.4754299, 3.7193936],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_14240c50c8e451cb03ebc409755890de = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_795fb6245846ed7324d2695a1b412a9c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIwMzQ0NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBFcHV0dTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ3NTQsIDMuNzE5NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBFcHV0dTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_14240c50c8e451cb03ebc409755890de.setContent(i_frame_795fb6245846ed7324d2695a1b412a9c);
+            
+        
+
+        circle_marker_a96941eb54dc79e1e970764cc274c74c.bindPopup(popup_14240c50c8e451cb03ebc409755890de)
+        ;
+
+        
+    
+    
+            circle_marker_a96941eb54dc79e1e970764cc274c74c.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Eputu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_419dba0762f0d7cc3509fdc2bc9fab60 = L.circleMarker(
+                [6.4588325, 3.849574],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_e8e1b4f43e22bedf7cf8db612065f0fa = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_ef5ae5f690efbc2d391fe9dcef834eff = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE5OTQyODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEVsZWtvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDU4OCwgMy44NDk2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmVqdSBMZWtraTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEliZWp1IExla2tpIC0gRWxla288L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_e8e1b4f43e22bedf7cf8db612065f0fa.setContent(i_frame_ef5ae5f690efbc2d391fe9dcef834eff);
+            
+        
+
+        circle_marker_419dba0762f0d7cc3509fdc2bc9fab60.bindPopup(popup_e8e1b4f43e22bedf7cf8db612065f0fa)
+        ;
+
+        
+    
+    
+            circle_marker_419dba0762f0d7cc3509fdc2bc9fab60.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Eleko (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bfb2bbc9aafb9146ef1935bb641e84c6 = L.circleMarker(
+                [6.4689554, 3.6936317],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_72bd359e841f049583619f7ba5a788c1 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_2603b8f3017b2967d90d77ce0521e855 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ1OTE5ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBDb250YWluZXIgQnVzdG9wPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDY5MCwgMy42OTM2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmVqdSBMZWtraTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEliZWp1IExla2tpIC0gQXdveWF5YSAtIENvbnRhaW5lciBCdXN0b3A8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_72bd359e841f049583619f7ba5a788c1.setContent(i_frame_2603b8f3017b2967d90d77ce0521e855);
+            
+        
+
+        circle_marker_bfb2bbc9aafb9146ef1935bb641e84c6.bindPopup(popup_72bd359e841f049583619f7ba5a788c1)
+        ;
+
+        
+    
+    
+            circle_marker_bfb2bbc9aafb9146ef1935bb641e84c6.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Container Bustop (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0ae4a44f1806555267aeb0d671196548 = L.circleMarker(
+                [6.4754343, 3.7326118],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_e7db9897fa45eb90a51813dc8f251381 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_656212920329a3ddff90b806c51858f8 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTgwNjA1ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIExha293ZSAtIFNjaG9vbCBHYXRlPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDc1NCwgMy43MzI2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmVqdSBMZWtraTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEliZWp1IExla2tpIC0gTGFrb3dlIC0gU2Nob29sIEdhdGU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_e7db9897fa45eb90a51813dc8f251381.setContent(i_frame_656212920329a3ddff90b806c51858f8);
+            
+        
+
+        circle_marker_0ae4a44f1806555267aeb0d671196548.bindPopup(popup_e7db9897fa45eb90a51813dc8f251381)
+        ;
+
+        
+    
+    
+            circle_marker_0ae4a44f1806555267aeb0d671196548.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Lakowe - School Gate (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9a457d0ad89470c6fe7c7eb78734b35f = L.circleMarker(
+                [6.4689554, 3.6936317],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_05ccca2104a91dbf17e480ae7a03376a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_6698556211ee07c7fb78125a8c6add5d = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDAwMjYyMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBDb250YWluZXIgQnVzdG9wPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDY5MCwgMy42OTM2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmVqdSBMZWtraTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEliZWp1IExla2tpIC0gQXdveWF5YSAtIENvbnRhaW5lciBCdXN0b3A8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_05ccca2104a91dbf17e480ae7a03376a.setContent(i_frame_6698556211ee07c7fb78125a8c6add5d);
+            
+        
+
+        circle_marker_9a457d0ad89470c6fe7c7eb78734b35f.bindPopup(popup_05ccca2104a91dbf17e480ae7a03376a)
+        ;
+
+        
+    
+    
+            circle_marker_9a457d0ad89470c6fe7c7eb78734b35f.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Container Bustop (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f75cbb3ad4ab20459f70cc19e2b3acf6 = L.circleMarker(
+                [6.4689314, 3.7210708],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_881b76cca3fa113e171b9370e257f422 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_144c32f13de7e02567678114731e979f = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTg1NDA4NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBFcHV0dTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ2ODksIDMuNzIxMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBFcHV0dTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_881b76cca3fa113e171b9370e257f422.setContent(i_frame_144c32f13de7e02567678114731e979f);
+            
+        
+
+        circle_marker_f75cbb3ad4ab20459f70cc19e2b3acf6.bindPopup(popup_881b76cca3fa113e171b9370e257f422)
+        ;
+
+        
+    
+    
+            circle_marker_f75cbb3ad4ab20459f70cc19e2b3acf6.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Eputu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ecedde5bddd9c692eed7aff55a652ff7 = L.circleMarker(
+                [6.475981, 3.757726],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_fe89a8a05c5a43e4be5fb25a33e0cfff = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_04f717387038aa9ef61ccef2672e3316 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMjUwNzU3OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEJvZ29qZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ3NjAsIDMuNzU3NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEJvZ29qZTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_fe89a8a05c5a43e4be5fb25a33e0cfff.setContent(i_frame_04f717387038aa9ef61ccef2672e3316);
+            
+        
+
+        circle_marker_ecedde5bddd9c692eed7aff55a652ff7.bindPopup(popup_fe89a8a05c5a43e4be5fb25a33e0cfff)
+        ;
+
+        
+    
+    
+            circle_marker_ecedde5bddd9c692eed7aff55a652ff7.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Bogoje (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b7ee09c64e0a11871adc108e130d1ae1 = L.circleMarker(
+                [6.4452482, 3.5523892],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_c94b48f7d9851927ec22f6abab174630 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_0ff87a56b5f5ed7d3ed2853dd0e98d8a = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM2NTU3NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEJvZ29qZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ0NTIsIDMuNTUyNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEJvZ29qZTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_c94b48f7d9851927ec22f6abab174630.setContent(i_frame_0ff87a56b5f5ed7d3ed2853dd0e98d8a);
+            
+        
+
+        circle_marker_b7ee09c64e0a11871adc108e130d1ae1.bindPopup(popup_c94b48f7d9851927ec22f6abab174630)
+        ;
+
+        
+    
+    
+            circle_marker_b7ee09c64e0a11871adc108e130d1ae1.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Bogoje (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9bac0c9d13b64291991d988ac6a60683 = L.circleMarker(
+                [6.4518724, 3.7422177],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_4c0ee2ccb122530fdffc887aa8c0e182 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_2ff02cca382508a0cb05d4c69922d242 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzkwMDA5MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBPbW5pU2hlbGYgTENEQTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ1MTksIDMuNzQyMjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBPbW5pU2hlbGYgTENEQTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_4c0ee2ccb122530fdffc887aa8c0e182.setContent(i_frame_2ff02cca382508a0cb05d4c69922d242);
+            
+        
+
+        circle_marker_9bac0c9d13b64291991d988ac6a60683.bindPopup(popup_4c0ee2ccb122530fdffc887aa8c0e182)
+        ;
+
+        
+    
+    
+            circle_marker_9bac0c9d13b64291991d988ac6a60683.bindTooltip(
+                `<div>
+                     Ibeju Lekki | OmniShelf LCDA (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2e6643797ec4a97b21b12e767d11a8f3 = L.circleMarker(
+                [6.4672737, 3.7006392],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_28580dda1b987bb517e3f887ed86d214 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_2b2eec97e67a94b93e020094d57beca8 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIzNjIyMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBPZ3VubGFuYSBCdXNzdG9wPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDY3MywgMy43MDA2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmVqdSBMZWtraTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEliZWp1IExla2tpIC0gQXdveWF5YSAtIE9ndW5sYW5hIEJ1c3N0b3A8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_28580dda1b987bb517e3f887ed86d214.setContent(i_frame_2b2eec97e67a94b93e020094d57beca8);
+            
+        
+
+        circle_marker_2e6643797ec4a97b21b12e767d11a8f3.bindPopup(popup_28580dda1b987bb517e3f887ed86d214)
+        ;
+
+        
+    
+    
+            circle_marker_2e6643797ec4a97b21b12e767d11a8f3.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Ogunlana Busstop (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a7ccef9be130c70867b3c49adeb81f15 = L.circleMarker(
+                [6.475369499999999, 3.7787544],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_6f2b0320a87d2a97725a59e52a04b204 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_92060e14f4ef5fbebd369c99f9886856 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzc5NjMwMjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEJvZ29qZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ3NTQsIDMuNzc4ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEJvZ29qZTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_6f2b0320a87d2a97725a59e52a04b204.setContent(i_frame_92060e14f4ef5fbebd369c99f9886856);
+            
+        
+
+        circle_marker_a7ccef9be130c70867b3c49adeb81f15.bindPopup(popup_6f2b0320a87d2a97725a59e52a04b204)
+        ;
+
+        
+    
+    
+            circle_marker_a7ccef9be130c70867b3c49adeb81f15.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Bogoje (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5401baae5cd78b3a28299894513ff812 = L.circleMarker(
+                [6.4641357, 3.732302599999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_4832014e98a375fc807a035a6f543f0d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_e43c8e4d27384c40f0dc6ddbe2853548 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMwMDg4OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBNYXlmYWlyIEdhcmRlbnM8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi40NjQxLCAzLjczMjM8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEliZWp1IExla2tpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWJlanUgTGVra2kgLSBBd295YXlhIC0gTWF5ZmFpciBHYXJkZW5zPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_4832014e98a375fc807a035a6f543f0d.setContent(i_frame_e43c8e4d27384c40f0dc6ddbe2853548);
+            
+        
+
+        circle_marker_5401baae5cd78b3a28299894513ff812.bindPopup(popup_4832014e98a375fc807a035a6f543f0d)
+        ;
+
+        
+    
+    
+            circle_marker_5401baae5cd78b3a28299894513ff812.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Mayfair Gardens (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2863bb4a7e3ec9e8141f7bef788276fe = L.circleMarker(
+                [6.4709601, 3.710648399999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_f26f437c50720272d15892b11e7045e7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_0c122137bd7902ec0c27c3c7ada1405b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzg4MTI2NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBFa28gQWtldGUgRXN0YXRlPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDcxMCwgMy43MTA2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmVqdSBMZWtraTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEliZWp1IExla2tpIC0gQXdveWF5YSAtIEVrbyBBa2V0ZSBFc3RhdGU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f26f437c50720272d15892b11e7045e7.setContent(i_frame_0c122137bd7902ec0c27c3c7ada1405b);
+            
+        
+
+        circle_marker_2863bb4a7e3ec9e8141f7bef788276fe.bindPopup(popup_f26f437c50720272d15892b11e7045e7)
+        ;
+
+        
+    
+    
+            circle_marker_2863bb4a7e3ec9e8141f7bef788276fe.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Eko Akete Estate (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_355e80a20285f4cbabf25098f880ae37 = L.circleMarker(
+                [6.4706867, 3.8281167],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_9e9da1cf5abfd24ebcfefec10d616ea5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_cef143f98c834210d461685f151aebd6 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMjYxOTk0MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEVsZWtvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDcwNywgMy44MjgxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmVqdSBMZWtraTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEliZWp1IExla2tpIC0gRWxla288L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_9e9da1cf5abfd24ebcfefec10d616ea5.setContent(i_frame_cef143f98c834210d461685f151aebd6);
+            
+        
+
+        circle_marker_355e80a20285f4cbabf25098f880ae37.bindPopup(popup_9e9da1cf5abfd24ebcfefec10d616ea5)
+        ;
+
+        
+    
+    
+            circle_marker_355e80a20285f4cbabf25098f880ae37.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Eleko (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_21522b3705f1ffa1298b3faab09273e9 = L.circleMarker(
+                [6.4569054, 3.8858955],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_c4373c2ed9152f928ee2e003d1a68a08 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_1f9ebe5371e52b1f725644b1deeb4ae5 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzk2OTA0NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEJvZ29qZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ1NjksIDMuODg1OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEJvZ29qZTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_c4373c2ed9152f928ee2e003d1a68a08.setContent(i_frame_1f9ebe5371e52b1f725644b1deeb4ae5);
+            
+        
+
+        circle_marker_21522b3705f1ffa1298b3faab09273e9.bindPopup(popup_c4373c2ed9152f928ee2e003d1a68a08)
+        ;
+
+        
+    
+    
+            circle_marker_21522b3705f1ffa1298b3faab09273e9.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Bogoje (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_641980318807f85b06836984f11ff7cb = L.circleMarker(
+                [6.483633900000001, 3.777321599999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_32f37578b5251afb7f66495c14d6fe55 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_20b0ed6ed44e5e1b8ea54f4d3f3b0d27 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ1OTc4ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEJvZ29qZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ4MzYsIDMuNzc3MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEJvZ29qZTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_32f37578b5251afb7f66495c14d6fe55.setContent(i_frame_20b0ed6ed44e5e1b8ea54f4d3f3b0d27);
+            
+        
+
+        circle_marker_641980318807f85b06836984f11ff7cb.bindPopup(popup_32f37578b5251afb7f66495c14d6fe55)
+        ;
+
+        
+    
+    
+            circle_marker_641980318807f85b06836984f11ff7cb.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Bogoje (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_66361951d632a0681642967e04b8c185 = L.circleMarker(
+                [6.4641562, 3.7323135],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_5826c6edb8fe3ea76a737be09405bffb = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_911c7980b964c12045e7ae93d0ad7b78 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzA3NzQ5MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIExha293ZSAtIEFkZWJhIFJvYWQ8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi40NjQyLCAzLjczMjM8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEliZWp1IExla2tpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWJlanUgTGVra2kgLSBMYWtvd2UgLSBBZGViYSBSb2FkPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_5826c6edb8fe3ea76a737be09405bffb.setContent(i_frame_911c7980b964c12045e7ae93d0ad7b78);
+            
+        
+
+        circle_marker_66361951d632a0681642967e04b8c185.bindPopup(popup_5826c6edb8fe3ea76a737be09405bffb)
+        ;
+
+        
+    
+    
+            circle_marker_66361951d632a0681642967e04b8c185.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Lakowe - Adeba Road (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7aa85c13f140df19b922044e6b3f0807 = L.circleMarker(
+                [6.469672099999999, 3.7047421],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_cab676d3c3f26ffb2ea766b936b7fa68 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_168d244a69e556ce6971b0030e023571 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzg4MjYyMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBDb250YWluZXIgQnVzdG9wPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDY5NywgMy43MDQ3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmVqdSBMZWtraTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEliZWp1IExla2tpIC0gQXdveWF5YSAtIENvbnRhaW5lciBCdXN0b3A8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_cab676d3c3f26ffb2ea766b936b7fa68.setContent(i_frame_168d244a69e556ce6971b0030e023571);
+            
+        
+
+        circle_marker_7aa85c13f140df19b922044e6b3f0807.bindPopup(popup_cab676d3c3f26ffb2ea766b936b7fa68)
+        ;
+
+        
+    
+    
+            circle_marker_7aa85c13f140df19b922044e6b3f0807.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Container Bustop (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_39fcec4a518084c5d16838a2833491b3 = L.circleMarker(
+                [6.4751158, 3.7294623],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_2db3e84eb4269166b7cdf327001adf5b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_cc18c4f465e018a3de4f73862d3670bd = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQwNjg4NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIExha293ZSAtIFNjaG9vbCBHYXRlPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDc1MSwgMy43Mjk1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmVqdSBMZWtraTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEliZWp1IExla2tpIC0gTGFrb3dlIC0gU2Nob29sIEdhdGU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_2db3e84eb4269166b7cdf327001adf5b.setContent(i_frame_cc18c4f465e018a3de4f73862d3670bd);
+            
+        
+
+        circle_marker_39fcec4a518084c5d16838a2833491b3.bindPopup(popup_2db3e84eb4269166b7cdf327001adf5b)
+        ;
+
+        
+    
+    
+            circle_marker_39fcec4a518084c5d16838a2833491b3.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Lakowe - School Gate (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d7d33efc2bce3e99b5614c5341200f38 = L.circleMarker(
+                [6.471006, 3.713431999999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a);
+        
+    
+        var popup_d0f66021db7198d061defaa53d81c1b0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_9b383989e36115b3e80df9b1b7f18291 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDQwNzI1NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi40NzEwLCAzLjcxMzQ8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEliZWp1IExla2tpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d0f66021db7198d061defaa53d81c1b0.setContent(i_frame_9b383989e36115b3e80df9b1b7f18291);
+            
+        
+
+        circle_marker_d7d33efc2bce3e99b5614c5341200f38.bindPopup(popup_d0f66021db7198d061defaa53d81c1b0)
+        ;
+
+        
+    
+    
+            circle_marker_d7d33efc2bce3e99b5614c5341200f38.bindTooltip(
+                `<div>
+                     Ibeju Lekki |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a.addTo(map_a38063b972cfd2cd698932e63ba5290e);
+        
+    
+            var feature_group_26b8499a6b0af9b31e44af16e24b2f21 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_09be0980e941d93438f075916a5fe54d = L.circleMarker(
+                [6.4570358, 3.7114047],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_26b8499a6b0af9b31e44af16e24b2f21);
+        
+    
+        var popup_483913725732af6cd71ded0605d9122a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_17b956d03cb341326d8c1394b6013c20 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ1ODQxMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBHYmV0dSBJd2VyZWt1biBSb2FkPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDU3MCwgMy43MTE0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmVqdSBMZWtraTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEliZWp1IExla2tpIC0gQXdveWF5YSAtIEdiZXR1IEl3ZXJla3VuIFJvYWQ8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_483913725732af6cd71ded0605d9122a.setContent(i_frame_17b956d03cb341326d8c1394b6013c20);
+            
+        
+
+        circle_marker_09be0980e941d93438f075916a5fe54d.bindPopup(popup_483913725732af6cd71ded0605d9122a)
+        ;
+
+        
+    
+    
+            circle_marker_09be0980e941d93438f075916a5fe54d.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Gbetu Iwerekun Road (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c3e8b585ffc4de31c006132e0f255922 = L.circleMarker(
+                [6.4649211, 3.7243109],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_26b8499a6b0af9b31e44af16e24b2f21);
+        
+    
+        var popup_b8dd603f6046a9078f51295fc5b15921 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_d3b5505f2595d9eeb4602f8ea4d468a7 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIyODk5MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBPcmliYW53YTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ2NDksIDMuNzI0MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBPcmliYW53YTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_b8dd603f6046a9078f51295fc5b15921.setContent(i_frame_d3b5505f2595d9eeb4602f8ea4d468a7);
+            
+        
+
+        circle_marker_c3e8b585ffc4de31c006132e0f255922.bindPopup(popup_b8dd603f6046a9078f51295fc5b15921)
+        ;
+
+        
+    
+    
+            circle_marker_c3e8b585ffc4de31c006132e0f255922.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Oribanwa (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5da330ce36a1675fabc1891ef407559b = L.circleMarker(
+                [6.465152, 3.7321623],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_26b8499a6b0af9b31e44af16e24b2f21);
+        
+    
+        var popup_81e2d93edffea783c3387ec9690090db = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_7417646ff8cb3fae923c35298c46adbf = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIwNTMzMDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi40NjUyLCAzLjczMjI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEliZWp1IExla2tpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_81e2d93edffea783c3387ec9690090db.setContent(i_frame_7417646ff8cb3fae923c35298c46adbf);
+            
+        
+
+        circle_marker_5da330ce36a1675fabc1891ef407559b.bindPopup(popup_81e2d93edffea783c3387ec9690090db)
+        ;
+
+        
+    
+    
+            circle_marker_5da330ce36a1675fabc1891ef407559b.bindTooltip(
+                `<div>
+                     Ibeju Lekki |  (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a04e923457d5187124077bfe2495800e = L.circleMarker(
+                [6.465152, 3.7321623],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_26b8499a6b0af9b31e44af16e24b2f21);
+        
+    
+        var popup_2c64d1f5770ddab8cdfbb8b6e9251aeb = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_4fa387f12527bf991bd929ab5a24b17c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDEwMDk2OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBPbW5pU2hlbGYgTENEQTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ2NTIsIDMuNzMyMjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBPbW5pU2hlbGYgTENEQTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_2c64d1f5770ddab8cdfbb8b6e9251aeb.setContent(i_frame_4fa387f12527bf991bd929ab5a24b17c);
+            
+        
+
+        circle_marker_a04e923457d5187124077bfe2495800e.bindPopup(popup_2c64d1f5770ddab8cdfbb8b6e9251aeb)
+        ;
+
+        
+    
+    
+            circle_marker_a04e923457d5187124077bfe2495800e.bindTooltip(
+                `<div>
+                     Ibeju Lekki | OmniShelf LCDA (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1ae26a92ed4cac670c7491374f961317 = L.circleMarker(
+                [6.4642122, 3.7324617],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_26b8499a6b0af9b31e44af16e24b2f21);
+        
+    
+        var popup_8553c8a42217326bb67d8f4127522fae = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_2f65f31a74eef6237014e8f022bb9b8f = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMjM2Mzc1OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIExha293ZSAtIEFkZWJhIFJvYWQ8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi40NjQyLCAzLjczMjU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEliZWp1IExla2tpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWJlanUgTGVra2kgLSBMYWtvd2UgLSBBZGViYSBSb2FkPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8553c8a42217326bb67d8f4127522fae.setContent(i_frame_2f65f31a74eef6237014e8f022bb9b8f);
+            
+        
+
+        circle_marker_1ae26a92ed4cac670c7491374f961317.bindPopup(popup_8553c8a42217326bb67d8f4127522fae)
+        ;
+
+        
+    
+    
+            circle_marker_1ae26a92ed4cac670c7491374f961317.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Lakowe - Adeba Road (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ddae9a73ad3a2e733c82f9ab989b967f = L.circleMarker(
+                [6.4754299, 3.7193936],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_26b8499a6b0af9b31e44af16e24b2f21);
+        
+    
+        var popup_b210547a90c5ec7655e967da7a43d791 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_f461bcdb880db8b76ac4fd0d4cec3473 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM1NDAxMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIExha293ZSAtIFNjaG9vbCBHYXRlPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDc1NCwgMy43MTk0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmVqdSBMZWtraTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEliZWp1IExla2tpIC0gTGFrb3dlIC0gU2Nob29sIEdhdGU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_b210547a90c5ec7655e967da7a43d791.setContent(i_frame_f461bcdb880db8b76ac4fd0d4cec3473);
+            
+        
+
+        circle_marker_ddae9a73ad3a2e733c82f9ab989b967f.bindPopup(popup_b210547a90c5ec7655e967da7a43d791)
+        ;
+
+        
+    
+    
+            circle_marker_ddae9a73ad3a2e733c82f9ab989b967f.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Lakowe - School Gate (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5304d44ca1ab4070f6dad53c13df4701 = L.circleMarker(
+                [6.4753317, 3.7174699],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_26b8499a6b0af9b31e44af16e24b2f21);
+        
+    
+        var popup_f45fabbba369fbf699fdad566370ba89 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_9e5c5b03f6209c67baab49ddf8bd2217 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTk5OTk3MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBFcHV0dTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ3NTMsIDMuNzE3NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBFcHV0dTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f45fabbba369fbf699fdad566370ba89.setContent(i_frame_9e5c5b03f6209c67baab49ddf8bd2217);
+            
+        
+
+        circle_marker_5304d44ca1ab4070f6dad53c13df4701.bindPopup(popup_f45fabbba369fbf699fdad566370ba89)
+        ;
+
+        
+    
+    
+            circle_marker_5304d44ca1ab4070f6dad53c13df4701.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Eputu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_26b8499a6b0af9b31e44af16e24b2f21.addTo(map_a38063b972cfd2cd698932e63ba5290e);
+        
+    
+            var feature_group_07e248fdd78f40489e86dfdd05fd22c2 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_9ee5060c0e62679106bebd0ae6eb8553 = L.circleMarker(
+                [6.474053800000001, 3.8056763],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_07e248fdd78f40489e86dfdd05fd22c2);
+        
+    
+        var popup_bc1b06e4fa1f89c88b5a0943ab7e41e6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a26f225ef5c9c5837406a3f11ef02ba4 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMjM1MTA0MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIElnYW5kbyAtIE9sb2phPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDc0MSwgMy44MDU3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmVqdSBMZWtraTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEliZWp1IExla2tpIC0gSWdhbmRvIC0gT2xvamE8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_bc1b06e4fa1f89c88b5a0943ab7e41e6.setContent(i_frame_a26f225ef5c9c5837406a3f11ef02ba4);
+            
+        
+
+        circle_marker_9ee5060c0e62679106bebd0ae6eb8553.bindPopup(popup_bc1b06e4fa1f89c88b5a0943ab7e41e6)
+        ;
+
+        
+    
+    
+            circle_marker_9ee5060c0e62679106bebd0ae6eb8553.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Igando - Oloja (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fc62b45bfb290db10943fb4240a71ae2 = L.circleMarker(
+                [6.471419999999999, 3.825001],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_07e248fdd78f40489e86dfdd05fd22c2);
+        
+    
+        var popup_4dce80c593aadc15dea484de43bf4edc = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_dcd034c1f8afa3d2a1e2aab69e56276b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQ1MDAyNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIElnYW5kbyAtIE9sb2phPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDcxNCwgMy44MjUwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmVqdSBMZWtraTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEliZWp1IExla2tpIC0gSWdhbmRvIC0gT2xvamE8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_4dce80c593aadc15dea484de43bf4edc.setContent(i_frame_dcd034c1f8afa3d2a1e2aab69e56276b);
+            
+        
+
+        circle_marker_fc62b45bfb290db10943fb4240a71ae2.bindPopup(popup_4dce80c593aadc15dea484de43bf4edc)
+        ;
+
+        
+    
+    
+            circle_marker_fc62b45bfb290db10943fb4240a71ae2.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Igando - Oloja (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_208b3cd3385f9e2a657a642a80ae37f6 = L.circleMarker(
+                [6.471419999999999, 3.825001],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_07e248fdd78f40489e86dfdd05fd22c2);
+        
+    
+        var popup_1d8d942e747b5f4a6426dc70f9bdbb52 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_e4f193dfb76501c5787ad84d1d745695 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE4MjQ3MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEVsZWtvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDcxNCwgMy44MjUwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJYmVqdSBMZWtraTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEliZWp1IExla2tpIC0gRWxla288L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_1d8d942e747b5f4a6426dc70f9bdbb52.setContent(i_frame_e4f193dfb76501c5787ad84d1d745695);
+            
+        
+
+        circle_marker_208b3cd3385f9e2a657a642a80ae37f6.bindPopup(popup_1d8d942e747b5f4a6426dc70f9bdbb52)
+        ;
+
+        
+    
+    
+            circle_marker_208b3cd3385f9e2a657a642a80ae37f6.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Eleko (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_07e248fdd78f40489e86dfdd05fd22c2.addTo(map_a38063b972cfd2cd698932e63ba5290e);
+        
+    
+            var feature_group_2047c5c39753e7f40741a5a3c511bb42 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_410057b0efbffee6e61486b35bd87a49 = L.circleMarker(
+                [6.484799799999999, 3.8897149],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2047c5c39753e7f40741a5a3c511bb42);
+        
+    
+        var popup_7a44f1ff90cd121a74b76b8151e95110 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a8045caa659120b1381419c4da53b6e8 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE0NjEwMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBFcHV0dTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ4NDgsIDMuODg5NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIEF3b3lheWEgLSBFcHV0dTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_7a44f1ff90cd121a74b76b8151e95110.setContent(i_frame_a8045caa659120b1381419c4da53b6e8);
+            
+        
+
+        circle_marker_410057b0efbffee6e61486b35bd87a49.bindPopup(popup_7a44f1ff90cd121a74b76b8151e95110)
+        ;
+
+        
+    
+    
+            circle_marker_410057b0efbffee6e61486b35bd87a49.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Awoyaya - Eputu (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_2047c5c39753e7f40741a5a3c511bb42.addTo(map_a38063b972cfd2cd698932e63ba5290e);
+        
+    
+            var feature_group_e316ca2602681c9d62fc1e01df671704 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_53640849cc0a9d2b8ece77dd3ae4bc42 = L.circleMarker(
+                [6.4570335, 3.437542],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_e316ca2602681c9d62fc1e01df671704);
+        
+    
+        var popup_b38d6bddf3380466625d96c0980dcf43 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a8631db1087800d9b229e1cb06143fb2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIzNTk4NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIExha293ZSAtIEtham9sYTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ1NzAsIDMuNDM3NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWJlanUgTGVra2k8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJYmVqdSBMZWtraSAtIExha293ZSAtIEtham9sYTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_b38d6bddf3380466625d96c0980dcf43.setContent(i_frame_a8631db1087800d9b229e1cb06143fb2);
+            
+        
+
+        circle_marker_53640849cc0a9d2b8ece77dd3ae4bc42.bindPopup(popup_b38d6bddf3380466625d96c0980dcf43)
+        ;
+
+        
+    
+    
+            circle_marker_53640849cc0a9d2b8ece77dd3ae4bc42.bindTooltip(
+                `<div>
+                     Ibeju Lekki | Ibeju Lekki - Lakowe - Kajola (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_e316ca2602681c9d62fc1e01df671704.addTo(map_a38063b972cfd2cd698932e63ba5290e);
+        
+    
+            var layer_control_fcb765280dae7f73569f9851e38168d5_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_a52a002fde8b0e18c3cb3d0fca9eae63,
+                    "OpenStreetMap" : tile_layer_d95096e3b427bf90211be15753b1fc68,
+                    "Terrain" : tile_layer_847165dab8282c37da0bff6dc1b1de39,
+                    "Toner" : tile_layer_36613e800236725375ad26fbf464d3cf,
+                    "CartoDB Dark" : tile_layer_46a2fda67b89262666db88a05d83beca,
+                    "CartoDB Light" : tile_layer_e354638fee7443ed5a1d2bf254a76be8,
+                },
+                overlays :  {
+                    "Cluster 1 - Ibeju Lekki - Ibeju Lekki - Awoyaya - Eputu+10more (20 points)" : feature_group_d65b8884c90d18ae6c1a3c6e8a14fd4a,
+                    "Cluster 4 - Ibeju Lekki - Ibeju Lekki - Awoyaya - Gbetu Iwerekun Road+6more (7 points)" : feature_group_26b8499a6b0af9b31e44af16e24b2f21,
+                    "Cluster 3 - Ibeju Lekki - Ibeju Lekki - Igando - Oloja+1more (3 points)" : feature_group_07e248fdd78f40489e86dfdd05fd22c2,
+                    "Cluster 2 - Ibeju Lekki - Ibeju Lekki - Awoyaya - Eputu (1 points)" : feature_group_2047c5c39753e7f40741a5a3c511bb42,
+                    "Cluster 5 - Ibeju Lekki - Ibeju Lekki - Lakowe - Kajola (1 points)" : feature_group_e316ca2602681c9d62fc1e01df671704,
+                },
+            };
+            let layer_control_fcb765280dae7f73569f9851e38168d5 = L.control.layers(
+                layer_control_fcb765280dae7f73569f9851e38168d5_layers.base_layers,
+                layer_control_fcb765280dae7f73569f9851e38168d5_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_a38063b972cfd2cd698932e63ba5290e);
+
+        
+    
+            var tile_layer_cfc059013829348b672e51a22abd58b2 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_e635985318ec84b70a50aaf153685aec = new L.Control.MiniMap(
+                tile_layer_cfc059013829348b672e51a22abd58b2,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_a38063b972cfd2cd698932e63ba5290e.addControl(mini_map_e635985318ec84b70a50aaf153685aec);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_a38063b972cfd2cd698932e63ba5290e);
+        
+    
+            var measure_control_218508a4e52580e626d0012afb18deb2 = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_a38063b972cfd2cd698932e63ba5290e.addControl(measure_control_218508a4e52580e626d0012afb18deb2);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_88d9357d8a436d2d318e369f5044a7b4 = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_88d9357d8a436d2d318e369f5044a7b4.options["latFormatter"] =
+                undefined;
+            mouse_position_88d9357d8a436d2d318e369f5044a7b4.options["lngFormatter"] =
+                undefined;
+            map_a38063b972cfd2cd698932e63ba5290e.addControl(mouse_position_88d9357d8a436d2d318e369f5044a7b4);
+        
+    
+            map_a38063b972cfd2cd698932e63ba5290e.fitBounds(
+                [[6.4352482, 3.4275420000000003], [6.494799799999999, 3.8997148999999998]],
+                {}
+            );
+        
+    
+            var marker_b3db5bd5883d2c43c7177f5749ed3934 = L.marker(
+                [6.4656195, 3.7052798],
+                {
+  "size": 10,
+}
+            ).addTo(map_a38063b972cfd2cd698932e63ba5290e);
+        
+    
+            var icon_a561ee1c417c470d7923d369f0dd8b64 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_b3db5bd5883d2c43c7177f5749ed3934.bindTooltip(
+                `<div>
+                     OmniHub Ibeju Lekki Lagos - SI & A
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b3db5bd5883d2c43c7177f5749ed3934.setIcon(icon_a561ee1c417c470d7923d369f0dd8b64);
+            
+</script>
+</html>

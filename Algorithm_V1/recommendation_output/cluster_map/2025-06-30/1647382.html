@@ -1,0 +1,2119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_8b7106cea30000c81a80fe79392e948e {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 5 clusters | 44 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+                    <div id="cluster-legend" style="position: fixed; 
+                                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                                background-color: rgba(255, 255, 255, 0.95); 
+                                border: 2px solid #ccc; z-index: 999; 
+                                font-size: 11px; padding: 12px; border-radius: 8px;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                backdrop-filter: blur(5px);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #333;">Cluster Legend</strong>
+                        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+                    </div>
+                    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+                        5 clusters | Sorted by size | Showing top 15
+                    </div>
+                    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+                    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 1 
+                <br><span style="color: #666; font-size: 9px;">10 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">10 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #d62728; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 4 
+                <br><span style="color: #666; font-size: 9px;">10 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #9467bd; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#4</strong> Cluster 5 
+                <br><span style="color: #666; font-size: 9px;">9 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#5</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">5 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_8b7106cea30000c81a80fe79392e948e" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_8b7106cea30000c81a80fe79392e948e = L.map(
+                "map_8b7106cea30000c81a80fe79392e948e",
+                {
+                    center: [4.7731429, 7.0131633],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_8b7106cea30000c81a80fe79392e948e);
+
+            
+
+        
+    
+            var tile_layer_011650532935e9600c876d0fd4b5265d = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_011650532935e9600c876d0fd4b5265d.addTo(map_8b7106cea30000c81a80fe79392e948e);
+        
+    
+            var tile_layer_33e0fd2da669ee33ef460591bf83bcb5 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_33e0fd2da669ee33ef460591bf83bcb5.addTo(map_8b7106cea30000c81a80fe79392e948e);
+        
+    
+            var tile_layer_5e2dae4ef24c0cc296c4d161b78cebbf = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_5e2dae4ef24c0cc296c4d161b78cebbf.addTo(map_8b7106cea30000c81a80fe79392e948e);
+        
+    
+            var tile_layer_ba4e9881c31d08320e74084d31d78dce = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_ba4e9881c31d08320e74084d31d78dce.addTo(map_8b7106cea30000c81a80fe79392e948e);
+        
+    
+            var tile_layer_a1c7aef3e70df13d70fbf9d9291e00de = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_a1c7aef3e70df13d70fbf9d9291e00de.addTo(map_8b7106cea30000c81a80fe79392e948e);
+        
+    
+            var tile_layer_a91da29ef75ff35967f8b30d9ddf4fd0 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_a91da29ef75ff35967f8b30d9ddf4fd0.addTo(map_8b7106cea30000c81a80fe79392e948e);
+        
+    
+            var feature_group_d022927ff432b749246a3d4ff32b0c28 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_3b9d08e1de921ad51d195b51d9b5f7d4 = L.circleMarker(
+                [4.7987562, 7.0025111],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d022927ff432b749246a3d4ff32b0c28);
+        
+    
+        var popup_b892eff3aa351420cc25d45269aa84c2 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_84924a160b5dbb4ba756eb8bd723a7dc = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQxMTI1MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEQtTGluZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljc5ODgsIDcuMDAyNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEQtTGluZTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_b892eff3aa351420cc25d45269aa84c2.setContent(i_frame_84924a160b5dbb4ba756eb8bd723a7dc);
+            
+        
+
+        circle_marker_3b9d08e1de921ad51d195b51d9b5f7d4.bindPopup(popup_b892eff3aa351420cc25d45269aa84c2)
+        ;
+
+        
+    
+    
+            circle_marker_3b9d08e1de921ad51d195b51d9b5f7d4.bindTooltip(
+                `<div>
+                     Port Harcourt | D-Line (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1add895cbc9b09db68546fac9a24efb5 = L.circleMarker(
+                [4.795805, 6.995101999999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d022927ff432b749246a3d4ff32b0c28);
+        
+    
+        var popup_67f7a87d7e3b70e4a2189e632d84d9f6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_325bf66e297ddf7f35baf25063fa4670 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQzMDUyMDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljc5NTgsIDYuOTk1MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_67f7a87d7e3b70e4a2189e632d84d9f6.setContent(i_frame_325bf66e297ddf7f35baf25063fa4670);
+            
+        
+
+        circle_marker_1add895cbc9b09db68546fac9a24efb5.bindPopup(popup_67f7a87d7e3b70e4a2189e632d84d9f6)
+        ;
+
+        
+    
+    
+            circle_marker_1add895cbc9b09db68546fac9a24efb5.bindTooltip(
+                `<div>
+                     Port Harcourt |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_144a1d80ced7fe357707bc843cc4e14f = L.circleMarker(
+                [4.8029774, 6.9910005],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d022927ff432b749246a3d4ff32b0c28);
+        
+    
+        var popup_91380812d9b8809ba023e68caf583cf9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_4aa3c20f23c129872dfc77651d207189 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzg5MTk5ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODAzMCwgNi45OTEwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_91380812d9b8809ba023e68caf583cf9.setContent(i_frame_4aa3c20f23c129872dfc77651d207189);
+            
+        
+
+        circle_marker_144a1d80ced7fe357707bc843cc4e14f.bindPopup(popup_91380812d9b8809ba023e68caf583cf9)
+        ;
+
+        
+    
+    
+            circle_marker_144a1d80ced7fe357707bc843cc4e14f.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c3c2655e8ec8f731fed7e44bb9af4d8a = L.circleMarker(
+                [4.8029861, 6.9910028],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d022927ff432b749246a3d4ff32b0c28);
+        
+    
+        var popup_2c96f6bb16d57df267943abe009ecb42 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_31d02462102f2dbe642bbbcc8e19d29a = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIyMjA2NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODAzMCwgNi45OTEwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_2c96f6bb16d57df267943abe009ecb42.setContent(i_frame_31d02462102f2dbe642bbbcc8e19d29a);
+            
+        
+
+        circle_marker_c3c2655e8ec8f731fed7e44bb9af4d8a.bindPopup(popup_2c96f6bb16d57df267943abe009ecb42)
+        ;
+
+        
+    
+    
+            circle_marker_c3c2655e8ec8f731fed7e44bb9af4d8a.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_27e7f19e069a379e3b450f643c249bd2 = L.circleMarker(
+                [4.8037092, 6.9928840999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d022927ff432b749246a3d4ff32b0c28);
+        
+    
+        var popup_1c54a9ef2d670bc70a7a902d71a1aa86 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_340d4d287c3f703145d9d66839c5b3b6 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI0NTkzOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODAzNywgNi45OTI5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_1c54a9ef2d670bc70a7a902d71a1aa86.setContent(i_frame_340d4d287c3f703145d9d66839c5b3b6);
+            
+        
+
+        circle_marker_27e7f19e069a379e3b450f643c249bd2.bindPopup(popup_1c54a9ef2d670bc70a7a902d71a1aa86)
+        ;
+
+        
+    
+    
+            circle_marker_27e7f19e069a379e3b450f643c249bd2.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e3eab066bf885ab6979bc042ab6cff80 = L.circleMarker(
+                [4.7385703, 7.0337141],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d022927ff432b749246a3d4ff32b0c28);
+        
+    
+        var popup_027194f4619f3a0aeda52cbdc5700923 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_dd324b2413a082ae595e03ad3d2149b7 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzgyMDY3MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJvcm9raXJpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzM4NiwgNy4wMzM3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQm9yb2tpcmk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_027194f4619f3a0aeda52cbdc5700923.setContent(i_frame_dd324b2413a082ae595e03ad3d2149b7);
+            
+        
+
+        circle_marker_e3eab066bf885ab6979bc042ab6cff80.bindPopup(popup_027194f4619f3a0aeda52cbdc5700923)
+        ;
+
+        
+    
+    
+            circle_marker_e3eab066bf885ab6979bc042ab6cff80.bindTooltip(
+                `<div>
+                     Port Harcourt | Borokiri (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f87d17a2129c585c2fa50c2cd5fb7b7f = L.circleMarker(
+                [4.8040138, 7.0013345],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d022927ff432b749246a3d4ff32b0c28);
+        
+    
+        var popup_a33b5f114545d471d28a8c4509924f7d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_f8b8eb775fd033c4dfe22121518d9807 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMxNzU4MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODA0MCwgNy4wMDEzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_a33b5f114545d471d28a8c4509924f7d.setContent(i_frame_f8b8eb775fd033c4dfe22121518d9807);
+            
+        
+
+        circle_marker_f87d17a2129c585c2fa50c2cd5fb7b7f.bindPopup(popup_a33b5f114545d471d28a8c4509924f7d)
+        ;
+
+        
+    
+    
+            circle_marker_f87d17a2129c585c2fa50c2cd5fb7b7f.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_97cda1f6c97268604edd4f338b3c713a = L.circleMarker(
+                [4.7595287, 7.025795],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d022927ff432b749246a3d4ff32b0c28);
+        
+    
+        var popup_1262570a1ebbebdee2c2bf966b7d4750 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_5feb8b4dd9fcb1937b6d10b9f0ec15f0 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQxNzIzMjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE9sZCBQb3J0IEhhcmNvdXJ0IFRvd25zaGlwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzU5NSwgNy4wMjU4PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gT2xkIFBvcnQgSGFyY291cnQgVG93bnNoaXA8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_1262570a1ebbebdee2c2bf966b7d4750.setContent(i_frame_5feb8b4dd9fcb1937b6d10b9f0ec15f0);
+            
+        
+
+        circle_marker_97cda1f6c97268604edd4f338b3c713a.bindPopup(popup_1262570a1ebbebdee2c2bf966b7d4750)
+        ;
+
+        
+    
+    
+            circle_marker_97cda1f6c97268604edd4f338b3c713a.bindTooltip(
+                `<div>
+                     Port Harcourt | Old Port Harcourt Township (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_410beffbc9902f041f115d92cb958677 = L.circleMarker(
+                [4.7939245, 6.9875191],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d022927ff432b749246a3d4ff32b0c28);
+        
+    
+        var popup_6e2db9ef1624446a9f192df66527a87a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_11c94fa3bc2346cdf3e9248d60be0705 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTEzNjEwMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzkzOSwgNi45ODc1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_6e2db9ef1624446a9f192df66527a87a.setContent(i_frame_11c94fa3bc2346cdf3e9248d60be0705);
+            
+        
+
+        circle_marker_410beffbc9902f041f115d92cb958677.bindPopup(popup_6e2db9ef1624446a9f192df66527a87a)
+        ;
+
+        
+    
+    
+            circle_marker_410beffbc9902f041f115d92cb958677.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2dfbd18a00c472cbcc3cfcf3ccc6243a = L.circleMarker(
+                [4.7856897956069, 6.9948145374655],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_d022927ff432b749246a3d4ff32b0c28);
+        
+    
+        var popup_0928333f3005a0d7796d82310779ef08 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_d7441844be36dfe65a1e19e95f4e8a02 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDU1NzU0NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzg1NywgNi45OTQ4PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0928333f3005a0d7796d82310779ef08.setContent(i_frame_d7441844be36dfe65a1e19e95f4e8a02);
+            
+        
+
+        circle_marker_2dfbd18a00c472cbcc3cfcf3ccc6243a.bindPopup(popup_0928333f3005a0d7796d82310779ef08)
+        ;
+
+        
+    
+    
+            circle_marker_2dfbd18a00c472cbcc3cfcf3ccc6243a.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_d022927ff432b749246a3d4ff32b0c28.addTo(map_8b7106cea30000c81a80fe79392e948e);
+        
+    
+            var feature_group_eb592c5eaa84723428f424b8bf4eb6c0 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_6d6e8987fa844a3267086c105e673df1 = L.circleMarker(
+                [4.7929345391304, 6.99810359627],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_eb592c5eaa84723428f424b8bf4eb6c0);
+        
+    
+        var popup_5cb4dd0818cbc4cd5a4d1c0fe9ece2af = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_3eb0d62267ef877b0eee522f3fa3fcc6 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE3MTgwNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzkyOSwgNi45OTgxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_5cb4dd0818cbc4cd5a4d1c0fe9ece2af.setContent(i_frame_3eb0d62267ef877b0eee522f3fa3fcc6);
+            
+        
+
+        circle_marker_6d6e8987fa844a3267086c105e673df1.bindPopup(popup_5cb4dd0818cbc4cd5a4d1c0fe9ece2af)
+        ;
+
+        
+    
+    
+            circle_marker_6d6e8987fa844a3267086c105e673df1.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7e0c725549095469a292804f7dd9da40 = L.circleMarker(
+                [4.7927698, 6.9979394],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_eb592c5eaa84723428f424b8bf4eb6c0);
+        
+    
+        var popup_ed4b287487e23507257e234c1bb2ee23 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_539510e14f73e56c4fb28354c0c28ee9 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzc4Njc0MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzkyOCwgNi45OTc5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_ed4b287487e23507257e234c1bb2ee23.setContent(i_frame_539510e14f73e56c4fb28354c0c28ee9);
+            
+        
+
+        circle_marker_7e0c725549095469a292804f7dd9da40.bindPopup(popup_ed4b287487e23507257e234c1bb2ee23)
+        ;
+
+        
+    
+    
+            circle_marker_7e0c725549095469a292804f7dd9da40.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e9ac7c4d8eaa7c38ba2088b49b6bc182 = L.circleMarker(
+                [4.7917983, 6.9986111],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_eb592c5eaa84723428f424b8bf4eb6c0);
+        
+    
+        var popup_69c47d8fc72c4d8819cc0cc32f37bde6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a393eb2a4f0c0e0d3381f0ea690e8663 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDA5Mzg2NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzkxOCwgNi45OTg2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_69c47d8fc72c4d8819cc0cc32f37bde6.setContent(i_frame_a393eb2a4f0c0e0d3381f0ea690e8663);
+            
+        
+
+        circle_marker_e9ac7c4d8eaa7c38ba2088b49b6bc182.bindPopup(popup_69c47d8fc72c4d8819cc0cc32f37bde6)
+        ;
+
+        
+    
+    
+            circle_marker_e9ac7c4d8eaa7c38ba2088b49b6bc182.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_863ee647c0183068bda50014d09bcd0f = L.circleMarker(
+                [4.791728, 7.0002815],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_eb592c5eaa84723428f424b8bf4eb6c0);
+        
+    
+        var popup_946a0f6168b5eb1a4545ae2f14039f21 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_d50fcd9361b4bedcd128e5685e30a09e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM5MTk0NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzkxNywgNy4wMDAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_946a0f6168b5eb1a4545ae2f14039f21.setContent(i_frame_d50fcd9361b4bedcd128e5685e30a09e);
+            
+        
+
+        circle_marker_863ee647c0183068bda50014d09bcd0f.bindPopup(popup_946a0f6168b5eb1a4545ae2f14039f21)
+        ;
+
+        
+    
+    
+            circle_marker_863ee647c0183068bda50014d09bcd0f.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e996d06540e4cab8d3bf630703ef9b85 = L.circleMarker(
+                [4.7924126, 7.0010204],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_eb592c5eaa84723428f424b8bf4eb6c0);
+        
+    
+        var popup_0edee381eabc04c5698bccd8676ebcf8 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_2bf3f78092a0ba69760fe9afe2e74b3c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDI2OTQ4NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzkyNCwgNy4wMDEwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0edee381eabc04c5698bccd8676ebcf8.setContent(i_frame_2bf3f78092a0ba69760fe9afe2e74b3c);
+            
+        
+
+        circle_marker_e996d06540e4cab8d3bf630703ef9b85.bindPopup(popup_0edee381eabc04c5698bccd8676ebcf8)
+        ;
+
+        
+    
+    
+            circle_marker_e996d06540e4cab8d3bf630703ef9b85.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_37fb19e1333ff8023bab3d5a1cf705e9 = L.circleMarker(
+                [4.7929287, 7.0001804],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_eb592c5eaa84723428f424b8bf4eb6c0);
+        
+    
+        var popup_b0629b64fb8e85ce2fd7fdd62568e6c9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a17777f93ef053ef69a237b1fe8bec09 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTExOTAyNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzkyOSwgNy4wMDAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_b0629b64fb8e85ce2fd7fdd62568e6c9.setContent(i_frame_a17777f93ef053ef69a237b1fe8bec09);
+            
+        
+
+        circle_marker_37fb19e1333ff8023bab3d5a1cf705e9.bindPopup(popup_b0629b64fb8e85ce2fd7fdd62568e6c9)
+        ;
+
+        
+    
+    
+            circle_marker_37fb19e1333ff8023bab3d5a1cf705e9.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e76a97407b8b5901d8d510829a8a0f8e = L.circleMarker(
+                [4.7888889, 6.997509699999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_eb592c5eaa84723428f424b8bf4eb6c0);
+        
+    
+        var popup_65f63cbc430c3ff15118e6ac9b62dad8 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_5d46e96004dca7f0489294a8ddc0bd1a = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTgwMzI3MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzg4OSwgNi45OTc1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_65f63cbc430c3ff15118e6ac9b62dad8.setContent(i_frame_5d46e96004dca7f0489294a8ddc0bd1a);
+            
+        
+
+        circle_marker_e76a97407b8b5901d8d510829a8a0f8e.bindPopup(popup_65f63cbc430c3ff15118e6ac9b62dad8)
+        ;
+
+        
+    
+    
+            circle_marker_e76a97407b8b5901d8d510829a8a0f8e.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e6717145942500612100286df480fcbc = L.circleMarker(
+                [4.7872374, 6.995821899999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_eb592c5eaa84723428f424b8bf4eb6c0);
+        
+    
+        var popup_3154396bc4c955084be18db1c6b82b0b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_3665093c6d9d0ec6d691342693df89be = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyMDkwNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzg3MiwgNi45OTU4PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_3154396bc4c955084be18db1c6b82b0b.setContent(i_frame_3665093c6d9d0ec6d691342693df89be);
+            
+        
+
+        circle_marker_e6717145942500612100286df480fcbc.bindPopup(popup_3154396bc4c955084be18db1c6b82b0b)
+        ;
+
+        
+    
+    
+            circle_marker_e6717145942500612100286df480fcbc.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_94caa95b9115cfed38f7f24e2d5fbb99 = L.circleMarker(
+                [4.7872911, 6.9956761],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_eb592c5eaa84723428f424b8bf4eb6c0);
+        
+    
+        var popup_8dfbacc1be76bf3bd66b7c7956624f6c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_ad01a814f5e0fe86213cd8e570eb9bc2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyMDg1NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzg3MywgNi45OTU3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8dfbacc1be76bf3bd66b7c7956624f6c.setContent(i_frame_ad01a814f5e0fe86213cd8e570eb9bc2);
+            
+        
+
+        circle_marker_94caa95b9115cfed38f7f24e2d5fbb99.bindPopup(popup_8dfbacc1be76bf3bd66b7c7956624f6c)
+        ;
+
+        
+    
+    
+            circle_marker_94caa95b9115cfed38f7f24e2d5fbb99.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cde3d83d39ff589178ed4f85288466cf = L.circleMarker(
+                [4.7863773, 7.001975600000001],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_eb592c5eaa84723428f424b8bf4eb6c0);
+        
+    
+        var popup_a935c10919a89dbdaa157bd6fb69fc49 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_ef65093eb3412e5da60b0fee8552f467 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIxOTc1NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzg2NCwgNy4wMDIwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_a935c10919a89dbdaa157bd6fb69fc49.setContent(i_frame_ef65093eb3412e5da60b0fee8552f467);
+            
+        
+
+        circle_marker_cde3d83d39ff589178ed4f85288466cf.bindPopup(popup_a935c10919a89dbdaa157bd6fb69fc49)
+        ;
+
+        
+    
+    
+            circle_marker_cde3d83d39ff589178ed4f85288466cf.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_eb592c5eaa84723428f424b8bf4eb6c0.addTo(map_8b7106cea30000c81a80fe79392e948e);
+        
+    
+            var feature_group_5c9eb0cb894525c1a9c8efac7d9b399e = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_a8086b8f19136e76fb4ae4b64b6f9214 = L.circleMarker(
+                [4.8077155, 6.990355099999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5c9eb0cb894525c1a9c8efac7d9b399e);
+        
+    
+        var popup_679b525c70624f212564a0e3a157ac55 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_0d4d183899f3cfc91cdc45f4c6c4f6f0 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI5NjQxODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODA3NywgNi45OTA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_679b525c70624f212564a0e3a157ac55.setContent(i_frame_0d4d183899f3cfc91cdc45f4c6c4f6f0);
+            
+        
+
+        circle_marker_a8086b8f19136e76fb4ae4b64b6f9214.bindPopup(popup_679b525c70624f212564a0e3a157ac55)
+        ;
+
+        
+    
+    
+            circle_marker_a8086b8f19136e76fb4ae4b64b6f9214.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_619f633f3b7e1b2fa975ed1b8a2fe61b = L.circleMarker(
+                [4.8044273, 6.9902608],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5c9eb0cb894525c1a9c8efac7d9b399e);
+        
+    
+        var popup_952188905e84a011861267ea8d29e355 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_8f460ec51a047f122f86fcae575ecba3 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDk0NjgzNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODA0NCwgNi45OTAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_952188905e84a011861267ea8d29e355.setContent(i_frame_8f460ec51a047f122f86fcae575ecba3);
+            
+        
+
+        circle_marker_619f633f3b7e1b2fa975ed1b8a2fe61b.bindPopup(popup_952188905e84a011861267ea8d29e355)
+        ;
+
+        
+    
+    
+            circle_marker_619f633f3b7e1b2fa975ed1b8a2fe61b.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b6e4c1c7611b86caef38b613c8aa86f9 = L.circleMarker(
+                [4.8036579, 6.9912441],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5c9eb0cb894525c1a9c8efac7d9b399e);
+        
+    
+        var popup_5bf828f57b6a36d5d7dbd8fb1669e80c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_3bc9c1e85d92cfa8b2ce5d990a520daf = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDA5MzcwMjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODAzNywgNi45OTEyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_5bf828f57b6a36d5d7dbd8fb1669e80c.setContent(i_frame_3bc9c1e85d92cfa8b2ce5d990a520daf);
+            
+        
+
+        circle_marker_b6e4c1c7611b86caef38b613c8aa86f9.bindPopup(popup_5bf828f57b6a36d5d7dbd8fb1669e80c)
+        ;
+
+        
+    
+    
+            circle_marker_b6e4c1c7611b86caef38b613c8aa86f9.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2803209a2ba103e3fe59ce7f4875b6eb = L.circleMarker(
+                [4.803048, 6.991114],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5c9eb0cb894525c1a9c8efac7d9b399e);
+        
+    
+        var popup_6dace73ef51a31d1740785e7929f2297 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_982a9d91d417dd0bb6a0ea8155464623 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI0NjU1NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODAzMCwgNi45OTExPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_6dace73ef51a31d1740785e7929f2297.setContent(i_frame_982a9d91d417dd0bb6a0ea8155464623);
+            
+        
+
+        circle_marker_2803209a2ba103e3fe59ce7f4875b6eb.bindPopup(popup_6dace73ef51a31d1740785e7929f2297)
+        ;
+
+        
+    
+    
+            circle_marker_2803209a2ba103e3fe59ce7f4875b6eb.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_193b69585cc85af1eead852db4c45ea1 = L.circleMarker(
+                [4.803663, 6.9919875],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5c9eb0cb894525c1a9c8efac7d9b399e);
+        
+    
+        var popup_0f33728f2da2bfe5855095b6762dcbee = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_1f6ca943b2c0502a8f4394baaa19ac0c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDA5MzY3ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODAzNywgNi45OTIwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0f33728f2da2bfe5855095b6762dcbee.setContent(i_frame_1f6ca943b2c0502a8f4394baaa19ac0c);
+            
+        
+
+        circle_marker_193b69585cc85af1eead852db4c45ea1.bindPopup(popup_0f33728f2da2bfe5855095b6762dcbee)
+        ;
+
+        
+    
+    
+            circle_marker_193b69585cc85af1eead852db4c45ea1.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d981d980642b2036d0d1f681e0be88e6 = L.circleMarker(
+                [4.8037813, 6.992855500000001],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5c9eb0cb894525c1a9c8efac7d9b399e);
+        
+    
+        var popup_0580f8d7244feb24be89fb1fdb8bba82 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_cbaf905125e3e777e3545ac7c2f0791d = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE3NTg5MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODAzOCwgNi45OTI5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0580f8d7244feb24be89fb1fdb8bba82.setContent(i_frame_cbaf905125e3e777e3545ac7c2f0791d);
+            
+        
+
+        circle_marker_d981d980642b2036d0d1f681e0be88e6.bindPopup(popup_0580f8d7244feb24be89fb1fdb8bba82)
+        ;
+
+        
+    
+    
+            circle_marker_d981d980642b2036d0d1f681e0be88e6.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_88392f7d55abaafdc68b890e37c867de = L.circleMarker(
+                [4.8037813, 6.9928555],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5c9eb0cb894525c1a9c8efac7d9b399e);
+        
+    
+        var popup_194aae97ed1dd63bdc3c38a74cba1be3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_ad0ce73ccecde6ae3f8025bceba91c14 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI0NTkyNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODAzOCwgNi45OTI5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_194aae97ed1dd63bdc3c38a74cba1be3.setContent(i_frame_ad0ce73ccecde6ae3f8025bceba91c14);
+            
+        
+
+        circle_marker_88392f7d55abaafdc68b890e37c867de.bindPopup(popup_194aae97ed1dd63bdc3c38a74cba1be3)
+        ;
+
+        
+    
+    
+            circle_marker_88392f7d55abaafdc68b890e37c867de.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_054db1d1fa0702a707cebc1d5ffbbe45 = L.circleMarker(
+                [4.7993741, 6.9903631],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5c9eb0cb894525c1a9c8efac7d9b399e);
+        
+    
+        var popup_a9b2ff2cf3fe31110b10b2192f8068f7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_fe5f024ce1b9a6a1e0c65d254c65e3da = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzg1Njc0NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzk5NCwgNi45OTA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_a9b2ff2cf3fe31110b10b2192f8068f7.setContent(i_frame_fe5f024ce1b9a6a1e0c65d254c65e3da);
+            
+        
+
+        circle_marker_054db1d1fa0702a707cebc1d5ffbbe45.bindPopup(popup_a9b2ff2cf3fe31110b10b2192f8068f7)
+        ;
+
+        
+    
+    
+            circle_marker_054db1d1fa0702a707cebc1d5ffbbe45.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ceceeea305bedd706f447380b4564c0d = L.circleMarker(
+                [4.7984297, 6.9924057],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5c9eb0cb894525c1a9c8efac7d9b399e);
+        
+    
+        var popup_c07e7d050aa38bb358fe41f2fb9a8456 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_83dcade61fa7e218b33c642cac01e1a5 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTA5OTcwNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzk4NCwgNi45OTI0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_c07e7d050aa38bb358fe41f2fb9a8456.setContent(i_frame_83dcade61fa7e218b33c642cac01e1a5);
+            
+        
+
+        circle_marker_ceceeea305bedd706f447380b4564c0d.bindPopup(popup_c07e7d050aa38bb358fe41f2fb9a8456)
+        ;
+
+        
+    
+    
+            circle_marker_ceceeea305bedd706f447380b4564c0d.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2cbc748d5b00e90c9c8da6f5c6587875 = L.circleMarker(
+                [4.8067794, 6.98681],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_5c9eb0cb894525c1a9c8efac7d9b399e);
+        
+    
+        var popup_0302abac98a0de2c08685514b7d3ba5a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_41f480da3f49e5f2b5b03fae96897e03 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTExOTgwNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuODA2OCwgNi45ODY4PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0302abac98a0de2c08685514b7d3ba5a.setContent(i_frame_41f480da3f49e5f2b5b03fae96897e03);
+            
+        
+
+        circle_marker_2cbc748d5b00e90c9c8da6f5c6587875.bindPopup(popup_0302abac98a0de2c08685514b7d3ba5a)
+        ;
+
+        
+    
+    
+            circle_marker_2cbc748d5b00e90c9c8da6f5c6587875.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_5c9eb0cb894525c1a9c8efac7d9b399e.addTo(map_8b7106cea30000c81a80fe79392e948e);
+        
+    
+            var feature_group_abb67c319b55ad0d8340886f78b40ee5 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_277a8c3ed683937445a2c26d626dd45c = L.circleMarker(
+                [4.7990983, 7.0009628],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_abb67c319b55ad0d8340886f78b40ee5);
+        
+    
+        var popup_4a4d06541a4edc30602d8e79efcbdcba = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_be8df3278c0c7e45869d0198ce527a5c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQyNDUyMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEQtTGluZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA0Ljc5OTEsIDcuMDAxMDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEQtTGluZTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_4a4d06541a4edc30602d8e79efcbdcba.setContent(i_frame_be8df3278c0c7e45869d0198ce527a5c);
+            
+        
+
+        circle_marker_277a8c3ed683937445a2c26d626dd45c.bindPopup(popup_4a4d06541a4edc30602d8e79efcbdcba)
+        ;
+
+        
+    
+    
+            circle_marker_277a8c3ed683937445a2c26d626dd45c.bindTooltip(
+                `<div>
+                     Port Harcourt | D-Line (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5f29f5863514ab599f41d8ae1a293121 = L.circleMarker(
+                [4.7972917, 6.996583999999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_abb67c319b55ad0d8340886f78b40ee5);
+        
+    
+        var popup_753e30a3dcb31532d73add3af3d660ac = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_cd1235fc014158d424a39a874f642847 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE3NTYxMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzk3MywgNi45OTY2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_753e30a3dcb31532d73add3af3d660ac.setContent(i_frame_cd1235fc014158d424a39a874f642847);
+            
+        
+
+        circle_marker_5f29f5863514ab599f41d8ae1a293121.bindPopup(popup_753e30a3dcb31532d73add3af3d660ac)
+        ;
+
+        
+    
+    
+            circle_marker_5f29f5863514ab599f41d8ae1a293121.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_17cbe2b37e9574d71ae76ca03c8db3cd = L.circleMarker(
+                [4.7956729, 6.997147699999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_abb67c319b55ad0d8340886f78b40ee5);
+        
+    
+        var popup_228142328c9a7255e5b1f4e34dcb329e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_f3a2e5a4d35491ce063da2053bbff318 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIzMzA1NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzk1NywgNi45OTcxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_228142328c9a7255e5b1f4e34dcb329e.setContent(i_frame_f3a2e5a4d35491ce063da2053bbff318);
+            
+        
+
+        circle_marker_17cbe2b37e9574d71ae76ca03c8db3cd.bindPopup(popup_228142328c9a7255e5b1f4e34dcb329e)
+        ;
+
+        
+    
+    
+            circle_marker_17cbe2b37e9574d71ae76ca03c8db3cd.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6f4fb6b8eb80aabc9f68ff51413b6a32 = L.circleMarker(
+                [4.790584, 6.9915591],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_abb67c319b55ad0d8340886f78b40ee5);
+        
+    
+        var popup_9181bd94014a1aa3e0a66d20dceeffbb = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_94636735969927de36a1bdc69ff18538 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzk2MTA3ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzkwNiwgNi45OTE2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_9181bd94014a1aa3e0a66d20dceeffbb.setContent(i_frame_94636735969927de36a1bdc69ff18538);
+            
+        
+
+        circle_marker_6f4fb6b8eb80aabc9f68ff51413b6a32.bindPopup(popup_9181bd94014a1aa3e0a66d20dceeffbb)
+        ;
+
+        
+    
+    
+            circle_marker_6f4fb6b8eb80aabc9f68ff51413b6a32.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fcad70631214cb6c3c09062c152389be = L.circleMarker(
+                [4.7900263, 6.991732],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_abb67c319b55ad0d8340886f78b40ee5);
+        
+    
+        var popup_24067dbf8cb1941b10da0f979cc70b8a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_0adcd208ea0dfbfd14a2dc6340c628b8 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDkxODE4NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzkwMCwgNi45OTE3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_24067dbf8cb1941b10da0f979cc70b8a.setContent(i_frame_0adcd208ea0dfbfd14a2dc6340c628b8);
+            
+        
+
+        circle_marker_fcad70631214cb6c3c09062c152389be.bindPopup(popup_24067dbf8cb1941b10da0f979cc70b8a)
+        ;
+
+        
+    
+    
+            circle_marker_fcad70631214cb6c3c09062c152389be.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1c3b38bf1297d0e3e2cc552284998ecb = L.circleMarker(
+                [4.7896544, 6.9924012],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_abb67c319b55ad0d8340886f78b40ee5);
+        
+    
+        var popup_632455f6030dcbe9e0f7bf1398a7830a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_21c9c9ab41165f472b47dd400f506826 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTA4MDYzODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzg5NywgNi45OTI0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_632455f6030dcbe9e0f7bf1398a7830a.setContent(i_frame_21c9c9ab41165f472b47dd400f506826);
+            
+        
+
+        circle_marker_1c3b38bf1297d0e3e2cc552284998ecb.bindPopup(popup_632455f6030dcbe9e0f7bf1398a7830a)
+        ;
+
+        
+    
+    
+            circle_marker_1c3b38bf1297d0e3e2cc552284998ecb.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_221e2f41b03d2ab7155f4cdbf58d9077 = L.circleMarker(
+                [4.7904491999999, 6.9909925],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_abb67c319b55ad0d8340886f78b40ee5);
+        
+    
+        var popup_5e5cdc2c72563f570226cd09bb2b1f8d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_4757b7f2155da009bc5957b3fade3ff5 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTEzNzA0MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzkwNCwgNi45OTEwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_5e5cdc2c72563f570226cd09bb2b1f8d.setContent(i_frame_4757b7f2155da009bc5957b3fade3ff5);
+            
+        
+
+        circle_marker_221e2f41b03d2ab7155f4cdbf58d9077.bindPopup(popup_5e5cdc2c72563f570226cd09bb2b1f8d)
+        ;
+
+        
+    
+    
+            circle_marker_221e2f41b03d2ab7155f4cdbf58d9077.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5dbb8379fe62e56a974c8b810538153f = L.circleMarker(
+                [4.7931574, 6.988410699999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_abb67c319b55ad0d8340886f78b40ee5);
+        
+    
+        var popup_eabc23ee3331dcb5ee8528fa9f37771a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_bc6ce7e12d70dff68d448289b5716d06 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE0NTgwNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzkzMiwgNi45ODg0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_eabc23ee3331dcb5ee8528fa9f37771a.setContent(i_frame_bc6ce7e12d70dff68d448289b5716d06);
+            
+        
+
+        circle_marker_5dbb8379fe62e56a974c8b810538153f.bindPopup(popup_eabc23ee3331dcb5ee8528fa9f37771a)
+        ;
+
+        
+    
+    
+            circle_marker_5dbb8379fe62e56a974c8b810538153f.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ca7616cf3d37a970f3828d70c67062ff = L.circleMarker(
+                [4.7948801, 6.9891488],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_abb67c319b55ad0d8340886f78b40ee5);
+        
+    
+        var popup_f1f62b4fbee290d6f4c9e6c992201851 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_acfd9b1174eead30c0f3f7f864dae014 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDg3Mzk5MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IERpb2J1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzk0OSwgNi45ODkxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gRGlvYnU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f1f62b4fbee290d6f4c9e6c992201851.setContent(i_frame_acfd9b1174eead30c0f3f7f864dae014);
+            
+        
+
+        circle_marker_ca7616cf3d37a970f3828d70c67062ff.bindPopup(popup_f1f62b4fbee290d6f4c9e6c992201851)
+        ;
+
+        
+    
+    
+            circle_marker_ca7616cf3d37a970f3828d70c67062ff.bindTooltip(
+                `<div>
+                     Port Harcourt | Diobu (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_abb67c319b55ad0d8340886f78b40ee5.addTo(map_8b7106cea30000c81a80fe79392e948e);
+        
+    
+            var feature_group_2ced9d6f49ad443444cd59d34222edf1 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_58315c79191fd2810238d75fa369a995 = L.circleMarker(
+                [4.7584512, 7.033373999999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2ced9d6f49ad443444cd59d34222edf1);
+        
+    
+        var popup_ea7e259115ea63063517c0872326b6db = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_86e1603e9077f23efddd74b3a4aa357b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDA5MzczMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJvcm9raXJpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzU4NSwgNy4wMzM0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQm9yb2tpcmk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_ea7e259115ea63063517c0872326b6db.setContent(i_frame_86e1603e9077f23efddd74b3a4aa357b);
+            
+        
+
+        circle_marker_58315c79191fd2810238d75fa369a995.bindPopup(popup_ea7e259115ea63063517c0872326b6db)
+        ;
+
+        
+    
+    
+            circle_marker_58315c79191fd2810238d75fa369a995.bindTooltip(
+                `<div>
+                     Port Harcourt | Borokiri (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c3197dac23dea41c04ef06fe5eaee28f = L.circleMarker(
+                [4.742923, 7.0395166],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2ced9d6f49ad443444cd59d34222edf1);
+        
+    
+        var popup_a41804c39c657227cf50940fff752228 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_ba78d4d16f24b6104b3019b9876ce847 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTgwNDQ3MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJvcm9raXJpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzQyOSwgNy4wMzk1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQm9yb2tpcmk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_a41804c39c657227cf50940fff752228.setContent(i_frame_ba78d4d16f24b6104b3019b9876ce847);
+            
+        
+
+        circle_marker_c3197dac23dea41c04ef06fe5eaee28f.bindPopup(popup_a41804c39c657227cf50940fff752228)
+        ;
+
+        
+    
+    
+            circle_marker_c3197dac23dea41c04ef06fe5eaee28f.bindTooltip(
+                `<div>
+                     Port Harcourt | Borokiri (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7e4282b908822878cb5736710b847c27 = L.circleMarker(
+                [4.7385703, 7.0337141],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2ced9d6f49ad443444cd59d34222edf1);
+        
+    
+        var popup_1fdc35fee85b5cdf51141127ef59e183 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_9b9372f5999d7dffdf49c3d5f90a960e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI0ODkzOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJvcm9raXJpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzM4NiwgNy4wMzM3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQm9yb2tpcmk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_1fdc35fee85b5cdf51141127ef59e183.setContent(i_frame_9b9372f5999d7dffdf49c3d5f90a960e);
+            
+        
+
+        circle_marker_7e4282b908822878cb5736710b847c27.bindPopup(popup_1fdc35fee85b5cdf51141127ef59e183)
+        ;
+
+        
+    
+    
+            circle_marker_7e4282b908822878cb5736710b847c27.bindTooltip(
+                `<div>
+                     Port Harcourt | Borokiri (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_23867a949dc98d5de46d24e0da8c8bd6 = L.circleMarker(
+                [4.7385703, 7.0337141],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2ced9d6f49ad443444cd59d34222edf1);
+        
+    
+        var popup_5494359ea124e7737d37bc511f56f276 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_e3b0832f7e1e9d45eb646911ebded9ba = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM2ODI4NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IE9sZCBQb3J0IEhhcmNvdXJ0IFRvd25zaGlwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzM4NiwgNy4wMzM3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gT2xkIFBvcnQgSGFyY291cnQgVG93bnNoaXA8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_5494359ea124e7737d37bc511f56f276.setContent(i_frame_e3b0832f7e1e9d45eb646911ebded9ba);
+            
+        
+
+        circle_marker_23867a949dc98d5de46d24e0da8c8bd6.bindPopup(popup_5494359ea124e7737d37bc511f56f276)
+        ;
+
+        
+    
+    
+            circle_marker_23867a949dc98d5de46d24e0da8c8bd6.bindTooltip(
+                `<div>
+                     Port Harcourt | Old Port Harcourt Township (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5aeedfb4cba3da68f2490e2466648d85 = L.circleMarker(
+                [4.7385703, 7.0337141],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2ced9d6f49ad443444cd59d34222edf1);
+        
+    
+        var popup_211226ec33291ef7d243734ce73861e9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_0da2a98157e80701e657d76cdbe88cc1 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDM4NDQ1MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gUG9ydCBIYXJjb3VydDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJvcm9raXJpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDQuNzM4NiwgNy4wMzM3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBQb3J0IEhhcmNvdXJ0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQm9yb2tpcmk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_211226ec33291ef7d243734ce73861e9.setContent(i_frame_0da2a98157e80701e657d76cdbe88cc1);
+            
+        
+
+        circle_marker_5aeedfb4cba3da68f2490e2466648d85.bindPopup(popup_211226ec33291ef7d243734ce73861e9)
+        ;
+
+        
+    
+    
+            circle_marker_5aeedfb4cba3da68f2490e2466648d85.bindTooltip(
+                `<div>
+                     Port Harcourt | Borokiri (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_2ced9d6f49ad443444cd59d34222edf1.addTo(map_8b7106cea30000c81a80fe79392e948e);
+        
+    
+            var layer_control_e7c98a1b34fe17a5c06cc348af2cbd7e_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_011650532935e9600c876d0fd4b5265d,
+                    "OpenStreetMap" : tile_layer_33e0fd2da669ee33ef460591bf83bcb5,
+                    "Terrain" : tile_layer_5e2dae4ef24c0cc296c4d161b78cebbf,
+                    "Toner" : tile_layer_ba4e9881c31d08320e74084d31d78dce,
+                    "CartoDB Dark" : tile_layer_a1c7aef3e70df13d70fbf9d9291e00de,
+                    "CartoDB Light" : tile_layer_a91da29ef75ff35967f8b30d9ddf4fd0,
+                },
+                overlays :  {
+                    "Cluster 1 - Port Harcourt - D-Line+4more (10 points)" : feature_group_d022927ff432b749246a3d4ff32b0c28,
+                    "Cluster 3 - Port Harcourt - Diobu (10 points)" : feature_group_eb592c5eaa84723428f424b8bf4eb6c0,
+                    "Cluster 4 - Port Harcourt - Diobu (10 points)" : feature_group_5c9eb0cb894525c1a9c8efac7d9b399e,
+                    "Cluster 5 - Port Harcourt - D-Line+1more (9 points)" : feature_group_abb67c319b55ad0d8340886f78b40ee5,
+                    "Cluster 2 - Port Harcourt - Borokiri+1more (5 points)" : feature_group_2ced9d6f49ad443444cd59d34222edf1,
+                },
+            };
+            let layer_control_e7c98a1b34fe17a5c06cc348af2cbd7e = L.control.layers(
+                layer_control_e7c98a1b34fe17a5c06cc348af2cbd7e_layers.base_layers,
+                layer_control_e7c98a1b34fe17a5c06cc348af2cbd7e_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_8b7106cea30000c81a80fe79392e948e);
+
+        
+    
+            var tile_layer_0982ce54b0a51ad26215f1ddd7fbf0fa = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_feecd1c27be6c15d2d7de84a23241f09 = new L.Control.MiniMap(
+                tile_layer_0982ce54b0a51ad26215f1ddd7fbf0fa,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_8b7106cea30000c81a80fe79392e948e.addControl(mini_map_feecd1c27be6c15d2d7de84a23241f09);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_8b7106cea30000c81a80fe79392e948e);
+        
+    
+            var measure_control_19cc47da0851e78362ae5e32ab21c116 = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_8b7106cea30000c81a80fe79392e948e.addControl(measure_control_19cc47da0851e78362ae5e32ab21c116);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_b10ae90b2e46dca6583aed1eefad742d = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_b10ae90b2e46dca6583aed1eefad742d.options["latFormatter"] =
+                undefined;
+            mouse_position_b10ae90b2e46dca6583aed1eefad742d.options["lngFormatter"] =
+                undefined;
+            map_8b7106cea30000c81a80fe79392e948e.addControl(mouse_position_b10ae90b2e46dca6583aed1eefad742d);
+        
+    
+            map_8b7106cea30000c81a80fe79392e948e.fitBounds(
+                [[4.7285703, 6.97681], [4.817715499999999, 7.0495166]],
+                {}
+            );
+        
+    
+            var marker_99048e26764b801f3697dc3294aa6d7f = L.marker(
+                [4.8520221, 6.9917392],
+                {
+  "size": 10,
+}
+            ).addTo(map_8b7106cea30000c81a80fe79392e948e);
+        
+    
+            var icon_3465ec7593691499d6db52f9243903fa = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_99048e26764b801f3697dc3294aa6d7f.bindTooltip(
+                `<div>
+                     OmniHub Port Harcourt Rivers - IFO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_99048e26764b801f3697dc3294aa6d7f.setIcon(icon_3465ec7593691499d6db52f9243903fa);
+            
+</script>
+</html>

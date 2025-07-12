@@ -3,14 +3,6 @@
 <head>
     
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    
-        <script>
-            L_NO_TOUCH = false;
-            L_DISABLE_3D = false;
-        </script>
-    
-    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
-    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -25,7 +17,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_5187d19fb179b983339889a72be8e93e {
+                #map_11b7186d6fa5c1dd365ee69a4639ffa8 {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -34,6 +26,29 @@
                 }
                 .leaflet-container { font-size: 1rem; }
             </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
         
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
@@ -47,1582 +62,1393 @@
 <body>
     
     
-        <script>
-        setTimeout(function() {
-            var controlContainer = document.createElement('div');
-            controlContainer.id = 'cluster-controls';
-            controlContainer.style.position = 'absolute';
-            controlContainer.style.top = '10px';
-            controlContainer.style.left = '60px';
-            controlContainer.style.zIndex = '1000';
-            controlContainer.style.display = 'flex';
-            controlContainer.style.flexDirection = 'column';
-            controlContainer.style.gap = '5px';
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
             
-            var controlPanel = document.createElement('div');
-            controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
-            controlPanel.style.border = '2px solid #ccc';
-            controlPanel.style.borderRadius = '8px';
-            controlPanel.style.padding = '10px';
-            controlPanel.style.fontSize = '12px';
-            controlPanel.style.fontFamily = 'Arial, sans-serif';
-            controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
-            controlPanel.style.backdropFilter = 'blur(5px)';
-            controlPanel.style.minWidth = '200px';
-            
-            var title = document.createElement('div');
-            title.innerHTML = '<strong>Cluster Controls</strong>';
-            title.style.marginBottom = '10px';
-            title.style.textAlign = 'center';
-            title.style.color = '#333';
-            title.style.borderBottom = '1px solid #ddd';
-            title.style.paddingBottom = '5px';
-            controlPanel.appendChild(title);
-            
-            var buttonContainer = document.createElement('div');
-            buttonContainer.style.display = 'flex';
-            buttonContainer.style.gap = '5px';
-            buttonContainer.style.marginBottom = '10px';
-            
-            var unselectButton = document.createElement('button');
-            unselectButton.innerHTML = 'Hide All';
-            unselectButton.style.flex = '1';
-            unselectButton.style.backgroundColor = '#f8f9fa';
-            unselectButton.style.border = '1px solid #dee2e6';
-            unselectButton.style.borderRadius = '4px';
-            unselectButton.style.padding = '6px 8px';
-            unselectButton.style.fontSize = '11px';
-            unselectButton.style.fontWeight = 'bold';
-            unselectButton.style.cursor = 'pointer';
-            unselectButton.style.transition = 'all 0.2s';
-            
-            var selectButton = document.createElement('button');
-            selectButton.innerHTML = 'Show All';
-            selectButton.style.flex = '1';
-            selectButton.style.backgroundColor = '#f8f9fa';
-            selectButton.style.border = '1px solid #dee2e6';
-            selectButton.style.borderRadius = '4px';
-            selectButton.style.padding = '6px 8px';
-            selectButton.style.fontSize = '11px';
-            selectButton.style.fontWeight = 'bold';
-            selectButton.style.cursor = 'pointer';
-            selectButton.style.transition = 'all 0.2s';
-            
-            [unselectButton, selectButton].forEach(function(btn) {
-                btn.onmouseover = function() {
-                    this.style.backgroundColor = '#e9ecef';
-                    this.style.transform = 'translateY(-1px)';
-                };
-                btn.onmouseout = function() {
-                    this.style.backgroundColor = '#f8f9fa';
-                    this.style.transform = 'translateY(0)';
-                };
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
             });
             
-            unselectButton.onclick = function() {
-                var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
-                var uncheckedCount = 0;
-                layerControls.forEach(function(checkbox) {
-                    if (checkbox.checked) {
-                        checkbox.click();
-                        uncheckedCount++;
-                    }
-                });
-                showFeedback(unselectButton, uncheckedCount > 0 ? 
-                    'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
-                    uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
-            };
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
             
-            selectButton.onclick = function() {
-                var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
-                var checkedCount = 0;
-                layerControls.forEach(function(checkbox) {
-                    if (!checkbox.checked) {
-                        checkbox.click();
-                        checkedCount++;
-                    }
-                });
-                showFeedback(selectButton, checkedCount > 0 ? 
-                    'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
-                    checkedCount > 0 ? '#d4edda' : '#d1ecf1');
-            };
-            
-            function showFeedback(button, message, color) {
-                var originalText = button.innerHTML;
-                var originalColor = button.style.backgroundColor;
-                button.innerHTML = message;
-                button.style.backgroundColor = color;
-                setTimeout(function() {
-                    button.innerHTML = originalText;
-                    button.style.backgroundColor = originalColor;
-                }, 2000);
-            }
-            
-            var summaryDiv = document.createElement('div');
-            summaryDiv.style.fontSize = '10px';
-            summaryDiv.style.color = '#666';
-            summaryDiv.style.textAlign = 'center';
-            summaryDiv.style.marginTop = '5px';
-            summaryDiv.innerHTML = 'Total: 4 clusters | 41 Outlets';
-            
-            buttonContainer.appendChild(unselectButton);
-            buttonContainer.appendChild(selectButton);
-            controlPanel.appendChild(buttonContainer);
-            controlPanel.appendChild(summaryDiv);
-            controlContainer.appendChild(controlPanel);
-            
-            var toggleButton = document.createElement('button');
-            toggleButton.innerHTML = '&minus;';
-            toggleButton.style.position = 'absolute';
-            toggleButton.style.top = '5px';
-            toggleButton.style.right = '5px';
-            toggleButton.style.width = '20px';
-            toggleButton.style.height = '20px';
-            toggleButton.style.border = 'none';
-            toggleButton.style.backgroundColor = 'transparent';
-            toggleButton.style.cursor = 'pointer';
-            toggleButton.style.fontSize = '14px';
-            toggleButton.style.fontWeight = 'bold';
-            toggleButton.style.color = '#666';
-            
-            var isMinimized = false;
-            toggleButton.onclick = function() {
-                if (isMinimized) {
-                    buttonContainer.style.display = 'flex';
-                    summaryDiv.style.display = 'block';
-                    toggleButton.innerHTML = '&minus;';
-                    isMinimized = false;
-                } else {
-                    buttonContainer.style.display = 'none';
-                    summaryDiv.style.display = 'none';
-                    toggleButton.innerHTML = '+';
-                    isMinimized = true;
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
                 }
-            };
+            });
             
-            controlPanel.appendChild(toggleButton);
-            document.body.appendChild(controlContainer);
-        }, 1000);
-        </script>
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
         
-    
-        <div id="cluster-legend" style="position: fixed;
-                    bottom: 120px; right: 10px; width: 250px; height: auto;
-                    background-color: rgba(255, 255, 255, 0.95);
-                    border: 2px solid #ccc; z-index: 999;
-                    font-size: 11px; padding: 12px; border-radius: 8px;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-                    backdrop-filter: blur(5px);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <strong style="color: #333;">Cluster & Route Legend</strong>
-            <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">&minus;</button>
-        </div>
-        <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
-            4 clusters | 0 routes | Showing top 10
-        </div>
-        <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
-        
-            <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
-                <span style="display: inline-block; width: 14px; height: 14px;
-                             background-color: red; border-radius: 50%;
-                             margin-right: 8px; border: 1px solid white;
-                             box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
-                <span style="font-size: 10px; flex: 1;">
-                    <strong>#1</strong> Cluster 1
-                    <br><span style="color: #666; font-size: 9px;">19 Outlets</span>
-                </span>
-            </div>
-            
-            <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
-                <span style="display: inline-block; width: 14px; height: 14px;
-                             background-color: blue; border-radius: 50%;
-                             margin-right: 8px; border: 1px solid white;
-                             box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
-                <span style="font-size: 10px; flex: 1;">
-                    <strong>#2</strong> Cluster 2
-                    <br><span style="color: #666; font-size: 9px;">16 Outlets</span>
-                </span>
-            </div>
-            
-            <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
-                <span style="display: inline-block; width: 14px; height: 14px;
-                             background-color: green; border-radius: 50%;
-                             margin-right: 8px; border: 1px solid white;
-                             box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
-                <span style="font-size: 10px; flex: 1;">
-                    <strong>#3</strong> Cluster 3
-                    <br><span style="color: #666; font-size: 9px;">5 Outlets</span>
-                </span>
-            </div>
-            
-            <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
-                <span style="display: inline-block; width: 14px; height: 14px;
-                             background-color: purple; border-radius: 50%;
-                             margin-right: 8px; border: 1px solid white;
-                             box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
-                <span style="font-size: 10px; flex: 1;">
-                    <strong>#4</strong> Cluster 4
-                    <br><span style="color: #666; font-size: 9px;">1 Outlets</span>
-                </span>
-            </div>
-            
-        </div>
-        <script>
-        function toggleLegend() {
-            var content = document.getElementById('legend-content');
-            var button = document.querySelector('#cluster-legend button');
-            if (content.style.display === 'none') {
-                content.style.display = 'block';
-                button.innerHTML = '&minus;';
-            } else {
-                content.style.display = 'none';
-                button.innerHTML = '+';
-            }
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
         }
-        </script>
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 5 clusters | 26 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+                    <div id="cluster-legend" style="position: fixed; 
+                                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                                background-color: rgba(255, 255, 255, 0.95); 
+                                border: 2px solid #ccc; z-index: 999; 
+                                font-size: 11px; padding: 12px; border-radius: 8px;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                backdrop-filter: blur(5px);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #333;">Cluster Legend</strong>
+                        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+                    </div>
+                    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+                        5 clusters | Sorted by size | Showing top 15
+                    </div>
+                    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+                    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 1 
+                <br><span style="color: #666; font-size: 9px;">17 points</span>
+            </span>
         </div>
         
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #9467bd; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 5 
+                <br><span style="color: #666; font-size: 9px;">4 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">2 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #d62728; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#4</strong> Cluster 4 
+                <br><span style="color: #666; font-size: 9px;">2 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#5</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">1 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
     
-            <div class="folium-map" id="map_5187d19fb179b983339889a72be8e93e" ></div>
+    
+            <div class="folium-map" id="map_11b7186d6fa5c1dd365ee69a4639ffa8" ></div>
         
 </body>
 <script>
     
     
-            var map_5187d19fb179b983339889a72be8e93e = L.map(
-                "map_5187d19fb179b983339889a72be8e93e",
+            var map_11b7186d6fa5c1dd365ee69a4639ffa8 = L.map(
+                "map_11b7186d6fa5c1dd365ee69a4639ffa8",
                 {
-                    center: [6.5118103000000005, 4.658559],
+                    center: [6.5118103000000005, 3.1135637999999997],
                     crs: L.CRS.EPSG3857,
-                    zoom: 11,
-                    zoomControl: true,
-                    preferCanvas: false,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
                 }
             );
-            L.control.scale().addTo(map_5187d19fb179b983339889a72be8e93e);
+            L.control.scale().addTo(map_11b7186d6fa5c1dd365ee69a4639ffa8);
 
             
 
         
     
-            var tile_layer_c293795a101deb3e071b35f62e6a1f2e = L.tileLayer(
+            var tile_layer_e156c8ff84305eae8364202550208294 = L.tileLayer(
                 "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e", "detectRetina": false, "maxNativeZoom": 20, "maxZoom": 20, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abcd", "tms": false}
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
             );
         
     
-            tile_layer_c293795a101deb3e071b35f62e6a1f2e.addTo(map_5187d19fb179b983339889a72be8e93e);
+            tile_layer_e156c8ff84305eae8364202550208294.addTo(map_11b7186d6fa5c1dd365ee69a4639ffa8);
         
     
-            var tile_layer_2e26786c096807e99073c3a01f6c7795 = L.tileLayer(
+            var tile_layer_3fc5eafa43e3f7bea073a575efb947ab = L.tileLayer(
                 "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
             );
         
     
-            tile_layer_2e26786c096807e99073c3a01f6c7795.addTo(map_5187d19fb179b983339889a72be8e93e);
+            tile_layer_3fc5eafa43e3f7bea073a575efb947ab.addTo(map_11b7186d6fa5c1dd365ee69a4639ffa8);
         
     
-            var tile_layer_c9bc8a84befe9a81b1def75435f3e018 = L.tileLayer(
+            var tile_layer_dec17498eed48631869f96bf325ab8ce = L.tileLayer(
                 "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
-                {"attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abcd", "tms": false}
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
             );
         
     
-            tile_layer_c9bc8a84befe9a81b1def75435f3e018.addTo(map_5187d19fb179b983339889a72be8e93e);
+            tile_layer_dec17498eed48631869f96bf325ab8ce.addTo(map_11b7186d6fa5c1dd365ee69a4639ffa8);
         
     
-            var tile_layer_9a92270a471e1fccf7f05d23896b0248 = L.tileLayer(
+            var tile_layer_474e9dbcfe5e2e7cc699a440e458e01e = L.tileLayer(
                 "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
-                {"attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxZoom": 20, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abcd", "tms": false}
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
             );
         
     
-            tile_layer_9a92270a471e1fccf7f05d23896b0248.addTo(map_5187d19fb179b983339889a72be8e93e);
+            tile_layer_474e9dbcfe5e2e7cc699a440e458e01e.addTo(map_11b7186d6fa5c1dd365ee69a4639ffa8);
         
     
-            var tile_layer_72209b36826f79f2b9c9f303e99ec711 = L.tileLayer(
+            var tile_layer_ca03aa514678d4e208834997055b5445 = L.tileLayer(
                 "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e", "detectRetina": false, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abcd", "tms": false}
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
             );
         
     
-            tile_layer_72209b36826f79f2b9c9f303e99ec711.addTo(map_5187d19fb179b983339889a72be8e93e);
+            tile_layer_ca03aa514678d4e208834997055b5445.addTo(map_11b7186d6fa5c1dd365ee69a4639ffa8);
         
     
-            var tile_layer_af9d1c4862d4ba72d810d3b408e12fb0 = L.tileLayer(
+            var tile_layer_4142375805276ebf9b19d9e062233e95 = L.tileLayer(
                 "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e", "detectRetina": false, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abcd", "tms": false}
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
             );
         
     
-            tile_layer_af9d1c4862d4ba72d810d3b408e12fb0.addTo(map_5187d19fb179b983339889a72be8e93e);
+            tile_layer_4142375805276ebf9b19d9e062233e95.addTo(map_11b7186d6fa5c1dd365ee69a4639ffa8);
         
     
-            var feature_group_d8558ca0703119c1935670c2700c08a8 = L.featureGroup(
-                {"className": "cluster-route-layer"}
+            var feature_group_a025d1b34fb666c24338b464147fae85 = L.featureGroup(
+                {
+}
             );
         
     
-            var circle_marker_ff7f0aab33641f17cadd16c2745e5d04 = L.circleMarker(
-                [6.4830505674528, 3.051826134324],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_155b432687b2f9f4e46629e93581e7ba = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_8d2b764bce0aa93da0d7a8e728ac0837 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDE3Njk0MTY8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi40ODMxLCAzLjA1MTg8L2Rpdj48L2Rpdj4=" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_155b432687b2f9f4e46629e93581e7ba.setContent(i_frame_8d2b764bce0aa93da0d7a8e728ac0837);
-            
-        
-
-        circle_marker_ff7f0aab33641f17cadd16c2745e5d04.bindPopup(popup_155b432687b2f9f4e46629e93581e7ba)
-        ;
-
-        
-    
-    
-            circle_marker_ff7f0aab33641f17cadd16c2745e5d04.bindTooltip(
-                `<div>
-                     1769416 | Badagry |  (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_3c99f2c332f457255dc3bb6eda6de374 = L.circleMarker(
-                [6.500607599999999, 3.0974813],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_dfae32dbd3624765fdde2ab2f463219a = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_2a0532d13ef4f7b4ae7c5f9cd0acc7ce = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDE3NzEwNzg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChjaGVja2luZyBQb2ludCk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41MDA2LCAzLjA5NzU8L2Rpdj48L2Rpdj4=" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_dfae32dbd3624765fdde2ab2f463219a.setContent(i_frame_2a0532d13ef4f7b4ae7c5f9cd0acc7ce);
-            
-        
-
-        circle_marker_3c99f2c332f457255dc3bb6eda6de374.bindPopup(popup_dfae32dbd3624765fdde2ab2f463219a)
-        ;
-
-        
-    
-    
-            circle_marker_3c99f2c332f457255dc3bb6eda6de374.bindTooltip(
-                `<div>
-                     1771078 | Badagry | Badagry - Agbara (checking Point) (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_496a4e70a236991e274968264a096e29 = L.circleMarker(
+            var circle_marker_854d3fe326291dcca5ed31bcac4e2620 = L.circleMarker(
                 [6.475407, 3.0184816],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
         
     
-        var popup_10b19dc22cfa995e202e6aad52d2f879 = L.popup({"maxWidth": "100%"});
+        var popup_eb70533cdafcb3a3cf610a6f62329a66 = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_2e0a36f41c26608df5865aff61470412 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDE3ODgyMzc8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChtb3JvZ2JvKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ3NTQsIDMuMDE4NTwvZGl2PjwvZGl2Pg==" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_10b19dc22cfa995e202e6aad52d2f879.setContent(i_frame_2e0a36f41c26608df5865aff61470412);
+                var i_frame_9d7c5d6ee4712b1dca965bff696c62bd = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzkwNzE2NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ3NTQsIDMuMDE4NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_eb70533cdafcb3a3cf610a6f62329a66.setContent(i_frame_9d7c5d6ee4712b1dca965bff696c62bd);
             
         
 
-        circle_marker_496a4e70a236991e274968264a096e29.bindPopup(popup_10b19dc22cfa995e202e6aad52d2f879)
+        circle_marker_854d3fe326291dcca5ed31bcac4e2620.bindPopup(popup_eb70533cdafcb3a3cf610a6f62329a66)
         ;
 
         
     
     
-            circle_marker_496a4e70a236991e274968264a096e29.bindTooltip(
+            circle_marker_854d3fe326291dcca5ed31bcac4e2620.bindTooltip(
                 `<div>
-                     1788237 | Badagry | Badagry - Agbara (morogbo) (Cluster 1)
+                     Badagry |  (Cluster 1)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            var circle_marker_a3779861009d2f36eeebcac6788387aa = L.circleMarker(
-                [6.500607599999999, 3.0974813],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_73cc0760cf3cf222e2648e499837c7a1 = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_826c4d6cb91f63689a05b5a1df2154f2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDUzMzgzODg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChtb3JvZ2JvKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjUwMDYsIDMuMDk3NTwvZGl2PjwvZGl2Pg==" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_73cc0760cf3cf222e2648e499837c7a1.setContent(i_frame_826c4d6cb91f63689a05b5a1df2154f2);
-            
-        
-
-        circle_marker_a3779861009d2f36eeebcac6788387aa.bindPopup(popup_73cc0760cf3cf222e2648e499837c7a1)
-        ;
-
-        
-    
-    
-            circle_marker_a3779861009d2f36eeebcac6788387aa.bindTooltip(
-                `<div>
-                     5338388 | Badagry | Badagry - Agbara (morogbo) (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_d90afb5c91fdc094010bbda867403e56 = L.circleMarker(
-                [6.4970456, 3.0903072],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_23a5e0c6f78b23c74717ead83365f89a = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_9716f173467079a7d91a404df8436c06 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDUzMzk0MDE8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChtb3JvZ2JvKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ5NzAsIDMuMDkwMzwvZGl2PjwvZGl2Pg==" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_23a5e0c6f78b23c74717ead83365f89a.setContent(i_frame_9716f173467079a7d91a404df8436c06);
-            
-        
-
-        circle_marker_d90afb5c91fdc094010bbda867403e56.bindPopup(popup_23a5e0c6f78b23c74717ead83365f89a)
-        ;
-
-        
-    
-    
-            circle_marker_d90afb5c91fdc094010bbda867403e56.bindTooltip(
-                `<div>
-                     5339401 | Badagry | Badagry - Agbara (morogbo) (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_9cb3bea653ad057c4955c342a461251f = L.circleMarker(
-                [6.475407, 3.0184816],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_43726ad8ac950e336cb5f095fbfab1b8 = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_473bb734079d9c49e7e635fbd2f8145b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDUyOTU3MjM8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi40NzU0LCAzLjAxODU8L2Rpdj48L2Rpdj4=" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_43726ad8ac950e336cb5f095fbfab1b8.setContent(i_frame_473bb734079d9c49e7e635fbd2f8145b);
-            
-        
-
-        circle_marker_9cb3bea653ad057c4955c342a461251f.bindPopup(popup_43726ad8ac950e336cb5f095fbfab1b8)
-        ;
-
-        
-    
-    
-            circle_marker_9cb3bea653ad057c4955c342a461251f.bindTooltip(
-                `<div>
-                     5295723 | Badagry |  (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_5acf9a67fdaddbd6fd937c670b41009f = L.circleMarker(
-                [6.4987482, 3.0958804],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_2cafc578af439615b9c604812800616d = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_626eb506e147f5459ccde421caafe319 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDIxNTQwMDM8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChtb3JvZ2JvKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ5ODcsIDMuMDk1OTwvZGl2PjwvZGl2Pg==" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_2cafc578af439615b9c604812800616d.setContent(i_frame_626eb506e147f5459ccde421caafe319);
-            
-        
-
-        circle_marker_5acf9a67fdaddbd6fd937c670b41009f.bindPopup(popup_2cafc578af439615b9c604812800616d)
-        ;
-
-        
-    
-    
-            circle_marker_5acf9a67fdaddbd6fd937c670b41009f.bindTooltip(
-                `<div>
-                     2154003 | Badagry | Badagry - Agbara (morogbo) (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_070e57e55eba5ced384652b89948a2b8 = L.circleMarker(
-                [6.5101887, 3.0926551],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_305ea0372da7b6a81ff96632e43a4062 = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_58fb89b169ffefd0f6fdf8ffa37773ed = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDUzMDYyNTY8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChhamliYWRlKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjUxMDIsIDMuMDkyNzwvZGl2PjwvZGl2Pg==" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_305ea0372da7b6a81ff96632e43a4062.setContent(i_frame_58fb89b169ffefd0f6fdf8ffa37773ed);
-            
-        
-
-        circle_marker_070e57e55eba5ced384652b89948a2b8.bindPopup(popup_305ea0372da7b6a81ff96632e43a4062)
-        ;
-
-        
-    
-    
-            circle_marker_070e57e55eba5ced384652b89948a2b8.bindTooltip(
-                `<div>
-                     5306256 | Badagry | Badagry - Agbara (ajibade) (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_1aa18d8713865c1651d08f9e081caa73 = L.circleMarker(
-                [6.5101887, 3.0926551],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_b98246c3a23aeb984ef06afb8caaa693 = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_de91cba56374dc56e4a9a750d1111bf2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDUzMDc2ODA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChhamliYWRlKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjUxMDIsIDMuMDkyNzwvZGl2PjwvZGl2Pg==" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_b98246c3a23aeb984ef06afb8caaa693.setContent(i_frame_de91cba56374dc56e4a9a750d1111bf2);
-            
-        
-
-        circle_marker_1aa18d8713865c1651d08f9e081caa73.bindPopup(popup_b98246c3a23aeb984ef06afb8caaa693)
-        ;
-
-        
-    
-    
-            circle_marker_1aa18d8713865c1651d08f9e081caa73.bindTooltip(
-                `<div>
-                     5307680 | Badagry | Badagry - Agbara (ajibade) (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_94df78bb9ab8e80a3fc3540cc53df322 = L.circleMarker(
-                [6.583739, 3.0842897],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_3953863cbc586bc6b653badc5e340c54 = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_31b0b218a0841c559d97e274d87261c8 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDUyNDk4ODk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41ODM3LCAzLjA4NDM8L2Rpdj48L2Rpdj4=" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_3953863cbc586bc6b653badc5e340c54.setContent(i_frame_31b0b218a0841c559d97e274d87261c8);
-            
-        
-
-        circle_marker_94df78bb9ab8e80a3fc3540cc53df322.bindPopup(popup_3953863cbc586bc6b653badc5e340c54)
-        ;
-
-        
-    
-    
-            circle_marker_94df78bb9ab8e80a3fc3540cc53df322.bindTooltip(
-                `<div>
-                     5249889 | Badagry |  (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_8f3a37f7c98b8523b1e5d192ce12cec5 = L.circleMarker(
-                [6.4857125, 3.0452505],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_7e5a44609efc4925636eac774a3a19e6 = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_f8cc885b04a2d1b56242254349e14921 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDUyNTE3NTc8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChtYWdib24pPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDg1NywgMy4wNDUzPC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_7e5a44609efc4925636eac774a3a19e6.setContent(i_frame_f8cc885b04a2d1b56242254349e14921);
-            
-        
-
-        circle_marker_8f3a37f7c98b8523b1e5d192ce12cec5.bindPopup(popup_7e5a44609efc4925636eac774a3a19e6)
-        ;
-
-        
-    
-    
-            circle_marker_8f3a37f7c98b8523b1e5d192ce12cec5.bindTooltip(
-                `<div>
-                     5251757 | Badagry | Badagry - Agbara (magbon) (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_031494684a0c4bf73fbf8104fa025b3c = L.circleMarker(
-                [6.500334, 3.096349],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_e15c05f898714ea2ba17645a57f577c0 = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_ba3303d7bc3c81f5359e2b09304c748e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDUzMjM5MzM8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChjaGVja2luZyBQb2ludCk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41MDAzLCAzLjA5NjM8L2Rpdj48L2Rpdj4=" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_e15c05f898714ea2ba17645a57f577c0.setContent(i_frame_ba3303d7bc3c81f5359e2b09304c748e);
-            
-        
-
-        circle_marker_031494684a0c4bf73fbf8104fa025b3c.bindPopup(popup_e15c05f898714ea2ba17645a57f577c0)
-        ;
-
-        
-    
-    
-            circle_marker_031494684a0c4bf73fbf8104fa025b3c.bindTooltip(
-                `<div>
-                     5323933 | Badagry | Badagry - Agbara (checking Point) (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_a2b7d4cb89cc913bc4f869da639d73fa = L.circleMarker(
-                [6.475407, 3.0184816],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_a2197ac4ea86026366b34e4a755e10e0 = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_b15bc57015821b274c7f8fd934202308 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDUzMjQwNTY8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChtYWdib24pPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDc1NCwgMy4wMTg1PC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_a2197ac4ea86026366b34e4a755e10e0.setContent(i_frame_b15bc57015821b274c7f8fd934202308);
-            
-        
-
-        circle_marker_a2b7d4cb89cc913bc4f869da639d73fa.bindPopup(popup_a2197ac4ea86026366b34e4a755e10e0)
-        ;
-
-        
-    
-    
-            circle_marker_a2b7d4cb89cc913bc4f869da639d73fa.bindTooltip(
-                `<div>
-                     5324056 | Badagry | Badagry - Agbara (magbon) (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_1bc3bfd79261435a4ba9cf8dff7080e7 = L.circleMarker(
-                [6.4987482, 3.0958804],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_fc8fb8560f82c3263c81a89a01331af1 = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_fb02e809a94c1e719d163d7edcb21d4d = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDUzMjY4Njc8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChtb3JvZ2JvKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ5ODcsIDMuMDk1OTwvZGl2PjwvZGl2Pg==" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_fc8fb8560f82c3263c81a89a01331af1.setContent(i_frame_fb02e809a94c1e719d163d7edcb21d4d);
-            
-        
-
-        circle_marker_1bc3bfd79261435a4ba9cf8dff7080e7.bindPopup(popup_fc8fb8560f82c3263c81a89a01331af1)
-        ;
-
-        
-    
-    
-            circle_marker_1bc3bfd79261435a4ba9cf8dff7080e7.bindTooltip(
-                `<div>
-                     5326867 | Badagry | Badagry - Agbara (morogbo) (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_3d806b42d2a23cb666fddf35f4a9915e = L.circleMarker(
-                [6.475407, 3.0184816],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_27fe12b50d3bc69ddee793e40097b1ce = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_5ac520c39b5e1bd524c3eaee834080ed = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDQxODkxOTg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChtYWdib24pPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDc1NCwgMy4wMTg1PC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_27fe12b50d3bc69ddee793e40097b1ce.setContent(i_frame_5ac520c39b5e1bd524c3eaee834080ed);
-            
-        
-
-        circle_marker_3d806b42d2a23cb666fddf35f4a9915e.bindPopup(popup_27fe12b50d3bc69ddee793e40097b1ce)
-        ;
-
-        
-    
-    
-            circle_marker_3d806b42d2a23cb666fddf35f4a9915e.bindTooltip(
-                `<div>
-                     4189198 | Badagry | Badagry - Agbara (magbon) (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_8fcc5b7a9ca56cc958a39326951a8c23 = L.circleMarker(
-                [6.4955909, 3.091437],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_035a2c4839ec18d96d7f3b456f18d6bf = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_23519ce2bea3857b3ef2e128adb4136e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDUwNTAwNjM8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChtb3JvZ2JvKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ5NTYsIDMuMDkxNDwvZGl2PjwvZGl2Pg==" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_035a2c4839ec18d96d7f3b456f18d6bf.setContent(i_frame_23519ce2bea3857b3ef2e128adb4136e);
-            
-        
-
-        circle_marker_8fcc5b7a9ca56cc958a39326951a8c23.bindPopup(popup_035a2c4839ec18d96d7f3b456f18d6bf)
-        ;
-
-        
-    
-    
-            circle_marker_8fcc5b7a9ca56cc958a39326951a8c23.bindTooltip(
-                `<div>
-                     5050063 | Badagry | Badagry - Agbara (morogbo) (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_8376118c14dc6cb705e56eb9689bd86a = L.circleMarker(
-                [6.475407, 3.0184816],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_2ff5f3685129ed3445bc9a02adc986cc = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_921d3abefffe2de0dc48020a7e93713b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDUzODEyNTk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChtYWdib24pPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDc1NCwgMy4wMTg1PC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_2ff5f3685129ed3445bc9a02adc986cc.setContent(i_frame_921d3abefffe2de0dc48020a7e93713b);
-            
-        
-
-        circle_marker_8376118c14dc6cb705e56eb9689bd86a.bindPopup(popup_2ff5f3685129ed3445bc9a02adc986cc)
-        ;
-
-        
-    
-    
-            circle_marker_8376118c14dc6cb705e56eb9689bd86a.bindTooltip(
-                `<div>
-                     5381259 | Badagry | Badagry - Agbara (magbon) (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_74b2beae747be2403ad068e5ceedab26 = L.circleMarker(
-                [6.475407, 3.0184816],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_47e816b4f8ff1014c72fe085d577d13f = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_711c0cbb87b43be72dd44581414ffbda = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDUxNDYxODc8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChjaHVyY2ggR2F0ZSk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi40NzU0LCAzLjAxODU8L2Rpdj48L2Rpdj4=" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_47e816b4f8ff1014c72fe085d577d13f.setContent(i_frame_711c0cbb87b43be72dd44581414ffbda);
-            
-        
-
-        circle_marker_74b2beae747be2403ad068e5ceedab26.bindPopup(popup_47e816b4f8ff1014c72fe085d577d13f)
-        ;
-
-        
-    
-    
-            circle_marker_74b2beae747be2403ad068e5ceedab26.bindTooltip(
-                `<div>
-                     5146187 | Badagry | Badagry - Agbara (church Gate) (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_8fc8ba10b44b82cab1e3d3fff4e27390 = L.circleMarker(
-                [6.500607599999999, 3.0974813],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_d8558ca0703119c1935670c2700c08a8);
-        
-    
-        var popup_2213013abc347059a7e81953f274ea03 = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_21a9bf48f27ce318c866cf5a93831014 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcmVkO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDUxNDkzMzQ8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChjaGVja2luZyBQb2ludCk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41MDA2LCAzLjA5NzU8L2Rpdj48L2Rpdj4=" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_2213013abc347059a7e81953f274ea03.setContent(i_frame_21a9bf48f27ce318c866cf5a93831014);
-            
-        
-
-        circle_marker_8fc8ba10b44b82cab1e3d3fff4e27390.bindPopup(popup_2213013abc347059a7e81953f274ea03)
-        ;
-
-        
-    
-    
-            circle_marker_8fc8ba10b44b82cab1e3d3fff4e27390.bindTooltip(
-                `<div>
-                     5149334 | Badagry | Badagry - Agbara (checking Point) (Cluster 1)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            feature_group_d8558ca0703119c1935670c2700c08a8.addTo(map_5187d19fb179b983339889a72be8e93e);
-        
-    
-            var feature_group_a9df6889253ae74ea7512e20d2dfbc5e = L.featureGroup(
-                {"className": "cluster-route-layer"}
-            );
-        
-    
-            var circle_marker_c8634c6b69761369768bff9ee2092f0f = L.circleMarker(
+            var circle_marker_ca8f599590042ce61b7d22bcac1ce77a = L.circleMarker(
                 [6.4182673, 2.8901388],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
         
     
-        var popup_7390e8dafdd1c33378532048147579c0 = L.popup({"maxWidth": "100%"});
+        var popup_a6fcae69a7b3b7828874807bbc4a4a6a = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_b903aaea4aa813c4449abfe926208b44 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiA1MjcyMTQzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAoY2h1cmNoIEdhdGUpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDE4MywgMi44OTAxPC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_7390e8dafdd1c33378532048147579c0.setContent(i_frame_b903aaea4aa813c4449abfe926208b44);
+                var i_frame_7ca8f53e851213afab0f2a970d6fafbc = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTc5MjIxMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBPa28tYWZvcjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQxODMsIDIuODkwMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBPa28tYWZvcjwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_a6fcae69a7b3b7828874807bbc4a4a6a.setContent(i_frame_7ca8f53e851213afab0f2a970d6fafbc);
             
         
 
-        circle_marker_c8634c6b69761369768bff9ee2092f0f.bindPopup(popup_7390e8dafdd1c33378532048147579c0)
+        circle_marker_ca8f599590042ce61b7d22bcac1ce77a.bindPopup(popup_a6fcae69a7b3b7828874807bbc4a4a6a)
         ;
 
         
     
     
-            circle_marker_c8634c6b69761369768bff9ee2092f0f.bindTooltip(
+            circle_marker_ca8f599590042ce61b7d22bcac1ce77a.bindTooltip(
                 `<div>
-                     5272143 | Badagry | Badagry - Agbara (church Gate) (Cluster 2)
+                     Badagry | Badagry - Oko-afor (Cluster 1)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            var circle_marker_e9dcacfd596291c260a8176c8474a3d3 = L.circleMarker(
-                [6.4182673, 2.8901388],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
-        
-    
-        var popup_c15e0837f8c1b60febe022ddbb148569 = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_f2ed0f867cba69265db12480264e89c8 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiA0MTMyMTYzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDE4MywgMi44OTAxPC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_c15e0837f8c1b60febe022ddbb148569.setContent(i_frame_f2ed0f867cba69265db12480264e89c8);
-            
-        
-
-        circle_marker_e9dcacfd596291c260a8176c8474a3d3.bindPopup(popup_c15e0837f8c1b60febe022ddbb148569)
-        ;
-
-        
-    
-    
-            circle_marker_e9dcacfd596291c260a8176c8474a3d3.bindTooltip(
-                `<div>
-                     4132163 | Badagry |  (Cluster 2)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_41eb38c2b9185026a35138d435a5f549 = L.circleMarker(
-                [6.4182673, 2.8901388],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
-        
-    
-        var popup_39e471495c25a36fb6b9b21503f47e8d = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_510a2c59e356dfa64d97d5cd7bbb5edc = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiA1MjkzMjMwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDE4MywgMi44OTAxPC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_39e471495c25a36fb6b9b21503f47e8d.setContent(i_frame_510a2c59e356dfa64d97d5cd7bbb5edc);
-            
-        
-
-        circle_marker_41eb38c2b9185026a35138d435a5f549.bindPopup(popup_39e471495c25a36fb6b9b21503f47e8d)
-        ;
-
-        
-    
-    
-            circle_marker_41eb38c2b9185026a35138d435a5f549.bindTooltip(
-                `<div>
-                     5293230 | Badagry |  (Cluster 2)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_3c1fbf3327990cc4cac8151c87a4fe25 = L.circleMarker(
-                [6.4182673, 2.8901388],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
-        
-    
-        var popup_01a81f411b595237b293c9b219769037 = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_f360c03a6cd4eea99aedb226ea9e3388 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiAyMDI4ODc2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAobW9yb2dibyk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi40MTgzLCAyLjg5MDE8L2Rpdj48L2Rpdj4=" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_01a81f411b595237b293c9b219769037.setContent(i_frame_f360c03a6cd4eea99aedb226ea9e3388);
-            
-        
-
-        circle_marker_3c1fbf3327990cc4cac8151c87a4fe25.bindPopup(popup_01a81f411b595237b293c9b219769037)
-        ;
-
-        
-    
-    
-            circle_marker_3c1fbf3327990cc4cac8151c87a4fe25.bindTooltip(
-                `<div>
-                     2028876 | Badagry | Badagry - Agbara (morogbo) (Cluster 2)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_a3cc19c67a11aef91acc07a69ca3bdcd = L.circleMarker(
-                [6.4182673, 2.8901388],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
-        
-    
-        var popup_d582a45c343638d5445a778b9f43de0d = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_3e8ba1e7463a70477ea3c4a7e4387031 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiAzMDQ3Mzg3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDE4MywgMi44OTAxPC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_d582a45c343638d5445a778b9f43de0d.setContent(i_frame_3e8ba1e7463a70477ea3c4a7e4387031);
-            
-        
-
-        circle_marker_a3cc19c67a11aef91acc07a69ca3bdcd.bindPopup(popup_d582a45c343638d5445a778b9f43de0d)
-        ;
-
-        
-    
-    
-            circle_marker_a3cc19c67a11aef91acc07a69ca3bdcd.bindTooltip(
-                `<div>
-                     3047387 | Badagry |  (Cluster 2)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_7996c3182d3c0bfa651a3d912678b704 = L.circleMarker(
-                [6.4182673, 2.8901388],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
-        
-    
-        var popup_8173db8faf5425204589160810cad358 = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_9c91281731db72671b84d09c5ef4970c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiA1MzA1Njk3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAobW9yb2dibyk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi40MTgzLCAyLjg5MDE8L2Rpdj48L2Rpdj4=" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_8173db8faf5425204589160810cad358.setContent(i_frame_9c91281731db72671b84d09c5ef4970c);
-            
-        
-
-        circle_marker_7996c3182d3c0bfa651a3d912678b704.bindPopup(popup_8173db8faf5425204589160810cad358)
-        ;
-
-        
-    
-    
-            circle_marker_7996c3182d3c0bfa651a3d912678b704.bindTooltip(
-                `<div>
-                     5305697 | Badagry | Badagry - Agbara (morogbo) (Cluster 2)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_27bb050a367276216935270ed083e4a2 = L.circleMarker(
+            var circle_marker_678c37053b274d99e9df8ffae641d606 = L.circleMarker(
                 [6.4312796999999, 2.8819244],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
         
     
-        var popup_c6267e28b55fbe5feaf60d2dd6d6ca00 = L.popup({"maxWidth": "100%"});
+        var popup_c32ec3c875d1e8c3510baeea13b42f72 = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_bcaa67ab926dc83ffc66ad447d52c4ea = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiA1MzE2OTU1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAobWFnYm9uKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQzMTMsIDIuODgxOTwvZGl2PjwvZGl2Pg==" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_c6267e28b55fbe5feaf60d2dd6d6ca00.setContent(i_frame_bcaa67ab926dc83ffc66ad447d52c4ea);
+                var i_frame_7d578fcc4eb7444fcd09f86379240ca4 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMxNjk1NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKG1hZ2Jvbik8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi40MzEzLCAyLjg4MTk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChtYWdib24pPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_c32ec3c875d1e8c3510baeea13b42f72.setContent(i_frame_7d578fcc4eb7444fcd09f86379240ca4);
             
         
 
-        circle_marker_27bb050a367276216935270ed083e4a2.bindPopup(popup_c6267e28b55fbe5feaf60d2dd6d6ca00)
+        circle_marker_678c37053b274d99e9df8ffae641d606.bindPopup(popup_c32ec3c875d1e8c3510baeea13b42f72)
         ;
 
         
     
     
-            circle_marker_27bb050a367276216935270ed083e4a2.bindTooltip(
+            circle_marker_678c37053b274d99e9df8ffae641d606.bindTooltip(
                 `<div>
-                     5316955 | Badagry | Badagry - Agbara (magbon) (Cluster 2)
+                     Badagry | Badagry - Agbara (magbon) (Cluster 1)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            var circle_marker_eb2bddb237c00f2edebe772ca30b2c8d = L.circleMarker(
+            var circle_marker_8ca0a13750f5a21bd5c6037ed89d10ec = L.circleMarker(
+                [6.509045, 3.0956657],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
+        
+    
+        var popup_7e49655175e1e7833fd1a3fd6c5bf148 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_70791a5b3652a694043bb0a203ec4669 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDY2OTk1MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGFqaWJhZGUpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTA5MCwgMy4wOTU3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAoYWppYmFkZSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_7e49655175e1e7833fd1a3fd6c5bf148.setContent(i_frame_70791a5b3652a694043bb0a203ec4669);
+            
+        
+
+        circle_marker_8ca0a13750f5a21bd5c6037ed89d10ec.bindPopup(popup_7e49655175e1e7833fd1a3fd6c5bf148)
+        ;
+
+        
+    
+    
+            circle_marker_8ca0a13750f5a21bd5c6037ed89d10ec.bindTooltip(
+                `<div>
+                     Badagry | Badagry - Agbara (ajibade) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a50ed8e0899c5a35ac8b76922343824f = L.circleMarker(
                 [6.4182673, 2.8901388],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
         
     
-        var popup_21db2e8b421031601097201e9cf51aa9 = L.popup({"maxWidth": "100%"});
+        var popup_8b71eedcfad2a153738c60fbcbd583a0 = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_4c7da55da1d3fc311713c0e540f94af2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiA0NjcxNTMxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAoY2hlY2tpbmcgUG9pbnQpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDE4MywgMi44OTAxPC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_21db2e8b421031601097201e9cf51aa9.setContent(i_frame_4c7da55da1d3fc311713c0e540f94af2);
+                var i_frame_299be711f0addd95cac078c135ec9179 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE0MDUxNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKG1vcm9nYm8pPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDE4MywgMi44OTAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAobW9yb2dibyk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8b71eedcfad2a153738c60fbcbd583a0.setContent(i_frame_299be711f0addd95cac078c135ec9179);
             
         
 
-        circle_marker_eb2bddb237c00f2edebe772ca30b2c8d.bindPopup(popup_21db2e8b421031601097201e9cf51aa9)
+        circle_marker_a50ed8e0899c5a35ac8b76922343824f.bindPopup(popup_8b71eedcfad2a153738c60fbcbd583a0)
         ;
 
         
     
     
-            circle_marker_eb2bddb237c00f2edebe772ca30b2c8d.bindTooltip(
+            circle_marker_a50ed8e0899c5a35ac8b76922343824f.bindTooltip(
                 `<div>
-                     4671531 | Badagry | Badagry - Agbara (checking Point) (Cluster 2)
+                     Badagry | Badagry - Agbara (morogbo) (Cluster 1)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            var circle_marker_2fa6884665442178824c357313a2224d = L.circleMarker(
+            var circle_marker_78f3b1f2b4fe5b72403ba4d27bb1db0f = L.circleMarker(
                 [6.4182673, 2.8901388],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
         
     
-        var popup_2d63467a7ee49eee41fe012c55209cba = L.popup({"maxWidth": "100%"});
+        var popup_0329a10e709e7ba84cf53c28ae7c5285 = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_ec72432e4d32eaf6f11359b905c45832 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiA1MzY4OTI4PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAoY2hlY2tpbmcgUG9pbnQpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDE4MywgMi44OTAxPC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_2d63467a7ee49eee41fe012c55209cba.setContent(i_frame_ec72432e4d32eaf6f11359b905c45832);
+                var i_frame_d16cf8c0c7041b9d5276abc8f6aefbec = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQyMTExNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGNoZWNraW5nIFBvaW50KTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQxODMsIDIuODkwMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGNoZWNraW5nIFBvaW50KTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0329a10e709e7ba84cf53c28ae7c5285.setContent(i_frame_d16cf8c0c7041b9d5276abc8f6aefbec);
             
         
 
-        circle_marker_2fa6884665442178824c357313a2224d.bindPopup(popup_2d63467a7ee49eee41fe012c55209cba)
+        circle_marker_78f3b1f2b4fe5b72403ba4d27bb1db0f.bindPopup(popup_0329a10e709e7ba84cf53c28ae7c5285)
         ;
 
         
     
     
-            circle_marker_2fa6884665442178824c357313a2224d.bindTooltip(
+            circle_marker_78f3b1f2b4fe5b72403ba4d27bb1db0f.bindTooltip(
                 `<div>
-                     5368928 | Badagry | Badagry - Agbara (checking Point) (Cluster 2)
+                     Badagry | Badagry - Agbara (checking Point) (Cluster 1)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            var circle_marker_7fd95f407ac4683c78fd822d68b8838a = L.circleMarker(
-                [6.4182673, 2.8901388],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
+            var circle_marker_0e74decf05aa938090bdcdacd03114a4 = L.circleMarker(
+                [6.500607599999999, 3.0974813],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
         
     
-        var popup_04c729bf708775285935160da2e14b8e = L.popup({"maxWidth": "100%"});
+        var popup_dfbea92bf762873dbf192567a1f0b6a5 = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_c2bbd797104be8a30b0c42c5c028e810 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiA0MjIyMDU3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDE4MywgMi44OTAxPC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_04c729bf708775285935160da2e14b8e.setContent(i_frame_c2bbd797104be8a30b0c42c5c028e810);
+                var i_frame_10f7ce4a41c996c8dfb078e9d9a00e19 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE0OTMzNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGNoZWNraW5nIFBvaW50KTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjUwMDYsIDMuMDk3NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGNoZWNraW5nIFBvaW50KTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_dfbea92bf762873dbf192567a1f0b6a5.setContent(i_frame_10f7ce4a41c996c8dfb078e9d9a00e19);
             
         
 
-        circle_marker_7fd95f407ac4683c78fd822d68b8838a.bindPopup(popup_04c729bf708775285935160da2e14b8e)
+        circle_marker_0e74decf05aa938090bdcdacd03114a4.bindPopup(popup_dfbea92bf762873dbf192567a1f0b6a5)
         ;
 
         
     
     
-            circle_marker_7fd95f407ac4683c78fd822d68b8838a.bindTooltip(
+            circle_marker_0e74decf05aa938090bdcdacd03114a4.bindTooltip(
                 `<div>
-                     4222057 | Badagry |  (Cluster 2)
+                     Badagry | Badagry - Agbara (checking Point) (Cluster 1)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            var circle_marker_20099ebe4a3a1f305c69e3e419ab4b3d = L.circleMarker(
+            var circle_marker_dcdf4ba1118aaa5965133742244542a3 = L.circleMarker(
+                [6.583739, 3.0842897],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
+        
+    
+        var popup_0574e03ebbbc5fd103b7557a69cb35c7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a55d2e402a4b8e03fa43ec4c4ed042b2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI0OTg4OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjU4MzcsIDMuMDg0MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0574e03ebbbc5fd103b7557a69cb35c7.setContent(i_frame_a55d2e402a4b8e03fa43ec4c4ed042b2);
+            
+        
+
+        circle_marker_dcdf4ba1118aaa5965133742244542a3.bindPopup(popup_0574e03ebbbc5fd103b7557a69cb35c7)
+        ;
+
+        
+    
+    
+            circle_marker_dcdf4ba1118aaa5965133742244542a3.bindTooltip(
+                `<div>
+                     Badagry |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_11a59726d8e62a4a89372329988274f7 = L.circleMarker(
+                [6.4830505674528, 3.051826134324],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
+        
+    
+        var popup_3b0163a020ed52e7f872ad8dea11c549 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_aa8c8c20f0c09b4402bdc3c593d1a66c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTc2OTQxNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQ4MzEsIDMuMDUxODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_3b0163a020ed52e7f872ad8dea11c549.setContent(i_frame_aa8c8c20f0c09b4402bdc3c593d1a66c);
+            
+        
+
+        circle_marker_11a59726d8e62a4a89372329988274f7.bindPopup(popup_3b0163a020ed52e7f872ad8dea11c549)
+        ;
+
+        
+    
+    
+            circle_marker_11a59726d8e62a4a89372329988274f7.bindTooltip(
+                `<div>
+                     Badagry |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b0918842cdb2c4dda98692046122f45c = L.circleMarker(
+                [6.4987482, 3.0958804],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
+        
+    
+        var popup_be61a96db59bfbaefaff46244a088ed5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a7ea6f4de213e38c0cbf80f3d73f2d7f = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMjE1NDAwMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKG1vcm9nYm8pPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDk4NywgMy4wOTU5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAobW9yb2dibyk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_be61a96db59bfbaefaff46244a088ed5.setContent(i_frame_a7ea6f4de213e38c0cbf80f3d73f2d7f);
+            
+        
+
+        circle_marker_b0918842cdb2c4dda98692046122f45c.bindPopup(popup_be61a96db59bfbaefaff46244a088ed5)
+        ;
+
+        
+    
+    
+            circle_marker_b0918842cdb2c4dda98692046122f45c.bindTooltip(
+                `<div>
+                     Badagry | Badagry - Agbara (morogbo) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1d9499495d5b75ae2de778b8e119a248 = L.circleMarker(
+                [6.500607599999999, 3.0974813],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
+        
+    
+        var popup_55e658add257044ac0e09026d2675da8 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_5835de73acb05a2ad4acef3a9025bb70 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTc3MTA3ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGNoZWNraW5nIFBvaW50KTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjUwMDYsIDMuMDk3NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGNoZWNraW5nIFBvaW50KTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_55e658add257044ac0e09026d2675da8.setContent(i_frame_5835de73acb05a2ad4acef3a9025bb70);
+            
+        
+
+        circle_marker_1d9499495d5b75ae2de778b8e119a248.bindPopup(popup_55e658add257044ac0e09026d2675da8)
+        ;
+
+        
+    
+    
+            circle_marker_1d9499495d5b75ae2de778b8e119a248.bindTooltip(
+                `<div>
+                     Badagry | Badagry - Agbara (checking Point) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d5d98ec0e37236c45ef00ef8485ac439 = L.circleMarker(
+                [6.4857125, 3.0452505],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
+        
+    
+        var popup_37f07744af720efcee55f818270835d3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_6842a0e5c91ec1420fbc494392b96508 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI1MTc1NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKG1hZ2Jvbik8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi40ODU3LCAzLjA0NTM8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChtYWdib24pPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_37f07744af720efcee55f818270835d3.setContent(i_frame_6842a0e5c91ec1420fbc494392b96508);
+            
+        
+
+        circle_marker_d5d98ec0e37236c45ef00ef8485ac439.bindPopup(popup_37f07744af720efcee55f818270835d3)
+        ;
+
+        
+    
+    
+            circle_marker_d5d98ec0e37236c45ef00ef8485ac439.bindTooltip(
+                `<div>
+                     Badagry | Badagry - Agbara (magbon) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a1f7467b5323745b4f9104bad9d859f3 = L.circleMarker(
+                [6.475407, 3.0184816],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
+        
+    
+        var popup_0ad1015ce6588ff4ff0f2b91021b835a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_2c7791cd20b31728ec9576bb5f3ed8a2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNDA1NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKG1hZ2Jvbik8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi40NzU0LCAzLjAxODU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChtYWdib24pPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0ad1015ce6588ff4ff0f2b91021b835a.setContent(i_frame_2c7791cd20b31728ec9576bb5f3ed8a2);
+            
+        
+
+        circle_marker_a1f7467b5323745b4f9104bad9d859f3.bindPopup(popup_0ad1015ce6588ff4ff0f2b91021b835a)
+        ;
+
+        
+    
+    
+            circle_marker_a1f7467b5323745b4f9104bad9d859f3.bindTooltip(
+                `<div>
+                     Badagry | Badagry - Agbara (magbon) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d77f38cfce0fe390a0fb64eb4f29f502 = L.circleMarker(
                 [6.4323299, 2.8221296],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
         
     
-        var popup_56f48a505e1dbf33a2f344dc604ae7d6 = L.popup({"maxWidth": "100%"});
+        var popup_ca2b164e4034aaf1a0ef751ef3d61ee7 = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_d552fb4c64e3f768c5ccd2dd2b61dbef = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiA1MTI3NzA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAoYWppYmFkZSk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi40MzIzLCAyLjgyMjE8L2Rpdj48L2Rpdj4=" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_56f48a505e1dbf33a2f344dc604ae7d6.setContent(i_frame_d552fb4c64e3f768c5ccd2dd2b61dbef);
+                var i_frame_53358767405da1505c2bdea4e62edee1 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTEyNzcwNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGFqaWJhZGUpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDMyMywgMi44MjIxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAoYWppYmFkZSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_ca2b164e4034aaf1a0ef751ef3d61ee7.setContent(i_frame_53358767405da1505c2bdea4e62edee1);
             
         
 
-        circle_marker_20099ebe4a3a1f305c69e3e419ab4b3d.bindPopup(popup_56f48a505e1dbf33a2f344dc604ae7d6)
+        circle_marker_d77f38cfce0fe390a0fb64eb4f29f502.bindPopup(popup_ca2b164e4034aaf1a0ef751ef3d61ee7)
         ;
 
         
     
     
-            circle_marker_20099ebe4a3a1f305c69e3e419ab4b3d.bindTooltip(
+            circle_marker_d77f38cfce0fe390a0fb64eb4f29f502.bindTooltip(
                 `<div>
-                     5127705 | Badagry | Badagry - Agbara (ajibade) (Cluster 2)
+                     Badagry | Badagry - Agbara (ajibade) (Cluster 1)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            var circle_marker_0c54a57c992fe35fc4a4caa634490b7d = L.circleMarker(
+            var circle_marker_2370deef5fc7aa1284946ad30a079d67 = L.circleMarker(
+                [6.4955909, 3.091437],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
+        
+    
+        var popup_db9cd181f3787ad2d57dc8a58e976c6f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_0fbd3416054420abee325cce99773121 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTA1MDA2MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKG1vcm9nYm8pPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDk1NiwgMy4wOTE0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAobW9yb2dibyk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_db9cd181f3787ad2d57dc8a58e976c6f.setContent(i_frame_0fbd3416054420abee325cce99773121);
+            
+        
+
+        circle_marker_2370deef5fc7aa1284946ad30a079d67.bindPopup(popup_db9cd181f3787ad2d57dc8a58e976c6f)
+        ;
+
+        
+    
+    
+            circle_marker_2370deef5fc7aa1284946ad30a079d67.bindTooltip(
+                `<div>
+                     Badagry | Badagry - Agbara (morogbo) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e5792cf2128cf1f4f6dfbc78f60954d2 = L.circleMarker(
                 [6.4182673, 2.8901388],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
         
     
-        var popup_a63a278f3fee6a20473586e644f5992b = L.popup({"maxWidth": "100%"});
+        var popup_d1256beda27349a48ee1a08adce4fb19 = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_40c4aba70ef098f69e6e1c3a052b850e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiA1MTQwNTE2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAobW9yb2dibyk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi40MTgzLCAyLjg5MDE8L2Rpdj48L2Rpdj4=" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_a63a278f3fee6a20473586e644f5992b.setContent(i_frame_40c4aba70ef098f69e6e1c3a052b850e);
+                var i_frame_2807c4fea0bd12a552b2335f4286e8a6 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDIyMjA1NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQxODMsIDIuODkwMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d1256beda27349a48ee1a08adce4fb19.setContent(i_frame_2807c4fea0bd12a552b2335f4286e8a6);
             
         
 
-        circle_marker_0c54a57c992fe35fc4a4caa634490b7d.bindPopup(popup_a63a278f3fee6a20473586e644f5992b)
+        circle_marker_e5792cf2128cf1f4f6dfbc78f60954d2.bindPopup(popup_d1256beda27349a48ee1a08adce4fb19)
         ;
 
         
     
     
-            circle_marker_0c54a57c992fe35fc4a4caa634490b7d.bindTooltip(
+            circle_marker_e5792cf2128cf1f4f6dfbc78f60954d2.bindTooltip(
                 `<div>
-                     5140516 | Badagry | Badagry - Agbara (morogbo) (Cluster 2)
+                     Badagry |  (Cluster 1)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            var circle_marker_7aac48a13a76c164721f6de54e5a3c77 = L.circleMarker(
+            var circle_marker_e1f2757715fc7f19602ae0d135688aeb = L.circleMarker(
                 [6.4182673, 2.8901388],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a025d1b34fb666c24338b464147fae85);
         
     
-        var popup_3f7d631fe1aee507ebc78d1e671e7a21 = L.popup({"maxWidth": "100%"});
+        var popup_68864cd8beffd3fd01bf7ac1342888f7 = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_31db562cde8a69821b75c2fd3590495c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiA1MTU2OTk3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDE4MywgMi44OTAxPC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_3f7d631fe1aee507ebc78d1e671e7a21.setContent(i_frame_31db562cde8a69821b75c2fd3590495c);
+                var i_frame_4ecfd92f35db791c2dcc510585da9f92 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE0MjA0OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGNoZWNraW5nIFBvaW50KTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjQxODMsIDIuODkwMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGNoZWNraW5nIFBvaW50KTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_68864cd8beffd3fd01bf7ac1342888f7.setContent(i_frame_4ecfd92f35db791c2dcc510585da9f92);
             
         
 
-        circle_marker_7aac48a13a76c164721f6de54e5a3c77.bindPopup(popup_3f7d631fe1aee507ebc78d1e671e7a21)
+        circle_marker_e1f2757715fc7f19602ae0d135688aeb.bindPopup(popup_68864cd8beffd3fd01bf7ac1342888f7)
         ;
 
         
     
     
-            circle_marker_7aac48a13a76c164721f6de54e5a3c77.bindTooltip(
+            circle_marker_e1f2757715fc7f19602ae0d135688aeb.bindTooltip(
                 `<div>
-                     5156997 | Badagry |  (Cluster 2)
+                     Badagry | Badagry - Agbara (checking Point) (Cluster 1)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            var circle_marker_541f910d48884e7168d9d0bf55c7895e = L.circleMarker(
-                [6.4182673, 2.8901388],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
+            feature_group_a025d1b34fb666c24338b464147fae85.addTo(map_11b7186d6fa5c1dd365ee69a4639ffa8);
         
     
-        var popup_d5151d71287ee9ae7d53e35cb0d38632 = L.popup({"maxWidth": "100%"});
+            var feature_group_a99b4b0ad57d636a1dc14a098615417b = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_2173933602a5727a2c1e3f9101daec83 = L.circleMarker(
+                [6.4970456, 3.0903072],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a99b4b0ad57d636a1dc14a098615417b);
+        
+    
+        var popup_acfd9699c2dbf969af4bc4e439cf099b = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_0241cb32f1626f4af937cf7663594750 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiA1NDIxMTE1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAoY2hlY2tpbmcgUG9pbnQpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDE4MywgMi44OTAxPC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_d5151d71287ee9ae7d53e35cb0d38632.setContent(i_frame_0241cb32f1626f4af937cf7663594750);
+                var i_frame_b0e50fed41994f645022ae6d6a2cadbd = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMzOTQwMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKG1vcm9nYm8pPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDk3MCwgMy4wOTAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAobW9yb2dibyk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_acfd9699c2dbf969af4bc4e439cf099b.setContent(i_frame_b0e50fed41994f645022ae6d6a2cadbd);
             
         
 
-        circle_marker_541f910d48884e7168d9d0bf55c7895e.bindPopup(popup_d5151d71287ee9ae7d53e35cb0d38632)
+        circle_marker_2173933602a5727a2c1e3f9101daec83.bindPopup(popup_acfd9699c2dbf969af4bc4e439cf099b)
         ;
 
         
     
     
-            circle_marker_541f910d48884e7168d9d0bf55c7895e.bindTooltip(
+            circle_marker_2173933602a5727a2c1e3f9101daec83.bindTooltip(
                 `<div>
-                     5421115 | Badagry | Badagry - Agbara (checking Point) (Cluster 2)
+                     Badagry | Badagry - Agbara (morogbo) (Cluster 5)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            var circle_marker_d1989a1048fdc14e88f3bee447564812 = L.circleMarker(
-                [6.4182673, 2.8901388],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
+            var circle_marker_a7d05bd80db733c5127289b0196354d1 = L.circleMarker(
+                [6.4987482, 3.0958804],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a99b4b0ad57d636a1dc14a098615417b);
         
     
-        var popup_0a6c90a16f723e4d4a65b709df4d6be2 = L.popup({"maxWidth": "100%"});
+        var popup_727b9afd9ea186ac1e4e07f1a249cbe2 = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_0dfe5640e1ca85d15d9defe3f5040519 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiA1MTk3NTUzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDE4MywgMi44OTAxPC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_0a6c90a16f723e4d4a65b709df4d6be2.setContent(i_frame_0dfe5640e1ca85d15d9defe3f5040519);
+                var i_frame_29c55b6d27107f185e3e9dee4a4a86e4 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyNjg2NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKG1vcm9nYm8pPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDk4NywgMy4wOTU5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAobW9yb2dibyk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_727b9afd9ea186ac1e4e07f1a249cbe2.setContent(i_frame_29c55b6d27107f185e3e9dee4a4a86e4);
             
         
 
-        circle_marker_d1989a1048fdc14e88f3bee447564812.bindPopup(popup_0a6c90a16f723e4d4a65b709df4d6be2)
+        circle_marker_a7d05bd80db733c5127289b0196354d1.bindPopup(popup_727b9afd9ea186ac1e4e07f1a249cbe2)
         ;
 
         
     
     
-            circle_marker_d1989a1048fdc14e88f3bee447564812.bindTooltip(
+            circle_marker_a7d05bd80db733c5127289b0196354d1.bindTooltip(
                 `<div>
-                     5197553 | Badagry |  (Cluster 2)
+                     Badagry | Badagry - Agbara (morogbo) (Cluster 5)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            var circle_marker_266f6011d440a490e901f9ca5152c742 = L.circleMarker(
-                [6.4182673, 2.8901388],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_a9df6889253ae74ea7512e20d2dfbc5e);
+            var circle_marker_4dcf10ca34019e794bf03a90e21b7f42 = L.circleMarker(
+                [6.500334, 3.096349],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a99b4b0ad57d636a1dc14a098615417b);
         
     
-        var popup_9f832697cd6914aa4b96771352fea902 = L.popup({"maxWidth": "100%"});
+        var popup_e23e877e37c838f5f9c11803961e254e = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_e336da7c85a3f92d14e78f59588e78c3 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogYmx1ZTttYXJnaW4tYm90dG9tOiA1cHg7Jz5DbHVzdGVyIDI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5DdXN0b21lcmlkOjwvc3Ryb25nPiA1MjM5ODU5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAoY2h1cmNoIEdhdGUpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDE4MywgMi44OTAxPC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_9f832697cd6914aa4b96771352fea902.setContent(i_frame_e336da7c85a3f92d14e78f59588e78c3);
+                var i_frame_6c334afcb57526e81e3d9187068b8cc2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyMzkzMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGNoZWNraW5nIFBvaW50KTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjUwMDMsIDMuMDk2MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGNoZWNraW5nIFBvaW50KTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_e23e877e37c838f5f9c11803961e254e.setContent(i_frame_6c334afcb57526e81e3d9187068b8cc2);
             
         
 
-        circle_marker_266f6011d440a490e901f9ca5152c742.bindPopup(popup_9f832697cd6914aa4b96771352fea902)
+        circle_marker_4dcf10ca34019e794bf03a90e21b7f42.bindPopup(popup_e23e877e37c838f5f9c11803961e254e)
         ;
 
         
     
     
-            circle_marker_266f6011d440a490e901f9ca5152c742.bindTooltip(
+            circle_marker_4dcf10ca34019e794bf03a90e21b7f42.bindTooltip(
                 `<div>
-                     5239859 | Badagry | Badagry - Agbara (church Gate) (Cluster 2)
+                     Badagry | Badagry - Agbara (checking Point) (Cluster 5)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            feature_group_a9df6889253ae74ea7512e20d2dfbc5e.addTo(map_5187d19fb179b983339889a72be8e93e);
+            var circle_marker_805965c2e363da52e7591039550d4976 = L.circleMarker(
+                [6.500607599999999, 3.0974813],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a99b4b0ad57d636a1dc14a098615417b);
         
     
-            var feature_group_c7c379abba1144603521099c62ff397a = L.featureGroup(
-                {"className": "cluster-route-layer"}
-            );
-        
-    
-            var circle_marker_44970d7894858c4e42dad811ccd782de = L.circleMarker(
-                [6.605353300000001, 3.2438129],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_c7c379abba1144603521099c62ff397a);
-        
-    
-        var popup_faa9d39ef9320bfa935c60f5429470e1 = L.popup({"maxWidth": "100%"});
+        var popup_f4a78513264f22b31beab2e59a735c03 = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_8166b66fddac0804af74fb31a06e751e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogZ3JlZW47bWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJpZDo8L3N0cm9uZz4gNTI5MjI1NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChheW9ibyBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjYwNTQsIDMuMjQzODwvZGl2PjwvZGl2Pg==" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_faa9d39ef9320bfa935c60f5429470e1.setContent(i_frame_8166b66fddac0804af74fb31a06e751e);
+                var i_frame_10c8ed689b02e30841b3508f0e579275 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMzODM4ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKG1vcm9nYm8pPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTAwNiwgMy4wOTc1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAobW9yb2dibyk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f4a78513264f22b31beab2e59a735c03.setContent(i_frame_10c8ed689b02e30841b3508f0e579275);
             
         
 
-        circle_marker_44970d7894858c4e42dad811ccd782de.bindPopup(popup_faa9d39ef9320bfa935c60f5429470e1)
+        circle_marker_805965c2e363da52e7591039550d4976.bindPopup(popup_f4a78513264f22b31beab2e59a735c03)
         ;
 
         
     
     
-            circle_marker_44970d7894858c4e42dad811ccd782de.bindTooltip(
+            circle_marker_805965c2e363da52e7591039550d4976.bindTooltip(
                 `<div>
-                     5292256 | Alimosho | Alimosho - Iyana Ipaja (ayobo Road) (Cluster 3)
+                     Badagry | Badagry - Agbara (morogbo) (Cluster 5)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            var circle_marker_673d17c1117e34692ed97cab912d5949 = L.circleMarker(
-                [6.5114449, 3.1114879],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_c7c379abba1144603521099c62ff397a);
+            feature_group_a99b4b0ad57d636a1dc14a098615417b.addTo(map_11b7186d6fa5c1dd365ee69a4639ffa8);
         
     
-        var popup_e194584596239e628af2ebb4c4e3d1a3 = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_ee8e9027922d616e404c6e3ed83ab021 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogZ3JlZW47bWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJpZDo8L3N0cm9uZz4gNDgyOTk5NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGNodXJjaCBHYXRlKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjUxMTQsIDMuMTExNTwvZGl2PjwvZGl2Pg==" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_e194584596239e628af2ebb4c4e3d1a3.setContent(i_frame_ee8e9027922d616e404c6e3ed83ab021);
-            
-        
-
-        circle_marker_673d17c1117e34692ed97cab912d5949.bindPopup(popup_e194584596239e628af2ebb4c4e3d1a3)
-        ;
-
-        
-    
-    
-            circle_marker_673d17c1117e34692ed97cab912d5949.bindTooltip(
-                `<div>
-                     4829995 | Badagry | Badagry - Agbara (church Gate) (Cluster 3)
-                 </div>`,
-                {"sticky": true}
+            var feature_group_9f28961844008da77ef89fbc3c6c4ef4 = L.featureGroup(
+                {
+}
             );
         
     
-            var circle_marker_14a769e684fea3a7d780680bde3ea6d9 = L.circleMarker(
-                [6.5114449, 3.1114879],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_c7c379abba1144603521099c62ff397a);
-        
-    
-        var popup_c9e0431136420c7bf005721f6b1c33e8 = L.popup({"maxWidth": "100%"});
-
-        
-            
-                var i_frame_1208008f507e3e64909d0041c7d5fb1d = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogZ3JlZW47bWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJpZDo8L3N0cm9uZz4gNDk2MjE2MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGFqaWJhZGUpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTExNCwgMy4xMTE1PC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_c9e0431136420c7bf005721f6b1c33e8.setContent(i_frame_1208008f507e3e64909d0041c7d5fb1d);
-            
-        
-
-        circle_marker_14a769e684fea3a7d780680bde3ea6d9.bindPopup(popup_c9e0431136420c7bf005721f6b1c33e8)
-        ;
-
-        
-    
-    
-            circle_marker_14a769e684fea3a7d780680bde3ea6d9.bindTooltip(
-                `<div>
-                     4962160 | Badagry | Badagry - Agbara (ajibade) (Cluster 3)
-                 </div>`,
-                {"sticky": true}
-            );
-        
-    
-            var circle_marker_872687aa497677dc936bfbdf8b8d33ba = L.circleMarker(
+            var circle_marker_f0bcec656fe1f11923726eb991a25b87 = L.circleMarker(
                 [6.4866029, 3.3652542],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_c7c379abba1144603521099c62ff397a);
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9f28961844008da77ef89fbc3c6c4ef4);
         
     
-        var popup_2321c98c5059b6bfaff3e6711c6afd56 = L.popup({"maxWidth": "100%"});
+        var popup_2a07ffa1239407da1e7019a3fcadf3d8 = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_88a31abb367deb7bd3fae69cac74bbab = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogZ3JlZW47bWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJpZDo8L3N0cm9uZz4gNTE0Nzk0MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGFqaWJhZGUpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDg2NiwgMy4zNjUzPC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_2321c98c5059b6bfaff3e6711c6afd56.setContent(i_frame_88a31abb367deb7bd3fae69cac74bbab);
+                var i_frame_3c73ae2a76b129af458d824a7e3378c6 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE0Nzk0MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGFqaWJhZGUpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDg2NiwgMy4zNjUzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAoYWppYmFkZSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_2a07ffa1239407da1e7019a3fcadf3d8.setContent(i_frame_3c73ae2a76b129af458d824a7e3378c6);
             
         
 
-        circle_marker_872687aa497677dc936bfbdf8b8d33ba.bindPopup(popup_2321c98c5059b6bfaff3e6711c6afd56)
+        circle_marker_f0bcec656fe1f11923726eb991a25b87.bindPopup(popup_2a07ffa1239407da1e7019a3fcadf3d8)
         ;
 
         
     
     
-            circle_marker_872687aa497677dc936bfbdf8b8d33ba.bindTooltip(
+            circle_marker_f0bcec656fe1f11923726eb991a25b87.bindTooltip(
                 `<div>
-                     5147940 | Badagry | Badagry - Agbara (ajibade) (Cluster 3)
+                     Badagry | Badagry - Agbara (ajibade) (Cluster 3)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            var circle_marker_ef4702c906718e079ac2657c5c7f9292 = L.circleMarker(
+            var circle_marker_03d57dbae25d7ecffa81e1946aaea733 = L.circleMarker(
                 [6.5441095, 3.404998],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_c7c379abba1144603521099c62ff397a);
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9f28961844008da77ef89fbc3c6c4ef4);
         
     
-        var popup_22adb1de3cc32cf4ffa353c5eeb587d7 = L.popup({"maxWidth": "100%"});
+        var popup_19f100ffb661e83e37cec28bcf862e8f = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_398836585a331db5315cf067af5fa7e3 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogZ3JlZW47bWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJpZDo8L3N0cm9uZz4gNTE3MzczNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGNodXJjaCBHYXRlKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjU0NDEsIDMuNDA1MDwvZGl2PjwvZGl2Pg==" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_22adb1de3cc32cf4ffa353c5eeb587d7.setContent(i_frame_398836585a331db5315cf067af5fa7e3);
+                var i_frame_858ea00a60cd7b0ac990973b6f2da246 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE3MzczNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGNodXJjaCBHYXRlKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjU0NDEsIDMuNDA1MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGNodXJjaCBHYXRlKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_19f100ffb661e83e37cec28bcf862e8f.setContent(i_frame_858ea00a60cd7b0ac990973b6f2da246);
             
         
 
-        circle_marker_ef4702c906718e079ac2657c5c7f9292.bindPopup(popup_22adb1de3cc32cf4ffa353c5eeb587d7)
+        circle_marker_03d57dbae25d7ecffa81e1946aaea733.bindPopup(popup_19f100ffb661e83e37cec28bcf862e8f)
         ;
 
         
     
     
-            circle_marker_ef4702c906718e079ac2657c5c7f9292.bindTooltip(
+            circle_marker_03d57dbae25d7ecffa81e1946aaea733.bindTooltip(
                 `<div>
-                     5173735 | Badagry | Badagry - Agbara (church Gate) (Cluster 3)
+                     Badagry | Badagry - Agbara (church Gate) (Cluster 3)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            feature_group_c7c379abba1144603521099c62ff397a.addTo(map_5187d19fb179b983339889a72be8e93e);
+            feature_group_9f28961844008da77ef89fbc3c6c4ef4.addTo(map_11b7186d6fa5c1dd365ee69a4639ffa8);
         
     
-            var feature_group_9a5991859190bf31d871be138da6773d = L.featureGroup(
-                {"className": "cluster-route-layer"}
+            var feature_group_9cb36288a3642a3f9764b66d59ab139b = L.featureGroup(
+                {
+}
             );
         
     
-            var circle_marker_0e5ad564accf0e86047f2eddbcb04465 = L.circleMarker(
-                [6.4949884, 6.4949884],
-                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
-            ).addTo(feature_group_9a5991859190bf31d871be138da6773d);
+            var circle_marker_59e18073d2f6756c3c305b442259ad48 = L.circleMarker(
+                [6.5101887, 3.0926551],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9cb36288a3642a3f9764b66d59ab139b);
         
     
-        var popup_dd938fab5cdddf62bed0f5441933aaf7 = L.popup({"maxWidth": "100%"});
+        var popup_abe8f31c29bc7a23819a170c7e9c567d = L.popup({
+  "maxWidth": "100%",
+});
 
         
             
-                var i_frame_14050064e2ac5d9ef757023d6558f5f2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogcHVycGxlO21hcmdpbi1ib3R0b206IDVweDsnPkNsdXN0ZXIgNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkN1c3RvbWVyaWQ6PC9zdHJvbmc+IDUzMTc1MzA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEJhZGFncnk8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBCYWRhZ3J5IC0gQWdiYXJhIChtYWdib24pPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDk1MCwgNi40OTUwPC9kaXY+PC9kaXY+" width="300" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_dd938fab5cdddf62bed0f5441933aaf7.setContent(i_frame_14050064e2ac5d9ef757023d6558f5f2);
+                var i_frame_d8bab34154cc65f2e149d067b565bf0d = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMwNjI1NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGFqaWJhZGUpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTEwMiwgMy4wOTI3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAoYWppYmFkZSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_abe8f31c29bc7a23819a170c7e9c567d.setContent(i_frame_d8bab34154cc65f2e149d067b565bf0d);
             
         
 
-        circle_marker_0e5ad564accf0e86047f2eddbcb04465.bindPopup(popup_dd938fab5cdddf62bed0f5441933aaf7)
+        circle_marker_59e18073d2f6756c3c305b442259ad48.bindPopup(popup_abe8f31c29bc7a23819a170c7e9c567d)
         ;
 
         
     
     
-            circle_marker_0e5ad564accf0e86047f2eddbcb04465.bindTooltip(
+            circle_marker_59e18073d2f6756c3c305b442259ad48.bindTooltip(
                 `<div>
-                     5317530 | Badagry | Badagry - Agbara (magbon) (Cluster 4)
+                     Badagry | Badagry - Agbara (ajibade) (Cluster 4)
                  </div>`,
-                {"sticky": true}
+                {
+  "sticky": true,
+}
             );
         
     
-            feature_group_9a5991859190bf31d871be138da6773d.addTo(map_5187d19fb179b983339889a72be8e93e);
+            var circle_marker_bb9754fa2ff9dbcf5c28b9bff89c03de = L.circleMarker(
+                [6.5101887, 3.0926551],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_9cb36288a3642a3f9764b66d59ab139b);
         
     
-            var layer_control_46afac680cac743ccf7314c2ddb39f9b_layers = {
+        var popup_09afead9002cc720881eaba809940bb8 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_96c6870456a04b534260c1f5440ffc8a = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMwNzY4MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQmFkYWdyeTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEJhZGFncnkgLSBBZ2JhcmEgKGFqaWJhZGUpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTEwMiwgMy4wOTI3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBCYWRhZ3J5PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQmFkYWdyeSAtIEFnYmFyYSAoYWppYmFkZSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_09afead9002cc720881eaba809940bb8.setContent(i_frame_96c6870456a04b534260c1f5440ffc8a);
+            
+        
+
+        circle_marker_bb9754fa2ff9dbcf5c28b9bff89c03de.bindPopup(popup_09afead9002cc720881eaba809940bb8)
+        ;
+
+        
+    
+    
+            circle_marker_bb9754fa2ff9dbcf5c28b9bff89c03de.bindTooltip(
+                `<div>
+                     Badagry | Badagry - Agbara (ajibade) (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_9cb36288a3642a3f9764b66d59ab139b.addTo(map_11b7186d6fa5c1dd365ee69a4639ffa8);
+        
+    
+            var feature_group_15b5e30f69d8821118d5ddc3cfd56075 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_94edd86ad474e1568aea9df81e3b816d = L.circleMarker(
+                [6.605353300000001, 3.2438129],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_15b5e30f69d8821118d5ddc3cfd56075);
+        
+    
+        var popup_57c8683fa309041d2cfe744c5b6dac06 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_322731f6f8dbe389650844d7c0609329 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI5MjI1NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChheW9ibyBSb2FkKTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjYwNTQsIDMuMjQzODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChheW9ibyBSb2FkKTwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_57c8683fa309041d2cfe744c5b6dac06.setContent(i_frame_322731f6f8dbe389650844d7c0609329);
+            
+        
+
+        circle_marker_94edd86ad474e1568aea9df81e3b816d.bindPopup(popup_57c8683fa309041d2cfe744c5b6dac06)
+        ;
+
+        
+    
+    
+            circle_marker_94edd86ad474e1568aea9df81e3b816d.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (ayobo Road) (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_15b5e30f69d8821118d5ddc3cfd56075.addTo(map_11b7186d6fa5c1dd365ee69a4639ffa8);
+        
+    
+            var layer_control_cee6f125d34f7e6bc3464b8335bf4a37_layers = {
                 base_layers : {
-                    "cartodbpositron" : tile_layer_c293795a101deb3e071b35f62e6a1f2e,
-                    "OpenStreetMap" : tile_layer_2e26786c096807e99073c3a01f6c7795,
-                    "Terrain" : tile_layer_c9bc8a84befe9a81b1def75435f3e018,
-                    "Toner" : tile_layer_9a92270a471e1fccf7f05d23896b0248,
-                    "CartoDB Dark" : tile_layer_72209b36826f79f2b9c9f303e99ec711,
-                    "CartoDB Light" : tile_layer_af9d1c4862d4ba72d810d3b408e12fb0,
+                    "cartodbpositron" : tile_layer_e156c8ff84305eae8364202550208294,
+                    "OpenStreetMap" : tile_layer_3fc5eafa43e3f7bea073a575efb947ab,
+                    "Terrain" : tile_layer_dec17498eed48631869f96bf325ab8ce,
+                    "Toner" : tile_layer_474e9dbcfe5e2e7cc699a440e458e01e,
+                    "CartoDB Dark" : tile_layer_ca03aa514678d4e208834997055b5445,
+                    "CartoDB Light" : tile_layer_4142375805276ebf9b19d9e062233e95,
                 },
                 overlays :  {
-                    "Cluster 1 - Badagry - +5more (19 Outlets)" : feature_group_d8558ca0703119c1935670c2700c08a8,
-                    "Cluster 2 - Badagry - Badagry - Agbara (church Gate)+5more (16 Outlets)" : feature_group_a9df6889253ae74ea7512e20d2dfbc5e,
-                    "Cluster 3 - Alimosho+1more - Alimosho - Iyana Ipaja (ayobo Road)+2more (5 Outlets)" : feature_group_c7c379abba1144603521099c62ff397a,
-                    "Cluster 4 - Badagry - Badagry - Agbara (magbon) (1 Outlets)" : feature_group_9a5991859190bf31d871be138da6773d,
+                    "Cluster 1 - Badagry - +5more (17 points)" : feature_group_a025d1b34fb666c24338b464147fae85,
+                    "Cluster 5 - Badagry - Badagry - Agbara (morogbo)+1more (4 points)" : feature_group_a99b4b0ad57d636a1dc14a098615417b,
+                    "Cluster 3 - Badagry - Badagry - Agbara (ajibade)+1more (2 points)" : feature_group_9f28961844008da77ef89fbc3c6c4ef4,
+                    "Cluster 4 - Badagry - Badagry - Agbara (ajibade) (2 points)" : feature_group_9cb36288a3642a3f9764b66d59ab139b,
+                    "Cluster 2 - Alimosho - Alimosho - Iyana Ipaja (ayobo Road) (1 points)" : feature_group_15b5e30f69d8821118d5ddc3cfd56075,
                 },
             };
-            let layer_control_46afac680cac743ccf7314c2ddb39f9b = L.control.layers(
-                layer_control_46afac680cac743ccf7314c2ddb39f9b_layers.base_layers,
-                layer_control_46afac680cac743ccf7314c2ddb39f9b_layers.overlays,
-                {"autoZIndex": true, "collapsed": true, "position": "topright"}
-            ).addTo(map_5187d19fb179b983339889a72be8e93e);
+            let layer_control_cee6f125d34f7e6bc3464b8335bf4a37 = L.control.layers(
+                layer_control_cee6f125d34f7e6bc3464b8335bf4a37_layers.base_layers,
+                layer_control_cee6f125d34f7e6bc3464b8335bf4a37_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_11b7186d6fa5c1dd365ee69a4639ffa8);
 
         
     
-            var tile_layer_bd5080307423035ddbd6bc9162a2aacf = L.tileLayer(
+            var tile_layer_b93d0bcd572d08fdb5d42de51069439e = L.tileLayer(
                 "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
             );
-            var mini_map_8ce280f23eeaf488ff5c061074080c38 = new L.Control.MiniMap(
-                tile_layer_bd5080307423035ddbd6bc9162a2aacf,
-                {"autoToggleDisplay": false, "centerFixed": false, "collapsedHeight": 25, "collapsedWidth": 25, "height": 150, "minimized": false, "position": "bottomleft", "toggleDisplay": true, "width": 150, "zoomAnimation": false, "zoomLevelOffset": -5}
+            var mini_map_0e2680c1ff4e157b951d1dcd9ce2bc1b = new L.Control.MiniMap(
+                tile_layer_b93d0bcd572d08fdb5d42de51069439e,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
             );
-            map_5187d19fb179b983339889a72be8e93e.addControl(mini_map_8ce280f23eeaf488ff5c061074080c38);
+            map_11b7186d6fa5c1dd365ee69a4639ffa8.addControl(mini_map_0e2680c1ff4e157b951d1dcd9ce2bc1b);
         
     
             L.control.fullscreen(
-                {"forceSeparateButton": false, "position": "topleft", "title": "Full Screen", "titleCancel": "Exit Full Screen"}
-            ).addTo(map_5187d19fb179b983339889a72be8e93e);
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_11b7186d6fa5c1dd365ee69a4639ffa8);
         
     
-            var measure_control_14103b645791f4a29bd9fdb758206397 = new L.Control.Measure(
-                {"position": "topright", "primaryAreaUnit": "sqmeters", "primaryLengthUnit": "meters", "secondaryAreaUnit": "acres", "secondaryLengthUnit": "miles"});
-            map_5187d19fb179b983339889a72be8e93e.addControl(measure_control_14103b645791f4a29bd9fdb758206397);
+            var measure_control_8b4ba762f3802b403a999fb95ceddb1a = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_11b7186d6fa5c1dd365ee69a4639ffa8.addControl(measure_control_8b4ba762f3802b403a999fb95ceddb1a);
 
             // Workaround for using this plugin with Leaflet>=1.8.0
             // https://github.com/ljagis/leaflet-measure/issues/171
@@ -1641,20 +1467,59 @@
 
         
     
-            var mouse_position_fc4400ce537ab51fdc309a40ec9d3940 = new L.Control.MousePosition(
-                {"emptyString": "Move mouse to see coordinates", "lngFirst": false, "numDigits": 4, "position": "bottomleft", "prefix": "Coordinates: ", "separator": " | "}
+            var mouse_position_d9011eed6b7c4acdf509a755e9e6db62 = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
             );
-            mouse_position_fc4400ce537ab51fdc309a40ec9d3940.options["latFormatter"] =
+            mouse_position_d9011eed6b7c4acdf509a755e9e6db62.options["latFormatter"] =
                 undefined;
-            mouse_position_fc4400ce537ab51fdc309a40ec9d3940.options["lngFormatter"] =
+            mouse_position_d9011eed6b7c4acdf509a755e9e6db62.options["lngFormatter"] =
                 undefined;
-            map_5187d19fb179b983339889a72be8e93e.addControl(mouse_position_fc4400ce537ab51fdc309a40ec9d3940);
+            map_11b7186d6fa5c1dd365ee69a4639ffa8.addControl(mouse_position_d9011eed6b7c4acdf509a755e9e6db62);
         
     
-            map_5187d19fb179b983339889a72be8e93e.fitBounds(
-                [[6.4082673, 2.8121296], [6.615353300000001, 6.5049884]],
+            map_11b7186d6fa5c1dd365ee69a4639ffa8.fitBounds(
+                [[6.4082673, 2.8121296], [6.615353300000001, 3.4149979999999998]],
                 {}
             );
         
+    
+            var marker_0e04b16df87e89324cc88837b44f4ed5 = L.marker(
+                [6.4182673, 2.8901388],
+                {
+  "size": 10,
+}
+            ).addTo(map_11b7186d6fa5c1dd365ee69a4639ffa8);
+        
+    
+            var icon_a5589c11b4c2a620f14b4626fdd3ecd7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_0e04b16df87e89324cc88837b44f4ed5.bindTooltip(
+                `<div>
+                     OmniHub Badagry Lagos - NEEMYGHT MULTI-VENTURE ENTERPRISES
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0e04b16df87e89324cc88837b44f4ed5.setIcon(icon_a5589c11b4c2a620f14b4626fdd3ecd7);
+            
 </script>
 </html>

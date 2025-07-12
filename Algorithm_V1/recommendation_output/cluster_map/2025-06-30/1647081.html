@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_3ced30660621b6e60e61f10027cd9a1d {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 5 clusters | 30 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+                    <div id="cluster-legend" style="position: fixed; 
+                                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                                background-color: rgba(255, 255, 255, 0.95); 
+                                border: 2px solid #ccc; z-index: 999; 
+                                font-size: 11px; padding: 12px; border-radius: 8px;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                backdrop-filter: blur(5px);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #333;">Cluster Legend</strong>
+                        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+                    </div>
+                    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+                        5 clusters | Sorted by size | Showing top 15
+                    </div>
+                    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+                    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 1 
+                <br><span style="color: #666; font-size: 9px;">10 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #9467bd; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 5 
+                <br><span style="color: #666; font-size: 9px;">10 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #d62728; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 4 
+                <br><span style="color: #666; font-size: 9px;">6 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#4</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">2 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#5</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">2 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_3ced30660621b6e60e61f10027cd9a1d" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_3ced30660621b6e60e61f10027cd9a1d = L.map(
+                "map_3ced30660621b6e60e61f10027cd9a1d",
+                {
+                    center: [6.57667924999995, 3.5895997499999996],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_3ced30660621b6e60e61f10027cd9a1d);
+
+            
+
+        
+    
+            var tile_layer_d45a78b67f4f102f189167171b3fd56c = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_d45a78b67f4f102f189167171b3fd56c.addTo(map_3ced30660621b6e60e61f10027cd9a1d);
+        
+    
+            var tile_layer_cf5286b01f379e8b1cfab75592d3332b = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_cf5286b01f379e8b1cfab75592d3332b.addTo(map_3ced30660621b6e60e61f10027cd9a1d);
+        
+    
+            var tile_layer_be31281ca3507c4856f719c9e339818c = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_be31281ca3507c4856f719c9e339818c.addTo(map_3ced30660621b6e60e61f10027cd9a1d);
+        
+    
+            var tile_layer_faa50a5cfe79099e33726320437f70b9 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_faa50a5cfe79099e33726320437f70b9.addTo(map_3ced30660621b6e60e61f10027cd9a1d);
+        
+    
+            var tile_layer_4409ae52b50b2f0623ac835e15f57ee9 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_4409ae52b50b2f0623ac835e15f57ee9.addTo(map_3ced30660621b6e60e61f10027cd9a1d);
+        
+    
+            var tile_layer_19c97ce1f6c14a5264d872ffa91a0c82 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_19c97ce1f6c14a5264d872ffa91a0c82.addTo(map_3ced30660621b6e60e61f10027cd9a1d);
+        
+    
+            var feature_group_7749a44b3409bd7e930055b04ea3005d = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_1d6a9a03eb168485b999115d1a3f7078 = L.circleMarker(
+                [6.5919183, 3.29933],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7749a44b3409bd7e930055b04ea3005d);
+        
+    
+        var popup_61a8fcbcf8870beebf1fdb6fefe9b178 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_09233cd3a378870568dec61a80154e46 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMjQ3MDM2NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gRWdiZWRhPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTkxOSwgMy4yOTkzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBFZ2JlZGE8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_61a8fcbcf8870beebf1fdb6fefe9b178.setContent(i_frame_09233cd3a378870568dec61a80154e46);
+            
+        
+
+        circle_marker_1d6a9a03eb168485b999115d1a3f7078.bindPopup(popup_61a8fcbcf8870beebf1fdb6fefe9b178)
+        ;
+
+        
+    
+    
+            circle_marker_1d6a9a03eb168485b999115d1a3f7078.bindTooltip(
+                `<div>
+                     Egbeda |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2d75c0b1ccefa82d8e56b52838ec7586 = L.circleMarker(
+                [6.5996246, 3.3007567],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7749a44b3409bd7e930055b04ea3005d);
+        
+    
+        var popup_19c11dfc97c5f01e6993ecd0872eed0b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_348e045e31777adab3fb006e92b927cb = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQxNTM0OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChlZ2JlZGEpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTk5NiwgMy4zMDA4PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSXlhbmEgSXBhamEgKGVnYmVkYSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_19c11dfc97c5f01e6993ecd0872eed0b.setContent(i_frame_348e045e31777adab3fb006e92b927cb);
+            
+        
+
+        circle_marker_2d75c0b1ccefa82d8e56b52838ec7586.bindPopup(popup_19c11dfc97c5f01e6993ecd0872eed0b)
+        ;
+
+        
+    
+    
+            circle_marker_2d75c0b1ccefa82d8e56b52838ec7586.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (egbeda) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8fa4d358e6f983434b311d9a77c1c236 = L.circleMarker(
+                [6.6008351, 3.3008173],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7749a44b3409bd7e930055b04ea3005d);
+        
+    
+        var popup_928f2b50dc03572c05969d6680befb2e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_3383d2184ff281f1ae1a1aa8292d957f = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM4Mzg4NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChlZ2JlZGEpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjAwOCwgMy4zMDA4PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSXlhbmEgSXBhamEgKGVnYmVkYSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_928f2b50dc03572c05969d6680befb2e.setContent(i_frame_3383d2184ff281f1ae1a1aa8292d957f);
+            
+        
+
+        circle_marker_8fa4d358e6f983434b311d9a77c1c236.bindPopup(popup_928f2b50dc03572c05969d6680befb2e)
+        ;
+
+        
+    
+    
+            circle_marker_8fa4d358e6f983434b311d9a77c1c236.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (egbeda) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c8d6ca9958bb3be817537d506525798c = L.circleMarker(
+                [6.6002728, 3.2978499],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7749a44b3409bd7e930055b04ea3005d);
+        
+    
+        var popup_e1cb2d9ad45b3783483e7c39df482779 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_38edf438966531de61e5be66a81983fc = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM4MzA5NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChlZ2JlZGEpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjAwMywgMy4yOTc4PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSXlhbmEgSXBhamEgKGVnYmVkYSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_e1cb2d9ad45b3783483e7c39df482779.setContent(i_frame_38edf438966531de61e5be66a81983fc);
+            
+        
+
+        circle_marker_c8d6ca9958bb3be817537d506525798c.bindPopup(popup_e1cb2d9ad45b3783483e7c39df482779)
+        ;
+
+        
+    
+    
+            circle_marker_c8d6ca9958bb3be817537d506525798c.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (egbeda) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3a5dd7c2eb8af1c70e4a00b3c11b6827 = L.circleMarker(
+                [6.6002728, 3.2978499],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7749a44b3409bd7e930055b04ea3005d);
+        
+    
+        var popup_47761b6de4de913e044a3fd01035623f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_31764975171ae327ed49dc5f722939c9 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM4MzA5MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChlZ2JlZGEpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjAwMywgMy4yOTc4PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSXlhbmEgSXBhamEgKGVnYmVkYSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_47761b6de4de913e044a3fd01035623f.setContent(i_frame_31764975171ae327ed49dc5f722939c9);
+            
+        
+
+        circle_marker_3a5dd7c2eb8af1c70e4a00b3c11b6827.bindPopup(popup_47761b6de4de913e044a3fd01035623f)
+        ;
+
+        
+    
+    
+            circle_marker_3a5dd7c2eb8af1c70e4a00b3c11b6827.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (egbeda) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_df837cf6a34e8c65ed5678719e140417 = L.circleMarker(
+                [6.5887404, 3.3082426],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7749a44b3409bd7e930055b04ea3005d);
+        
+    
+        var popup_a74ce658551b754153cdadc28ae92526 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_e2bb8ef4a22d9c6bfdb2426c57dfb6a3 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMzOTQyOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChzaGFzaGEpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTg4NywgMy4zMDgyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSXlhbmEgSXBhamEgKHNoYXNoYSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_a74ce658551b754153cdadc28ae92526.setContent(i_frame_e2bb8ef4a22d9c6bfdb2426c57dfb6a3);
+            
+        
+
+        circle_marker_df837cf6a34e8c65ed5678719e140417.bindPopup(popup_a74ce658551b754153cdadc28ae92526)
+        ;
+
+        
+    
+    
+            circle_marker_df837cf6a34e8c65ed5678719e140417.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (shasha) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ec908fd8da3b6658faf0796e90745834 = L.circleMarker(
+                [6.5732861, 3.2175],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7749a44b3409bd7e930055b04ea3005d);
+        
+    
+        var popup_e2996f806090c5a5f636c351189fef91 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_18d21761d1f815333e8ee0f9182e27a9 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMjgyMTAwNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41NzMzLCAzLjIxNzU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_e2996f806090c5a5f636c351189fef91.setContent(i_frame_18d21761d1f815333e8ee0f9182e27a9);
+            
+        
+
+        circle_marker_ec908fd8da3b6658faf0796e90745834.bindPopup(popup_e2996f806090c5a5f636c351189fef91)
+        ;
+
+        
+    
+    
+            circle_marker_ec908fd8da3b6658faf0796e90745834.bindTooltip(
+                `<div>
+                     Alimosho |  (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dfea0852e66db329f52bbb5aee6a8df8 = L.circleMarker(
+                [6.5437023, 3.275967],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7749a44b3409bd7e930055b04ea3005d);
+        
+    
+        var popup_9ca8c81a5bdca85c6638fe2121c12bc7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_695331dcb300ca50653df0b6e6ef22b5 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDE5MDYxMDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEVnYmUvaWRpbXU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41NDM3LCAzLjI3NjA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQWxpbW9zaG8gLSBFZ2JlL2lkaW11PC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_9ca8c81a5bdca85c6638fe2121c12bc7.setContent(i_frame_695331dcb300ca50653df0b6e6ef22b5);
+            
+        
+
+        circle_marker_dfea0852e66db329f52bbb5aee6a8df8.bindPopup(popup_9ca8c81a5bdca85c6638fe2121c12bc7)
+        ;
+
+        
+    
+    
+            circle_marker_dfea0852e66db329f52bbb5aee6a8df8.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Egbe/idimu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bb3caafa101dce1420d79e0426442635 = L.circleMarker(
+                [6.6096226, 3.2873135],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7749a44b3409bd7e930055b04ea3005d);
+        
+    
+        var popup_51a1990fe3345dc8e44761bd85c06b1e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_94e97d1e861bd312a30f57dac3ee681e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzA1NjYxOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChlZ2JlZGEpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjA5NiwgMy4yODczPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSXlhbmEgSXBhamEgKGVnYmVkYSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_51a1990fe3345dc8e44761bd85c06b1e.setContent(i_frame_94e97d1e861bd312a30f57dac3ee681e);
+            
+        
+
+        circle_marker_bb3caafa101dce1420d79e0426442635.bindPopup(popup_51a1990fe3345dc8e44761bd85c06b1e)
+        ;
+
+        
+    
+    
+            circle_marker_bb3caafa101dce1420d79e0426442635.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (egbeda) (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f2b0b80e05d9562c3bd05171265b22b3 = L.circleMarker(
+                [6.5590581, 3.2977041],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7749a44b3409bd7e930055b04ea3005d);
+        
+    
+        var popup_078ebf111b135294a85764faaacb2a07 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_67f40216ce1cc5d565a2b05aa44e54e7 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzkwMDYyMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEVnYmUvaWRpbXU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41NTkxLCAzLjI5Nzc8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQWxpbW9zaG8gLSBFZ2JlL2lkaW11PC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_078ebf111b135294a85764faaacb2a07.setContent(i_frame_67f40216ce1cc5d565a2b05aa44e54e7);
+            
+        
+
+        circle_marker_f2b0b80e05d9562c3bd05171265b22b3.bindPopup(popup_078ebf111b135294a85764faaacb2a07)
+        ;
+
+        
+    
+    
+            circle_marker_f2b0b80e05d9562c3bd05171265b22b3.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Egbe/idimu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_7749a44b3409bd7e930055b04ea3005d.addTo(map_3ced30660621b6e60e61f10027cd9a1d);
+        
+    
+            var feature_group_b8e62ddf1fdfcf7f7b5a8fda329c281d = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_9cb760bcdba92db242551d36dbe64713 = L.circleMarker(
+                [6.583762, 3.3010029],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b8e62ddf1fdfcf7f7b5a8fda329c281d);
+        
+    
+        var popup_3656d1815905be39f5414d3e7ff37631 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_2f56329f2f82c93fe9d5ff636b0acc7b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDA3NTgyNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChzaGFzaGEpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTgzOCwgMy4zMDEwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSXlhbmEgSXBhamEgKHNoYXNoYSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_3656d1815905be39f5414d3e7ff37631.setContent(i_frame_2f56329f2f82c93fe9d5ff636b0acc7b);
+            
+        
+
+        circle_marker_9cb760bcdba92db242551d36dbe64713.bindPopup(popup_3656d1815905be39f5414d3e7ff37631)
+        ;
+
+        
+    
+    
+            circle_marker_9cb760bcdba92db242551d36dbe64713.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (shasha) (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3e917865e8879cdb4b0fa1710c88ee98 = L.circleMarker(
+                [6.582129699999999, 3.3001647],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b8e62ddf1fdfcf7f7b5a8fda329c281d);
+        
+    
+        var popup_b88e830363f1941d3c3275939780ed75 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_289cde46d82a3bbe67aa6632afc47e7b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMjM2NDM3NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChzaGFzaGEpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTgyMSwgMy4zMDAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSXlhbmEgSXBhamEgKHNoYXNoYSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_b88e830363f1941d3c3275939780ed75.setContent(i_frame_289cde46d82a3bbe67aa6632afc47e7b);
+            
+        
+
+        circle_marker_3e917865e8879cdb4b0fa1710c88ee98.bindPopup(popup_b88e830363f1941d3c3275939780ed75)
+        ;
+
+        
+    
+    
+            circle_marker_3e917865e8879cdb4b0fa1710c88ee98.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (shasha) (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_86d93bc3ef3565f4351d8a9283362dab = L.circleMarker(
+                [6.5799369, 3.3022465],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b8e62ddf1fdfcf7f7b5a8fda329c281d);
+        
+    
+        var popup_326e19d0852b94e899b36851b6a5b822 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_9c26402f5da5e9aa3651ba6442c69607 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDE5MDk4MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChzaGFzaGEpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTc5OSwgMy4zMDIyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSXlhbmEgSXBhamEgKHNoYXNoYSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_326e19d0852b94e899b36851b6a5b822.setContent(i_frame_9c26402f5da5e9aa3651ba6442c69607);
+            
+        
+
+        circle_marker_86d93bc3ef3565f4351d8a9283362dab.bindPopup(popup_326e19d0852b94e899b36851b6a5b822)
+        ;
+
+        
+    
+    
+            circle_marker_86d93bc3ef3565f4351d8a9283362dab.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (shasha) (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fdac8e4702f425ead2a2ec3a5201e65f = L.circleMarker(
+                [6.580534999999999, 3.3032346],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b8e62ddf1fdfcf7f7b5a8fda329c281d);
+        
+    
+        var popup_bbfe53b4ac40af9104f4e7a8fb1015f7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_261cbdc6c3919225cb7164388789e61f = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDA2MDE3ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChzaGFzaGEpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTgwNSwgMy4zMDMyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSXlhbmEgSXBhamEgKHNoYXNoYSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_bbfe53b4ac40af9104f4e7a8fb1015f7.setContent(i_frame_261cbdc6c3919225cb7164388789e61f);
+            
+        
+
+        circle_marker_fdac8e4702f425ead2a2ec3a5201e65f.bindPopup(popup_bbfe53b4ac40af9104f4e7a8fb1015f7)
+        ;
+
+        
+    
+    
+            circle_marker_fdac8e4702f425ead2a2ec3a5201e65f.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (shasha) (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_150374d35e02e5258de2c4a1a6a4d448 = L.circleMarker(
+                [6.580535999999999, 3.3039626],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b8e62ddf1fdfcf7f7b5a8fda329c281d);
+        
+    
+        var popup_f1614ae24007f7e654c9e28ad4dd0842 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_26b259a10c9a6b4874c096f0d0bf31b7 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDEzNjY0MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChzaGFzaGEpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTgwNSwgMy4zMDQwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSXlhbmEgSXBhamEgKHNoYXNoYSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f1614ae24007f7e654c9e28ad4dd0842.setContent(i_frame_26b259a10c9a6b4874c096f0d0bf31b7);
+            
+        
+
+        circle_marker_150374d35e02e5258de2c4a1a6a4d448.bindPopup(popup_f1614ae24007f7e654c9e28ad4dd0842)
+        ;
+
+        
+    
+    
+            circle_marker_150374d35e02e5258de2c4a1a6a4d448.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (shasha) (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_450fe1c9453dae7d7f49719bfdb82c44 = L.circleMarker(
+                [6.580535999999999, 3.3039626],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b8e62ddf1fdfcf7f7b5a8fda329c281d);
+        
+    
+        var popup_97020c745caf62f8c6f4628f29b2970d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_c86ae4cf372bb0055a3369f60e46fdb1 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTM1MTY5NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChzaGFzaGEpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTgwNSwgMy4zMDQwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSXlhbmEgSXBhamEgKHNoYXNoYSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_97020c745caf62f8c6f4628f29b2970d.setContent(i_frame_c86ae4cf372bb0055a3369f60e46fdb1);
+            
+        
+
+        circle_marker_450fe1c9453dae7d7f49719bfdb82c44.bindPopup(popup_97020c745caf62f8c6f4628f29b2970d)
+        ;
+
+        
+    
+    
+            circle_marker_450fe1c9453dae7d7f49719bfdb82c44.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (shasha) (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c7ebf52fc8dea2b4057471a9413f2cf8 = L.circleMarker(
+                [6.5785828, 3.3066639],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b8e62ddf1fdfcf7f7b5a8fda329c281d);
+        
+    
+        var popup_a0309340417aee244a18fb946a871f22 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_cd11e83eee15cf9cffd590c3b93c87eb = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMwNTk2NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChzaGFzaGEpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTc4NiwgMy4zMDY3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSXlhbmEgSXBhamEgKHNoYXNoYSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_a0309340417aee244a18fb946a871f22.setContent(i_frame_cd11e83eee15cf9cffd590c3b93c87eb);
+            
+        
+
+        circle_marker_c7ebf52fc8dea2b4057471a9413f2cf8.bindPopup(popup_a0309340417aee244a18fb946a871f22)
+        ;
+
+        
+    
+    
+            circle_marker_c7ebf52fc8dea2b4057471a9413f2cf8.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (shasha) (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_733c32de75cea05e6ba0a5fba5f185b7 = L.circleMarker(
+                [6.5747852999999, 3.3066929],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b8e62ddf1fdfcf7f7b5a8fda329c281d);
+        
+    
+        var popup_c894056421b0ec8a5966c1768aa20d4b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_134019a5679656770d20cf3e00f662bc = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDA3ODEwNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChzaGFzaGEpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTc0OCwgMy4zMDY3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSXlhbmEgSXBhamEgKHNoYXNoYSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_c894056421b0ec8a5966c1768aa20d4b.setContent(i_frame_134019a5679656770d20cf3e00f662bc);
+            
+        
+
+        circle_marker_733c32de75cea05e6ba0a5fba5f185b7.bindPopup(popup_c894056421b0ec8a5966c1768aa20d4b)
+        ;
+
+        
+    
+    
+            circle_marker_733c32de75cea05e6ba0a5fba5f185b7.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (shasha) (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6624f6c9f2c87f8886aebf3335ec027d = L.circleMarker(
+                [6.5740322, 3.3066014],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b8e62ddf1fdfcf7f7b5a8fda329c281d);
+        
+    
+        var popup_868fd4d33be09fb186bc31d32a323918 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_ebec5d6e6a595320cf71287019738f89 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMxODg1MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIElkaW11PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNTc0MCwgMy4zMDY2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSWRpbXU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_868fd4d33be09fb186bc31d32a323918.setContent(i_frame_ebec5d6e6a595320cf71287019738f89);
+            
+        
+
+        circle_marker_6624f6c9f2c87f8886aebf3335ec027d.bindPopup(popup_868fd4d33be09fb186bc31d32a323918)
+        ;
+
+        
+    
+    
+            circle_marker_6624f6c9f2c87f8886aebf3335ec027d.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Idimu (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7404266b88535934c239771a405037df = L.circleMarker(
+                [6.5732228, 3.3060781],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_b8e62ddf1fdfcf7f7b5a8fda329c281d);
+        
+    
+        var popup_04a7d052a7458a9b3cac92c013a4928d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_10195b1ace42924ce1c27837892813f3 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDMwNjgxOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEVnYmUvaWRpbXU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41NzMyLCAzLjMwNjE8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQWxpbW9zaG8gLSBFZ2JlL2lkaW11PC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_04a7d052a7458a9b3cac92c013a4928d.setContent(i_frame_10195b1ace42924ce1c27837892813f3);
+            
+        
+
+        circle_marker_7404266b88535934c239771a405037df.bindPopup(popup_04a7d052a7458a9b3cac92c013a4928d)
+        ;
+
+        
+    
+    
+            circle_marker_7404266b88535934c239771a405037df.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Egbe/idimu (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_b8e62ddf1fdfcf7f7b5a8fda329c281d.addTo(map_3ced30660621b6e60e61f10027cd9a1d);
+        
+    
+            var feature_group_7047f01fa617801287975cbdf8765bf1 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_575779cfd6cba82dfa3ce685f199229c = L.circleMarker(
+                [6.5471115, 3.3028059],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7047f01fa617801287975cbdf8765bf1);
+        
+    
+        var popup_5d739e80f4475f3e3b65fdf4b52d8727 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_26bf8dde16b9ecb823a4191f03d6dbec = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIzODY2OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIEVqaWdibzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjU0NzEsIDMuMzAyODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIEVqaWdibzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_5d739e80f4475f3e3b65fdf4b52d8727.setContent(i_frame_26bf8dde16b9ecb823a4191f03d6dbec);
+            
+        
+
+        circle_marker_575779cfd6cba82dfa3ce685f199229c.bindPopup(popup_5d739e80f4475f3e3b65fdf4b52d8727)
+        ;
+
+        
+    
+    
+            circle_marker_575779cfd6cba82dfa3ce685f199229c.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ejigbo (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_311f7829b2d245c5394531f789896c33 = L.circleMarker(
+                [6.541027, 3.298791],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7047f01fa617801287975cbdf8765bf1);
+        
+    
+        var popup_be91ba9f449e61689a6f7432b5888283 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_6d05ad719d9f215b08116f7960ee495a = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI3MDEyMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIEVqaWdibzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjU0MTAsIDMuMjk4ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIEVqaWdibzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_be91ba9f449e61689a6f7432b5888283.setContent(i_frame_6d05ad719d9f215b08116f7960ee495a);
+            
+        
+
+        circle_marker_311f7829b2d245c5394531f789896c33.bindPopup(popup_be91ba9f449e61689a6f7432b5888283)
+        ;
+
+        
+    
+    
+            circle_marker_311f7829b2d245c5394531f789896c33.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ejigbo (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d6583f1aa1d38d212cb366f8b68106bc = L.circleMarker(
+                [6.5389689, 3.2909916],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7047f01fa617801287975cbdf8765bf1);
+        
+    
+        var popup_73908591a5b2d5e28ce9643d48f99a68 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_20acfd71b740baa49625815da8ec2663 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTg4MDMwMDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEVnYmUvaWRpbXU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41MzkwLCAzLjI5MTA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQWxpbW9zaG8gLSBFZ2JlL2lkaW11PC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_73908591a5b2d5e28ce9643d48f99a68.setContent(i_frame_20acfd71b740baa49625815da8ec2663);
+            
+        
+
+        circle_marker_d6583f1aa1d38d212cb366f8b68106bc.bindPopup(popup_73908591a5b2d5e28ce9643d48f99a68)
+        ;
+
+        
+    
+    
+            circle_marker_d6583f1aa1d38d212cb366f8b68106bc.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Egbe/idimu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_72a82f02db790d25a300a59b31ef083c = L.circleMarker(
+                [6.541964500000001, 3.2814333],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7047f01fa617801287975cbdf8765bf1);
+        
+    
+        var popup_9c3eee0e3318f754836e95486aa082fe = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_d89f401684da678eb48c6bcd23420f76 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI4NTMyMzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEVnYmUvaWRpbXU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41NDIwLCAzLjI4MTQ8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQWxpbW9zaG8gLSBFZ2JlL2lkaW11PC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_9c3eee0e3318f754836e95486aa082fe.setContent(i_frame_d89f401684da678eb48c6bcd23420f76);
+            
+        
+
+        circle_marker_72a82f02db790d25a300a59b31ef083c.bindPopup(popup_9c3eee0e3318f754836e95486aa082fe)
+        ;
+
+        
+    
+    
+            circle_marker_72a82f02db790d25a300a59b31ef083c.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Egbe/idimu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4ded6854d369de3059b74df6ee3e2c11 = L.circleMarker(
+                [6.533132999999999, 3.2787773],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7047f01fa617801287975cbdf8765bf1);
+        
+    
+        var popup_ac9325f1ddaeffef1cf25bf115b365f3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_3483c1db4579eda640ebbd01dca6b740 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTg3NTk0MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEVnYmUvaWRpbXU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41MzMxLCAzLjI3ODg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQWxpbW9zaG8gLSBFZ2JlL2lkaW11PC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_ac9325f1ddaeffef1cf25bf115b365f3.setContent(i_frame_3483c1db4579eda640ebbd01dca6b740);
+            
+        
+
+        circle_marker_4ded6854d369de3059b74df6ee3e2c11.bindPopup(popup_ac9325f1ddaeffef1cf25bf115b365f3)
+        ;
+
+        
+    
+    
+            circle_marker_4ded6854d369de3059b74df6ee3e2c11.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Egbe/idimu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e4c7ebb25589250f1a3a5e29743fcb68 = L.circleMarker(
+                [6.5295416, 3.283798],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7047f01fa617801287975cbdf8765bf1);
+        
+    
+        var popup_65d6d489f9a35b706177ee86cfd89c81 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_ee5f9496e76a5b5b8c7f0bd089e514aa = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTkzODA4MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEVnYmUvaWRpbXU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41Mjk1LCAzLjI4Mzg8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQWxpbW9zaG8gLSBFZ2JlL2lkaW11PC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_65d6d489f9a35b706177ee86cfd89c81.setContent(i_frame_ee5f9496e76a5b5b8c7f0bd089e514aa);
+            
+        
+
+        circle_marker_e4c7ebb25589250f1a3a5e29743fcb68.bindPopup(popup_65d6d489f9a35b706177ee86cfd89c81)
+        ;
+
+        
+    
+    
+            circle_marker_e4c7ebb25589250f1a3a5e29743fcb68.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Egbe/idimu (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_7047f01fa617801287975cbdf8765bf1.addTo(map_3ced30660621b6e60e61f10027cd9a1d);
+        
+    
+            var feature_group_1862d01abb9741dbaebb414914ace410 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_12868cfce13cd5d1915e3eade49b952f = L.circleMarker(
+                [6.4446331999999, 3.512253],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_1862d01abb9741dbaebb414914ace410);
+        
+    
+        var popup_33c47edfdc1977aab24dd0b33acec792 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_fdcd2dcc4a20d7ebcadf673e3a0e5757 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMyOTYyOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIElkaW11PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDQ0NiwgMy41MTIzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSWRpbXU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_33c47edfdc1977aab24dd0b33acec792.setContent(i_frame_fdcd2dcc4a20d7ebcadf673e3a0e5757);
+            
+        
+
+        circle_marker_12868cfce13cd5d1915e3eade49b952f.bindPopup(popup_33c47edfdc1977aab24dd0b33acec792)
+        ;
+
+        
+    
+    
+            circle_marker_12868cfce13cd5d1915e3eade49b952f.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Idimu (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2ae908725ad864f1089cfd77a8f03879 = L.circleMarker(
+                [6.7087253, 3.9616995],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_1862d01abb9741dbaebb414914ace410);
+        
+    
+        var popup_71f2f396a659958caa059dd35be9ce51 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_d13a50f62a694db81aab88a732a6e673 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDc2NzQyNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi43MDg3LCAzLjk2MTc8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_71f2f396a659958caa059dd35be9ce51.setContent(i_frame_d13a50f62a694db81aab88a732a6e673);
+            
+        
+
+        circle_marker_2ae908725ad864f1089cfd77a8f03879.bindPopup(popup_71f2f396a659958caa059dd35be9ce51)
+        ;
+
+        
+    
+    
+            circle_marker_2ae908725ad864f1089cfd77a8f03879.bindTooltip(
+                `<div>
+                     Alimosho |  (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_1862d01abb9741dbaebb414914ace410.addTo(map_3ced30660621b6e60e61f10027cd9a1d);
+        
+    
+            var feature_group_393cf6f58ccb2fbad30877ff2ffed603 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_c1e5ed63cfbff2847fd5b790d88e98d9 = L.circleMarker(
+                [6.519348, 3.321256],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_393cf6f58ccb2fbad30877ff2ffed603);
+        
+    
+        var popup_31475d1f5bb3727c4b22247d33e099f5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_eb8fc145ddbfd446c5217c40b2619a04 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMxNTI2NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEVnYmUvaWRpbXU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi41MTkzLCAzLjMyMTM8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IEFsaW1vc2hvPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQWxpbW9zaG8gLSBFZ2JlL2lkaW11PC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_31475d1f5bb3727c4b22247d33e099f5.setContent(i_frame_eb8fc145ddbfd446c5217c40b2619a04);
+            
+        
+
+        circle_marker_c1e5ed63cfbff2847fd5b790d88e98d9.bindPopup(popup_31475d1f5bb3727c4b22247d33e099f5)
+        ;
+
+        
+    
+    
+            circle_marker_c1e5ed63cfbff2847fd5b790d88e98d9.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Egbe/idimu (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7d7f89ed70802852a6fbab93898423ae = L.circleMarker(
+                [6.4873537, 3.3826238],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_393cf6f58ccb2fbad30877ff2ffed603);
+        
+    
+        var popup_643b98a360399630ddb6248c6cd3b7ca = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_190e20e8de723ae7e3d8940063f774c9 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzA0MzMxOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWxpbW9zaG88L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBbGltb3NobyAtIEl5YW5hIElwYWphIChzaGFzaGEpPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNDg3NCwgMy4zODI2PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBbGltb3NobzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFsaW1vc2hvIC0gSXlhbmEgSXBhamEgKHNoYXNoYSk8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_643b98a360399630ddb6248c6cd3b7ca.setContent(i_frame_190e20e8de723ae7e3d8940063f774c9);
+            
+        
+
+        circle_marker_7d7f89ed70802852a6fbab93898423ae.bindPopup(popup_643b98a360399630ddb6248c6cd3b7ca)
+        ;
+
+        
+    
+    
+            circle_marker_7d7f89ed70802852a6fbab93898423ae.bindTooltip(
+                `<div>
+                     Alimosho | Alimosho - Iyana Ipaja (shasha) (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_393cf6f58ccb2fbad30877ff2ffed603.addTo(map_3ced30660621b6e60e61f10027cd9a1d);
+        
+    
+            var layer_control_3196025747d711989733a1b409f633d8_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_d45a78b67f4f102f189167171b3fd56c,
+                    "OpenStreetMap" : tile_layer_cf5286b01f379e8b1cfab75592d3332b,
+                    "Terrain" : tile_layer_be31281ca3507c4856f719c9e339818c,
+                    "Toner" : tile_layer_faa50a5cfe79099e33726320437f70b9,
+                    "CartoDB Dark" : tile_layer_4409ae52b50b2f0623ac835e15f57ee9,
+                    "CartoDB Light" : tile_layer_19c97ce1f6c14a5264d872ffa91a0c82,
+                },
+                overlays :  {
+                    "Cluster 1 - Egbeda+1more - +3more (10 points)" : feature_group_7749a44b3409bd7e930055b04ea3005d,
+                    "Cluster 5 - Alimosho - Alimosho - Iyana Ipaja (shasha)+2more (10 points)" : feature_group_b8e62ddf1fdfcf7f7b5a8fda329c281d,
+                    "Cluster 4 - Alimosho - Alimosho - Iyana Ejigbo+1more (6 points)" : feature_group_7047f01fa617801287975cbdf8765bf1,
+                    "Cluster 2 - Alimosho - Alimosho - Idimu+1more (2 points)" : feature_group_1862d01abb9741dbaebb414914ace410,
+                    "Cluster 3 - Alimosho - Alimosho - Egbe/idimu+1more (2 points)" : feature_group_393cf6f58ccb2fbad30877ff2ffed603,
+                },
+            };
+            let layer_control_3196025747d711989733a1b409f633d8 = L.control.layers(
+                layer_control_3196025747d711989733a1b409f633d8_layers.base_layers,
+                layer_control_3196025747d711989733a1b409f633d8_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_3ced30660621b6e60e61f10027cd9a1d);
+
+        
+    
+            var tile_layer_5812c1355d1c31db5c476a6bcf64cda0 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_dc4b3f8c2acbccdf69543625e620bc5c = new L.Control.MiniMap(
+                tile_layer_5812c1355d1c31db5c476a6bcf64cda0,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_3ced30660621b6e60e61f10027cd9a1d.addControl(mini_map_dc4b3f8c2acbccdf69543625e620bc5c);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_3ced30660621b6e60e61f10027cd9a1d);
+        
+    
+            var measure_control_33dddc199be2ff02a6ed5015b00654d7 = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_3ced30660621b6e60e61f10027cd9a1d.addControl(measure_control_33dddc199be2ff02a6ed5015b00654d7);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_1a4bf3eeb526178e5ddc3872c5fe0378 = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_1a4bf3eeb526178e5ddc3872c5fe0378.options["latFormatter"] =
+                undefined;
+            mouse_position_1a4bf3eeb526178e5ddc3872c5fe0378.options["lngFormatter"] =
+                undefined;
+            map_3ced30660621b6e60e61f10027cd9a1d.addControl(mouse_position_1a4bf3eeb526178e5ddc3872c5fe0378);
+        
+    
+            map_3ced30660621b6e60e61f10027cd9a1d.fitBounds(
+                [[6.4346331999999, 3.2075], [6.7187253, 3.9716994999999997]],
+                {}
+            );
+        
+    
+            var marker_4d2ab889fdf7be654b37e21e3b478c84 = L.marker(
+                [6.5931241, 3.3055119],
+                {
+  "size": 10,
+}
+            ).addTo(map_3ced30660621b6e60e61f10027cd9a1d);
+        
+    
+            var icon_1842d99aa3d4cd6efd7afb7378796f8b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_4d2ab889fdf7be654b37e21e3b478c84.bindTooltip(
+                `<div>
+                     OmniHub Alimosho Lagos - Barka-Agro and General Services MFC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4d2ab889fdf7be654b37e21e3b478c84.setIcon(icon_1842d99aa3d4cd6efd7afb7378796f8b);
+            
+</script>
+</html>

@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_c3a2082ac4bd8d8d44e60106e12abe4a {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+    <script>
+    // Wait for the map to be fully loaded
+    setTimeout(function() {
+        // Create a container for all custom controls
+        var controlContainer = document.createElement('div');
+        controlContainer.id = 'cluster-controls';
+        controlContainer.style.position = 'absolute';
+        controlContainer.style.top = '10px';
+        controlContainer.style.left = '60px';  // Offset from zoom controls
+        controlContainer.style.zIndex = '1000';
+        controlContainer.style.display = 'flex';
+        controlContainer.style.flexDirection = 'column';
+        controlContainer.style.gap = '5px';
+        
+        // Create unified control panel
+        var controlPanel = document.createElement('div');
+        controlPanel.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        controlPanel.style.border = '2px solid #ccc';
+        controlPanel.style.borderRadius = '8px';
+        controlPanel.style.padding = '10px';
+        controlPanel.style.fontSize = '12px';
+        controlPanel.style.fontFamily = 'Arial, sans-serif';
+        controlPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+        controlPanel.style.backdropFilter = 'blur(5px)';
+        controlPanel.style.minWidth = '200px';
+        
+        // Add title
+        var title = document.createElement('div');
+        title.innerHTML = '<strong>Cluster Controls</strong>';
+        title.style.marginBottom = '10px';
+        title.style.textAlign = 'center';
+        title.style.color = '#333';
+        title.style.borderBottom = '1px solid #ddd';
+        title.style.paddingBottom = '5px';
+        controlPanel.appendChild(title);
+        
+        // Create button container
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.marginBottom = '10px';
+        
+        // Create the unselect all button
+        var unselectButton = document.createElement('button');
+        unselectButton.innerHTML = 'Hide All';
+        unselectButton.style.flex = '1';
+        unselectButton.style.backgroundColor = '#f8f9fa';
+        unselectButton.style.border = '1px solid #dee2e6';
+        unselectButton.style.borderRadius = '4px';
+        unselectButton.style.padding = '6px 8px';
+        unselectButton.style.fontSize = '11px';
+        unselectButton.style.fontWeight = 'bold';
+        unselectButton.style.cursor = 'pointer';
+        unselectButton.style.transition = 'all 0.2s';
+        
+        // Create the select all button
+        var selectButton = document.createElement('button');
+        selectButton.innerHTML = 'Show All';
+        selectButton.style.flex = '1';
+        selectButton.style.backgroundColor = '#f8f9fa';
+        selectButton.style.border = '1px solid #dee2e6';
+        selectButton.style.borderRadius = '4px';
+        selectButton.style.padding = '6px 8px';
+        selectButton.style.fontSize = '11px';
+        selectButton.style.fontWeight = 'bold';
+        selectButton.style.cursor = 'pointer';
+        selectButton.style.transition = 'all 0.2s';
+        
+        // Add hover effects
+        [unselectButton, selectButton].forEach(function(btn) {
+            btn.onmouseover = function() {
+                this.style.backgroundColor = '#e9ecef';
+                this.style.transform = 'translateY(-1px)';
+            };
+            btn.onmouseout = function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(0)';
+            };
+        });
+        
+        // Add click functionality for unselect all
+        unselectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var uncheckedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.click();
+                    uncheckedCount++;
+                }
+            });
+            
+            showFeedback(unselectButton, uncheckedCount > 0 ? 
+                'Hidden ' + uncheckedCount + ' clusters' : 'No clusters visible', 
+                uncheckedCount > 0 ? '#d1ecf1' : '#f8d7da');
+        };
+        
+        // Add click functionality for select all
+        selectButton.onclick = function() {
+            var layerControls = document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            layerControls.forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.click();
+                    checkedCount++;
+                }
+            });
+            
+            showFeedback(selectButton, checkedCount > 0 ? 
+                'Shown ' + checkedCount + ' clusters' : 'All clusters visible', 
+                checkedCount > 0 ? '#d4edda' : '#d1ecf1');
+        };
+        
+        // Feedback function
+        function showFeedback(button, message, color) {
+            var originalText = button.innerHTML;
+            var originalColor = button.style.backgroundColor;
+            button.innerHTML = message;
+            button.style.backgroundColor = color;
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = originalColor;
+            }, 2000);
+        }
+        
+        // Add cluster summary
+        var summaryDiv = document.createElement('div');
+        summaryDiv.style.fontSize = '10px';
+        summaryDiv.style.color = '#666';
+        summaryDiv.style.textAlign = 'center';
+        summaryDiv.style.marginTop = '5px';
+        summaryDiv.innerHTML = 'Total: 5 clusters | 35 points';
+        
+        // Assemble the control panel
+        buttonContainer.appendChild(unselectButton);
+        buttonContainer.appendChild(selectButton);
+        controlPanel.appendChild(buttonContainer);
+        controlPanel.appendChild(summaryDiv);
+        controlContainer.appendChild(controlPanel);
+        
+        // Add minimize/maximize functionality
+        var toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '−';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.top = '5px';
+        toggleButton.style.right = '5px';
+        toggleButton.style.width = '20px';
+        toggleButton.style.height = '20px';
+        toggleButton.style.border = 'none';
+        toggleButton.style.backgroundColor = 'transparent';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.fontSize = '14px';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.color = '#666';
+        
+        var isMinimized = false;
+        toggleButton.onclick = function() {
+            if (isMinimized) {
+                buttonContainer.style.display = 'flex';
+                summaryDiv.style.display = 'block';
+                toggleButton.innerHTML = '−';
+                isMinimized = false;
+            } else {
+                buttonContainer.style.display = 'none';
+                summaryDiv.style.display = 'none';
+                toggleButton.innerHTML = '+';
+                isMinimized = true;
+            }
+        };
+        
+        controlPanel.appendChild(toggleButton);
+        
+        // Add the control container to the map
+        document.body.appendChild(controlContainer);
+        
+    }, 1000);
+    </script>
+    
+    
+                    <div id="cluster-legend" style="position: fixed; 
+                                bottom: 120px; right: 10px; width: 250px; height: auto; 
+                                background-color: rgba(255, 255, 255, 0.95); 
+                                border: 2px solid #ccc; z-index: 999; 
+                                font-size: 11px; padding: 12px; border-radius: 8px;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                backdrop-filter: blur(5px);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #333;">Cluster Legend</strong>
+                        <button onclick="toggleLegend()" style="border: none; background: none; cursor: pointer; font-size: 14px; color: #666;">−</button>
+                    </div>
+                    <div style="font-size: 9px; color: #666; margin-bottom: 8px;">
+                        5 clusters | Sorted by size | Showing top 15
+                    </div>
+                    <div id="legend-content" style="max-height: 180px; overflow-y: auto;">
+                    
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #1f77b4; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#1</strong> Cluster 1 
+                <br><span style="color: #666; font-size: 9px;">14 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #9467bd; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#2</strong> Cluster 5 
+                <br><span style="color: #666; font-size: 9px;">10 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #d62728; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#3</strong> Cluster 4 
+                <br><span style="color: #666; font-size: 9px;">8 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #ff7f0e; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#4</strong> Cluster 2 
+                <br><span style="color: #666; font-size: 9px;">2 points</span>
+            </span>
+        </div>
+        
+        <div style="margin: 3px 0; display: flex; align-items: center; padding: 2px;">
+            <span style="display: inline-block; width: 14px; height: 14px; 
+                         background-color: #2ca02c; border-radius: 50%; 
+                         margin-right: 8px; border: 1px solid white; 
+                         box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+            <span style="font-size: 10px; flex: 1;">
+                <strong>#5</strong> Cluster 3 
+                <br><span style="color: #666; font-size: 9px;">1 points</span>
+            </span>
+        </div>
+        
+    </div>
+    <script>
+    function toggleLegend() {
+        var content = document.getElementById('legend-content');
+        var button = document.querySelector('#cluster-legend button');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.innerHTML = '−';
+        } else {
+            content.style.display = 'none';
+            button.innerHTML = '+';
+        }
+    }
+    </script>
+    </div>
+    
+    
+            <div class="folium-map" id="map_c3a2082ac4bd8d8d44e60106e12abe4a" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_c3a2082ac4bd8d8d44e60106e12abe4a = L.map(
+                "map_c3a2082ac4bd8d8d44e60106e12abe4a",
+                {
+                    center: [6.65107081039825, 4.9502954999999496],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_c3a2082ac4bd8d8d44e60106e12abe4a);
+
+            
+
+        
+    
+            var tile_layer_e0fafb3c5de8d51cd131d62fd0ba96a8 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e0fafb3c5de8d51cd131d62fd0ba96a8.addTo(map_c3a2082ac4bd8d8d44e60106e12abe4a);
+        
+    
+            var tile_layer_c41833297114cbefd1d8f4bbcee1ca2a = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_c41833297114cbefd1d8f4bbcee1ca2a.addTo(map_c3a2082ac4bd8d8d44e60106e12abe4a);
+        
+    
+            var tile_layer_d8177fcf7982a2f50c5ae7a99650de64 = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_d8177fcf7982a2f50c5ae7a99650de64.addTo(map_c3a2082ac4bd8d8d44e60106e12abe4a);
+        
+    
+            var tile_layer_7d30ad2371d300b0071635b56a02bc8a = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_7d30ad2371d300b0071635b56a02bc8a.addTo(map_c3a2082ac4bd8d8d44e60106e12abe4a);
+        
+    
+            var tile_layer_59bc00132993da947d97528b26fcfa25 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_59bc00132993da947d97528b26fcfa25.addTo(map_c3a2082ac4bd8d8d44e60106e12abe4a);
+        
+    
+            var tile_layer_8c82d8f9b7ea380ba9f586756a712d28 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_8c82d8f9b7ea380ba9f586756a712d28.addTo(map_c3a2082ac4bd8d8d44e60106e12abe4a);
+        
+    
+            var feature_group_cb6e01cd450b1a061ea86bc44256d995 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_84516318d15464ffd124dbdbac8ee78f = L.circleMarker(
+                [6.6682679999999, 3.3259411],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_cb6e01cd450b1a061ea86bc44256d995);
+        
+    
+        var popup_8b0634fa71fadfefdb83994a8dd84f44 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_2907a2dd5649beca0a8f8088ce71584e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzg3NTczNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY2ODMsIDMuMzI1OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8b0634fa71fadfefdb83994a8dd84f44.setContent(i_frame_2907a2dd5649beca0a8f8088ce71584e);
+            
+        
+
+        circle_marker_84516318d15464ffd124dbdbac8ee78f.bindPopup(popup_8b0634fa71fadfefdb83994a8dd84f44)
+        ;
+
+        
+    
+    
+            circle_marker_84516318d15464ffd124dbdbac8ee78f.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ojokoro (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_63f48158c932cb3428f7d29bb9ec01cf = L.circleMarker(
+                [6.6698626, 3.3505652],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_cb6e01cd450b1a061ea86bc44256d995);
+        
+    
+        var popup_66fc4a41c024da4ba7e17c24133865f3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_b6fb3c002aed9dbd3bde1dffc2ef074a = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDg3MDE5ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQWdlZ2UgLSBBanV3b24gQWt1dGUgUm9hZDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY2OTksIDMuMzUwNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQWdlZ2UgLSBBanV3b24gQWt1dGUgUm9hZDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_66fc4a41c024da4ba7e17c24133865f3.setContent(i_frame_b6fb3c002aed9dbd3bde1dffc2ef074a);
+            
+        
+
+        circle_marker_63f48158c932cb3428f7d29bb9ec01cf.bindPopup(popup_66fc4a41c024da4ba7e17c24133865f3)
+        ;
+
+        
+    
+    
+            circle_marker_63f48158c932cb3428f7d29bb9ec01cf.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Agege - Ajuwon Akute Road (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4418f9c70cb63a37367dcaffb56dec9a = L.circleMarker(
+                [6.6742995, 3.2915759],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_cb6e01cd450b1a061ea86bc44256d995);
+        
+    
+        var popup_533d6cb77af932cdb8438d01178fce19 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_89c5e11a0ac76c78c814de3d899940ec = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTEzNjUxNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY3NDMsIDMuMjkxNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_533d6cb77af932cdb8438d01178fce19.setContent(i_frame_89c5e11a0ac76c78c814de3d899940ec);
+            
+        
+
+        circle_marker_4418f9c70cb63a37367dcaffb56dec9a.bindPopup(popup_533d6cb77af932cdb8438d01178fce19)
+        ;
+
+        
+    
+    
+            circle_marker_4418f9c70cb63a37367dcaffb56dec9a.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ojokoro (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3ecb088ca05ab1d346e18c13a60faed1 = L.circleMarker(
+                [6.6590301, 3.3047186],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_cb6e01cd450b1a061ea86bc44256d995);
+        
+    
+        var popup_f07b9fa7f422b645ae61935784804b0f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_d57e3604790e5dbd483b39ec0942cd89 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTg0MDc1NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY1OTAsIDMuMzA0NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f07b9fa7f422b645ae61935784804b0f.setContent(i_frame_d57e3604790e5dbd483b39ec0942cd89);
+            
+        
+
+        circle_marker_3ecb088ca05ab1d346e18c13a60faed1.bindPopup(popup_f07b9fa7f422b645ae61935784804b0f)
+        ;
+
+        
+    
+    
+            circle_marker_3ecb088ca05ab1d346e18c13a60faed1.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ojokoro (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_39d2ad7d11163dad0a17ce0c6f139c6d = L.circleMarker(
+                [6.6646692, 3.3527495],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_cb6e01cd450b1a061ea86bc44256d995);
+        
+    
+        var popup_3ab9ec0a767ea22166d10b16db7b5492 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_08f53177267a73ba67eea49acc8ec914 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIyNTU5MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtlamE8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJa2VqYSAtIE9qb2R1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjY0NywgMy4zNTI3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJa2VqYTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElrZWphIC0gT2pvZHU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_3ab9ec0a767ea22166d10b16db7b5492.setContent(i_frame_08f53177267a73ba67eea49acc8ec914);
+            
+        
+
+        circle_marker_39d2ad7d11163dad0a17ce0c6f139c6d.bindPopup(popup_3ab9ec0a767ea22166d10b16db7b5492)
+        ;
+
+        
+    
+    
+            circle_marker_39d2ad7d11163dad0a17ce0c6f139c6d.bindTooltip(
+                `<div>
+                     Ikeja | Ikeja - Ojodu (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f4a403e40ab485aa13821f8703d76908 = L.circleMarker(
+                [6.676692, 3.35499],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_cb6e01cd450b1a061ea86bc44256d995);
+        
+    
+        var popup_f6e6d749e356ccbe495d4ff2b80e3f6e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_3461fcbe6a497f2b9a424b43760b202b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMjgxNjE5MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQWdlZ2UgLSBBanV3b24gQWt1dGUgUm9hZDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY3NjcsIDMuMzU1MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQWdlZ2UgLSBBanV3b24gQWt1dGUgUm9hZDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f6e6d749e356ccbe495d4ff2b80e3f6e.setContent(i_frame_3461fcbe6a497f2b9a424b43760b202b);
+            
+        
+
+        circle_marker_f4a403e40ab485aa13821f8703d76908.bindPopup(popup_f6e6d749e356ccbe495d4ff2b80e3f6e)
+        ;
+
+        
+    
+    
+            circle_marker_f4a403e40ab485aa13821f8703d76908.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Agege - Ajuwon Akute Road (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2bc0cc0c2170bbfc87752190dfa3fde2 = L.circleMarker(
+                [6.6296935, 3.3757573],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_cb6e01cd450b1a061ea86bc44256d995);
+        
+    
+        var popup_fbe4c3878db56a7a316883aeadf989b6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_8558d3c5e0a0f7072c7e74afaf53ca2f = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQyODk1OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pvZHUgQmVyZ2VyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjI5NywgMy4zNzU4PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJZmFrbyBJamFpeWU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJZmFrbyBJamFpeWUgLSBPam9kdSBCZXJnZXI8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_fbe4c3878db56a7a316883aeadf989b6.setContent(i_frame_8558d3c5e0a0f7072c7e74afaf53ca2f);
+            
+        
+
+        circle_marker_2bc0cc0c2170bbfc87752190dfa3fde2.bindPopup(popup_fbe4c3878db56a7a316883aeadf989b6)
+        ;
+
+        
+    
+    
+            circle_marker_2bc0cc0c2170bbfc87752190dfa3fde2.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ojodu Berger (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2a47faec5604342059714f18fd3f9b62 = L.circleMarker(
+                [6.6471608, 3.3492186],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_cb6e01cd450b1a061ea86bc44256d995);
+        
+    
+        var popup_66a93122fd0906d26150b27d5041c698 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_c7fc77bedb6944dababb67899f1a1c0d = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI4MDY3MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2diYSAtIE9rZSBJcmE8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NDcyLCAzLjM0OTI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElmYWtvIElqYWl5ZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElmYWtvIElqYWl5ZSAtIE9nYmEgLSBPa2UgSXJhPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_66a93122fd0906d26150b27d5041c698.setContent(i_frame_c7fc77bedb6944dababb67899f1a1c0d);
+            
+        
+
+        circle_marker_2a47faec5604342059714f18fd3f9b62.bindPopup(popup_66a93122fd0906d26150b27d5041c698)
+        ;
+
+        
+    
+    
+            circle_marker_2a47faec5604342059714f18fd3f9b62.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ogba - Oke Ira (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5926e885dfdbb43752358385cbd98b1a = L.circleMarker(
+                [6.6470058, 3.3154741],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_cb6e01cd450b1a061ea86bc44256d995);
+        
+    
+        var popup_f89c267dd80eeb18c84674a9a17dbeb2 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_66e95a667e1993c8b9bba90d5438b543 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIyOTg0MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWdlZ2U8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBZ2VnZSAtIE9sZCBBYmVva3V0YSBSb2FkPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjQ3MCwgMy4zMTU1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBZ2VnZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFnZWdlIC0gT2xkIEFiZW9rdXRhIFJvYWQ8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f89c267dd80eeb18c84674a9a17dbeb2.setContent(i_frame_66e95a667e1993c8b9bba90d5438b543);
+            
+        
+
+        circle_marker_5926e885dfdbb43752358385cbd98b1a.bindPopup(popup_f89c267dd80eeb18c84674a9a17dbeb2)
+        ;
+
+        
+    
+    
+            circle_marker_5926e885dfdbb43752358385cbd98b1a.bindTooltip(
+                `<div>
+                     Agege | Agege - Old Abeokuta Road (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_20c524dddb4ae7b8bc6d4d50b6c5bdca = L.circleMarker(
+                [6.6318554999999, 3.3129851],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_cb6e01cd450b1a061ea86bc44256d995);
+        
+    
+        var popup_eef9644031df4fafc6e0a1d03b6832a8 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_0344df14cd4671549fc3316e1846c704 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzc4NTE0MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWdlZ2U8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBZ2VnZSAtIE9yaWxlIEFnZWdlPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjMxOSwgMy4zMTMwPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBZ2VnZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFnZWdlIC0gT3JpbGUgQWdlZ2U8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_eef9644031df4fafc6e0a1d03b6832a8.setContent(i_frame_0344df14cd4671549fc3316e1846c704);
+            
+        
+
+        circle_marker_20c524dddb4ae7b8bc6d4d50b6c5bdca.bindPopup(popup_eef9644031df4fafc6e0a1d03b6832a8)
+        ;
+
+        
+    
+    
+            circle_marker_20c524dddb4ae7b8bc6d4d50b6c5bdca.bindTooltip(
+                `<div>
+                     Agege | Agege - Orile Agege (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_60b8afcc59889f1b07ffd20ad1b40abb = L.circleMarker(
+                [6.6779555, 3.3595429],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_cb6e01cd450b1a061ea86bc44256d995);
+        
+    
+        var popup_0b8878fda6c5536c7457be1721f0b145 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_8725f75aaf9671c52283bacb0d3182ca = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTQwNzE1OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQWdlZ2UgLSBBanV3b24gQWt1dGUgUm9hZDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY3ODAsIDMuMzU5NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gQWdlZ2UgLSBBanV3b24gQWt1dGUgUm9hZDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_0b8878fda6c5536c7457be1721f0b145.setContent(i_frame_8725f75aaf9671c52283bacb0d3182ca);
+            
+        
+
+        circle_marker_60b8afcc59889f1b07ffd20ad1b40abb.bindPopup(popup_0b8878fda6c5536c7457be1721f0b145)
+        ;
+
+        
+    
+    
+            circle_marker_60b8afcc59889f1b07ffd20ad1b40abb.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Agege - Ajuwon Akute Road (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_077259185462a104ab4bc42fcc0e954a = L.circleMarker(
+                [6.6629167, 3.3064817],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_cb6e01cd450b1a061ea86bc44256d995);
+        
+    
+        var popup_2f8ef34ffd24ba017ee06ceb93bc5361 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_9da42e2e6157b0e60a5c4109579fbcd1 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTgzNjAzNzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY2MjksIDMuMzA2NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_2f8ef34ffd24ba017ee06ceb93bc5361.setContent(i_frame_9da42e2e6157b0e60a5c4109579fbcd1);
+            
+        
+
+        circle_marker_077259185462a104ab4bc42fcc0e954a.bindPopup(popup_2f8ef34ffd24ba017ee06ceb93bc5361)
+        ;
+
+        
+    
+    
+            circle_marker_077259185462a104ab4bc42fcc0e954a.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ojokoro (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_759caf8a540ca3023966454df031a735 = L.circleMarker(
+                [6.6466452, 3.3445144],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_cb6e01cd450b1a061ea86bc44256d995);
+        
+    
+        var popup_e4d48f5a49abdc3b7c98febb2ed974a6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_da49eca1b2ad48682453dc17be45e643 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzg4MTEyNDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2diYSAtIE9rZSBJcmE8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NDY2LCAzLjM0NDU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElmYWtvIElqYWl5ZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElmYWtvIElqYWl5ZSAtIE9nYmEgLSBPa2UgSXJhPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_e4d48f5a49abdc3b7c98febb2ed974a6.setContent(i_frame_da49eca1b2ad48682453dc17be45e643);
+            
+        
+
+        circle_marker_759caf8a540ca3023966454df031a735.bindPopup(popup_e4d48f5a49abdc3b7c98febb2ed974a6)
+        ;
+
+        
+    
+    
+            circle_marker_759caf8a540ca3023966454df031a735.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ogba - Oke Ira (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_52a213909c3623571615c7a94ba6377c = L.circleMarker(
+                [6.6696599999999, 3.3255688],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1f77b4", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_cb6e01cd450b1a061ea86bc44256d995);
+        
+    
+        var popup_6929b9345a33679fe129f5b913f748a6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_13eccce2b96d8b065935c164708b001b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzFmNzdiNDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTg4NDI0OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2diYSAtIElmYWtvIC0gSWRpYWdib248L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42Njk3LCAzLjMyNTY8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElmYWtvIElqYWl5ZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElmYWtvIElqYWl5ZSAtIE9nYmEgLSBJZmFrbyAtIElkaWFnYm9uPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_6929b9345a33679fe129f5b913f748a6.setContent(i_frame_13eccce2b96d8b065935c164708b001b);
+            
+        
+
+        circle_marker_52a213909c3623571615c7a94ba6377c.bindPopup(popup_6929b9345a33679fe129f5b913f748a6)
+        ;
+
+        
+    
+    
+            circle_marker_52a213909c3623571615c7a94ba6377c.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ogba - Ifako - Idiagbon (Cluster 1)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_cb6e01cd450b1a061ea86bc44256d995.addTo(map_c3a2082ac4bd8d8d44e60106e12abe4a);
+        
+    
+            var feature_group_7a9caa17a6477604cb909e0f49e3c6ab = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_13759463947a4c636935b1b530982930 = L.circleMarker(
+                [6.6719528, 3.2925863],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7a9caa17a6477604cb909e0f49e3c6ab);
+        
+    
+        var popup_5eb0d19dfd406a6c605abfb93d685969 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_c8ff5b9b82412aab37207ba25d4c5d68 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzg4MjM2NTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY3MjAsIDMuMjkyNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_5eb0d19dfd406a6c605abfb93d685969.setContent(i_frame_c8ff5b9b82412aab37207ba25d4c5d68);
+            
+        
+
+        circle_marker_13759463947a4c636935b1b530982930.bindPopup(popup_5eb0d19dfd406a6c605abfb93d685969)
+        ;
+
+        
+    
+    
+            circle_marker_13759463947a4c636935b1b530982930.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ojokoro (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_82215faf1f8b9e95973da535b01884d9 = L.circleMarker(
+                [6.672349, 3.2834865],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7a9caa17a6477604cb909e0f49e3c6ab);
+        
+    
+        var popup_d03900fb11d9b7141970b4ebdb7f985f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_369c6b3f598b0d2b51b4ce184eae4348 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI3NTAwOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY3MjMsIDMuMjgzNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d03900fb11d9b7141970b4ebdb7f985f.setContent(i_frame_369c6b3f598b0d2b51b4ce184eae4348);
+            
+        
+
+        circle_marker_82215faf1f8b9e95973da535b01884d9.bindPopup(popup_d03900fb11d9b7141970b4ebdb7f985f)
+        ;
+
+        
+    
+    
+            circle_marker_82215faf1f8b9e95973da535b01884d9.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ojokoro (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_918c1c206af2d4ef91be4120d496a09d = L.circleMarker(
+                [6.673417799999999, 3.2754028],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7a9caa17a6477604cb909e0f49e3c6ab);
+        
+    
+        var popup_292e6d6a972c2c7acec2c2ce814003b2 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_dd2f3bd87e6c4ae881fb1f7748e836cc = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTIyOTE0MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjczNCwgMy4yNzU0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJZmFrbyBJamFpeWU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_292e6d6a972c2c7acec2c2ce814003b2.setContent(i_frame_dd2f3bd87e6c4ae881fb1f7748e836cc);
+            
+        
+
+        circle_marker_918c1c206af2d4ef91be4120d496a09d.bindPopup(popup_292e6d6a972c2c7acec2c2ce814003b2)
+        ;
+
+        
+    
+    
+            circle_marker_918c1c206af2d4ef91be4120d496a09d.bindTooltip(
+                `<div>
+                     Ifako Ijaiye |  (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_acfe8492694d7c504e6aa06671d26233 = L.circleMarker(
+                [6.6757186, 3.2756201],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7a9caa17a6477604cb909e0f49e3c6ab);
+        
+    
+        var popup_9587ffe7166c21bab02da81c6d19ac79 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_c47c859c2422bb99412fde1dde9f55b9 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI4NTE2NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY3NTcsIDMuMjc1NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_9587ffe7166c21bab02da81c6d19ac79.setContent(i_frame_c47c859c2422bb99412fde1dde9f55b9);
+            
+        
+
+        circle_marker_acfe8492694d7c504e6aa06671d26233.bindPopup(popup_9587ffe7166c21bab02da81c6d19ac79)
+        ;
+
+        
+    
+    
+            circle_marker_acfe8492694d7c504e6aa06671d26233.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ojokoro (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1a024809079235b4cbb3f27a41c0b3d7 = L.circleMarker(
+                [6.681382999999999, 3.2846895],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7a9caa17a6477604cb909e0f49e3c6ab);
+        
+    
+        var popup_d21c0587c68bb73ef60a28d6f0e9a853 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_5d9c8782bec89a059eb10fbfc3b9be1c = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDUyNTI2NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjgxNCwgMy4yODQ3PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJZmFrbyBJamFpeWU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_d21c0587c68bb73ef60a28d6f0e9a853.setContent(i_frame_5d9c8782bec89a059eb10fbfc3b9be1c);
+            
+        
+
+        circle_marker_1a024809079235b4cbb3f27a41c0b3d7.bindPopup(popup_d21c0587c68bb73ef60a28d6f0e9a853)
+        ;
+
+        
+    
+    
+            circle_marker_1a024809079235b4cbb3f27a41c0b3d7.bindTooltip(
+                `<div>
+                     Ifako Ijaiye |  (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_81c696d39e6571ce7b02dd05f208228a = L.circleMarker(
+                [6.681382999999999, 3.2846895],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7a9caa17a6477604cb909e0f49e3c6ab);
+        
+    
+        var popup_8dd0c74aec7956e61b0e0c3000318bf0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_4d100f1863fd07aa098471ee5b27e925 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTEyNzg5OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtlamE8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42ODE0LCAzLjI4NDc8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrZWphPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_8dd0c74aec7956e61b0e0c3000318bf0.setContent(i_frame_4d100f1863fd07aa098471ee5b27e925);
+            
+        
+
+        circle_marker_81c696d39e6571ce7b02dd05f208228a.bindPopup(popup_8dd0c74aec7956e61b0e0c3000318bf0)
+        ;
+
+        
+    
+    
+            circle_marker_81c696d39e6571ce7b02dd05f208228a.bindTooltip(
+                `<div>
+                     Ikeja |  (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f61ffb96d1583afce92f8149f2c6c01a = L.circleMarker(
+                [6.6847117, 3.282895],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7a9caa17a6477604cb909e0f49e3c6ab);
+        
+    
+        var popup_a535d5e89213499372a35f7ba902a94b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_894f1cbf3a89090a48fa173d113c5a0b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTgzOTc3OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY4NDcsIDMuMjgyOTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_a535d5e89213499372a35f7ba902a94b.setContent(i_frame_894f1cbf3a89090a48fa173d113c5a0b);
+            
+        
+
+        circle_marker_f61ffb96d1583afce92f8149f2c6c01a.bindPopup(popup_a535d5e89213499372a35f7ba902a94b)
+        ;
+
+        
+    
+    
+            circle_marker_f61ffb96d1583afce92f8149f2c6c01a.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ojokoro (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6bdf3de43d031ae88773d0d4fbce6165 = L.circleMarker(
+                [6.6849677, 3.2885455],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7a9caa17a6477604cb909e0f49e3c6ab);
+        
+    
+        var popup_587860583dd99534a4cc00781bec59b1 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_7ebcb387664647e600195e021116886e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDAwNDIxNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2diYSAtIElmYWtvIC0gT3JpbW9sYWRlPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjg1MCwgMy4yODg1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJZmFrbyBJamFpeWU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJZmFrbyBJamFpeWUgLSBPZ2JhIC0gSWZha28gLSBPcmltb2xhZGU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_587860583dd99534a4cc00781bec59b1.setContent(i_frame_7ebcb387664647e600195e021116886e);
+            
+        
+
+        circle_marker_6bdf3de43d031ae88773d0d4fbce6165.bindPopup(popup_587860583dd99534a4cc00781bec59b1)
+        ;
+
+        
+    
+    
+            circle_marker_6bdf3de43d031ae88773d0d4fbce6165.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ogba - Ifako - Orimolade (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_16ef54a5b6f09b946a139c985def6758 = L.circleMarker(
+                [6.6849677, 3.2885455],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7a9caa17a6477604cb909e0f49e3c6ab);
+        
+    
+        var popup_452399535c5fba252f89f4b88b06bf4c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_a9fcce3bcee150a8d1cb75a6778822ec = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTMwMTE4OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2diYSAtIEFraWxvIFJvYWQ8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42ODUwLCAzLjI4ODU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElmYWtvIElqYWl5ZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElmYWtvIElqYWl5ZSAtIE9nYmEgLSBBa2lsbyBSb2FkPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_452399535c5fba252f89f4b88b06bf4c.setContent(i_frame_a9fcce3bcee150a8d1cb75a6778822ec);
+            
+        
+
+        circle_marker_16ef54a5b6f09b946a139c985def6758.bindPopup(popup_452399535c5fba252f89f4b88b06bf4c)
+        ;
+
+        
+    
+    
+            circle_marker_16ef54a5b6f09b946a139c985def6758.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ogba - Akilo Road (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_014c2954af8bf9377e1681e1ec1ea9c1 = L.circleMarker(
+                [6.6830759, 3.2986181],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9467bd", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_7a9caa17a6477604cb909e0f49e3c6ab);
+        
+    
+        var popup_53abfa1c4cd642c7221aa28c5b704563 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_8e2954803cc2ffa9dff88dd121d66243 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzk0NjdiZDsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI5MzE0ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY4MzEsIDMuMjk4NjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_53abfa1c4cd642c7221aa28c5b704563.setContent(i_frame_8e2954803cc2ffa9dff88dd121d66243);
+            
+        
+
+        circle_marker_014c2954af8bf9377e1681e1ec1ea9c1.bindPopup(popup_53abfa1c4cd642c7221aa28c5b704563)
+        ;
+
+        
+    
+    
+            circle_marker_014c2954af8bf9377e1681e1ec1ea9c1.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ojokoro (Cluster 5)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_7a9caa17a6477604cb909e0f49e3c6ab.addTo(map_c3a2082ac4bd8d8d44e60106e12abe4a);
+        
+    
+            var feature_group_2935302119767c5272aa468ad72ed51a = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_84db6b46371ad94c92fadb86e5223385 = L.circleMarker(
+                [6.660400099999999, 3.3220809],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2935302119767c5272aa468ad72ed51a);
+        
+    
+        var popup_84957431faee3a29e0e8a82a1cd8337b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_7e4143b676aa82fdc8ff6e3c274c7859 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNDEzODE1MjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2diYSAtIENvbGxlZ2UgUm9hZDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY2MDQsIDMuMzIyMTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2diYSAtIENvbGxlZ2UgUm9hZDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_84957431faee3a29e0e8a82a1cd8337b.setContent(i_frame_7e4143b676aa82fdc8ff6e3c274c7859);
+            
+        
+
+        circle_marker_84db6b46371ad94c92fadb86e5223385.bindPopup(popup_84957431faee3a29e0e8a82a1cd8337b)
+        ;
+
+        
+    
+    
+            circle_marker_84db6b46371ad94c92fadb86e5223385.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ogba - College Road (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_65305e73c85a240bd1cf89608ea20992 = L.circleMarker(
+                [6.6699578, 3.32512],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2935302119767c5272aa468ad72ed51a);
+        
+    
+        var popup_ec2490bf9b7d8c519521915e22c2d49d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_78bf10d0bc2b40ae7ae31ec611943f6f = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTI5NTU4MzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2diYSAtIElmYWtvIC0gT3JpbW9sYWRlPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjcwMCwgMy4zMjUxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJZmFrbyBJamFpeWU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBJZmFrbyBJamFpeWUgLSBPZ2JhIC0gSWZha28gLSBPcmltb2xhZGU8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_ec2490bf9b7d8c519521915e22c2d49d.setContent(i_frame_78bf10d0bc2b40ae7ae31ec611943f6f);
+            
+        
+
+        circle_marker_65305e73c85a240bd1cf89608ea20992.bindPopup(popup_ec2490bf9b7d8c519521915e22c2d49d)
+        ;
+
+        
+    
+    
+            circle_marker_65305e73c85a240bd1cf89608ea20992.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ogba - Ifako - Orimolade (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a8b12cc5b93aad6cb5b08a2ee9e44d3b = L.circleMarker(
+                [6.6699578, 3.32512],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2935302119767c5272aa468ad72ed51a);
+        
+    
+        var popup_b499398e7d754ecb53ad9fdf7212e798 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_379300cf66f414d05263935a54d18ee9 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMjE3ODUwODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjcwMCwgMy4zMjUxPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJZmFrbyBJamFpeWU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_b499398e7d754ecb53ad9fdf7212e798.setContent(i_frame_379300cf66f414d05263935a54d18ee9);
+            
+        
+
+        circle_marker_a8b12cc5b93aad6cb5b08a2ee9e44d3b.bindPopup(popup_b499398e7d754ecb53ad9fdf7212e798)
+        ;
+
+        
+    
+    
+            circle_marker_a8b12cc5b93aad6cb5b08a2ee9e44d3b.bindTooltip(
+                `<div>
+                     Ifako Ijaiye |  (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_96fee1d965648e06b84f344c81f48cc2 = L.circleMarker(
+                [6.6705457, 3.3263777],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2935302119767c5272aa468ad72ed51a);
+        
+    
+        var popup_61dd8a41b09779ae07262dc9e367565e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_fc0bf832d3a602faee4b572b63d9e958 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gNTE1NzU0NDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2diYSAtIElmYWtvIC0gSWRpYWdib248L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NzA1LCAzLjMyNjQ8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElmYWtvIElqYWl5ZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElmYWtvIElqYWl5ZSAtIE9nYmEgLSBJZmFrbyAtIElkaWFnYm9uPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_61dd8a41b09779ae07262dc9e367565e.setContent(i_frame_fc0bf832d3a602faee4b572b63d9e958);
+            
+        
+
+        circle_marker_96fee1d965648e06b84f344c81f48cc2.bindPopup(popup_61dd8a41b09779ae07262dc9e367565e)
+        ;
+
+        
+    
+    
+            circle_marker_96fee1d965648e06b84f344c81f48cc2.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ogba - Ifako - Idiagbon (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e9178a2c494e6725551e48216f82aecb = L.circleMarker(
+                [6.6725286, 3.3204954],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2935302119767c5272aa468ad72ed51a);
+        
+    
+        var popup_210d7b23a7ec4ed236b920b5376451f6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_1414a06d6876f9ef04e5e4dc96b197d3 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTkyMjU1OTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjcyNSwgMy4zMjA1PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBJZmFrbyBJamFpeWU8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_210d7b23a7ec4ed236b920b5376451f6.setContent(i_frame_1414a06d6876f9ef04e5e4dc96b197d3);
+            
+        
+
+        circle_marker_e9178a2c494e6725551e48216f82aecb.bindPopup(popup_210d7b23a7ec4ed236b920b5376451f6)
+        ;
+
+        
+    
+    
+            circle_marker_e9178a2c494e6725551e48216f82aecb.bindTooltip(
+                `<div>
+                     Ifako Ijaiye |  (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1d756b36c8979cc0b9bb67195175c68d = L.circleMarker(
+                [6.6701714, 3.3190312],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2935302119767c5272aa468ad72ed51a);
+        
+    
+        var popup_6801eba0c069cbf2823152b1307a8184 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_df585a4420be153571fb2dcb4f9507fc = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTg0NzA4NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY3MDIsIDMuMzE5MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_6801eba0c069cbf2823152b1307a8184.setContent(i_frame_df585a4420be153571fb2dcb4f9507fc);
+            
+        
+
+        circle_marker_1d756b36c8979cc0b9bb67195175c68d.bindPopup(popup_6801eba0c069cbf2823152b1307a8184)
+        ;
+
+        
+    
+    
+            circle_marker_1d756b36c8979cc0b9bb67195175c68d.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ojokoro (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_67489cbf766044e74368ecc93e681b5d = L.circleMarker(
+                [6.6722633, 3.305145],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2935302119767c5272aa468ad72ed51a);
+        
+    
+        var popup_10b6b4c064d7b45cf44508ddbe96c848 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_ccd5021611461e3431e64efdb4c6a472 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTgyNzk2NzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2diYSAtIENvbGxlZ2UgUm9hZDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY3MjMsIDMuMzA1MTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2diYSAtIENvbGxlZ2UgUm9hZDwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_10b6b4c064d7b45cf44508ddbe96c848.setContent(i_frame_ccd5021611461e3431e64efdb4c6a472);
+            
+        
+
+        circle_marker_67489cbf766044e74368ecc93e681b5d.bindPopup(popup_10b6b4c064d7b45cf44508ddbe96c848)
+        ;
+
+        
+    
+    
+            circle_marker_67489cbf766044e74368ecc93e681b5d.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ogba - College Road (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5768090263bbb74171c3c6e6692a9420 = L.circleMarker(
+                [6.6822494, 3.30355],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_2935302119767c5272aa468ad72ed51a);
+        
+    
+        var popup_dd200c9d870ba8b3470ce4fc3831ebc7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_4659d08e868279ef6b39536fbe43cb98 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2Q2MjcyODsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciA0PC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMjUwNzE1MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkNvb3JkaW5hdGVzOjwvc3Ryb25nPiA2LjY4MjIsIDMuMzAzNTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2pva29ybzwvZGl2PjwvZGl2Pg==" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_dd200c9d870ba8b3470ce4fc3831ebc7.setContent(i_frame_4659d08e868279ef6b39536fbe43cb98);
+            
+        
+
+        circle_marker_5768090263bbb74171c3c6e6692a9420.bindPopup(popup_dd200c9d870ba8b3470ce4fc3831ebc7)
+        ;
+
+        
+    
+    
+            circle_marker_5768090263bbb74171c3c6e6692a9420.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ojokoro (Cluster 4)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_2935302119767c5272aa468ad72ed51a.addTo(map_c3a2082ac4bd8d8d44e60106e12abe4a);
+        
+    
+            var feature_group_565616733d212def9c882031d9967c93 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_0f574163a320818317d3606ae96b602f = L.circleMarker(
+                [6.6171739207965, 6.6171739207965],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_565616733d212def9c882031d9967c93);
+        
+    
+        var popup_f44d27137ebc9b1c0b7d2a9729f2b4a6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_02a103cd8199e674c201ec9f57171cc5 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMjE5MDk0ODwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gQWdlZ2U8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiBBZ2VnZSAtIE9yaWxlIEFnZWdlPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q29vcmRpbmF0ZXM6PC9zdHJvbmc+IDYuNjE3MiwgNi42MTcyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TEdBOjwvc3Ryb25nPiBBZ2VnZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IEFnZWdlIC0gT3JpbGUgQWdlZ2U8L2Rpdj48L2Rpdj4=" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_f44d27137ebc9b1c0b7d2a9729f2b4a6.setContent(i_frame_02a103cd8199e674c201ec9f57171cc5);
+            
+        
+
+        circle_marker_0f574163a320818317d3606ae96b602f.bindPopup(popup_f44d27137ebc9b1c0b7d2a9729f2b4a6)
+        ;
+
+        
+    
+    
+            circle_marker_0f574163a320818317d3606ae96b602f.bindTooltip(
+                `<div>
+                     Agege | Agege - Orile Agege (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f63ca19473921e39bf11c69366b45fc8 = L.circleMarker(
+                [6.6251881999999, 6.6251881999999],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_565616733d212def9c882031d9967c93);
+        
+    
+        var popup_c14087149ede18a6b608baa9b63698a2 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_13fccdbb612c40420eb75f1a5e9f4904 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogI2ZmN2YwZTsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAyPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMzkxMTk2MDwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWZha28gSWphaXllPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gSWZha28gSWphaXllIC0gT2diYSAtIE9rZSBJcmEgMm5kIEp1Y3Rpb248L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42MjUyLCA2LjYyNTI8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElmYWtvIElqYWl5ZTwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxDREE6PC9zdHJvbmc+IElmYWtvIElqYWl5ZSAtIE9nYmEgLSBPa2UgSXJhIDJuZCBKdWN0aW9uPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_c14087149ede18a6b608baa9b63698a2.setContent(i_frame_13fccdbb612c40420eb75f1a5e9f4904);
+            
+        
+
+        circle_marker_f63ca19473921e39bf11c69366b45fc8.bindPopup(popup_c14087149ede18a6b608baa9b63698a2)
+        ;
+
+        
+    
+    
+            circle_marker_f63ca19473921e39bf11c69366b45fc8.bindTooltip(
+                `<div>
+                     Ifako Ijaiye | Ifako Ijaiye - Ogba - Oke Ira 2nd Juction (Cluster 2)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_565616733d212def9c882031d9967c93.addTo(map_c3a2082ac4bd8d8d44e60106e12abe4a);
+        
+    
+            var feature_group_e0625981678c71aa79a1e830edcb5687 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_9b54f66f5d481baf5c9db914d0e9537e = L.circleMarker(
+                [6.649081199999999, 3.913274],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ca02c", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(feature_group_e0625981678c71aa79a1e830edcb5687);
+        
+    
+        var popup_4c2b2137425dc153d23537f8a3bb7f84 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var i_frame_2beac0571ce3825d2f65f900f176718a = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSdmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTJweDsnPjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzJjYTAyYzsgbWFyZ2luLWJvdHRvbTogNXB4Oyc+Q2x1c3RlciAzPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+Q3VzdG9tZXJJRDo8L3N0cm9uZz4gMTgwODkwNjwvZGl2PjxkaXYgc3R5bGU9J21hcmdpbjogMnB4IDA7Jz48c3Ryb25nPkxHQTo8L3N0cm9uZz4gSWtlamE8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MQ0RBOjwvc3Ryb25nPiA8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5Db29yZGluYXRlczo8L3N0cm9uZz4gNi42NDkxLCAzLjkxMzM8L2Rpdj48ZGl2IHN0eWxlPSdtYXJnaW46IDJweCAwOyc+PHN0cm9uZz5MR0E6PC9zdHJvbmc+IElrZWphPC9kaXY+PGRpdiBzdHlsZT0nbWFyZ2luOiAycHggMDsnPjxzdHJvbmc+TENEQTo8L3N0cm9uZz4gPC9kaXY+PC9kaXY+" width="200" style="border:none !important;" height="200"></iframe>`)[0];
+                popup_4c2b2137425dc153d23537f8a3bb7f84.setContent(i_frame_2beac0571ce3825d2f65f900f176718a);
+            
+        
+
+        circle_marker_9b54f66f5d481baf5c9db914d0e9537e.bindPopup(popup_4c2b2137425dc153d23537f8a3bb7f84)
+        ;
+
+        
+    
+    
+            circle_marker_9b54f66f5d481baf5c9db914d0e9537e.bindTooltip(
+                `<div>
+                     Ikeja |  (Cluster 3)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_e0625981678c71aa79a1e830edcb5687.addTo(map_c3a2082ac4bd8d8d44e60106e12abe4a);
+        
+    
+            var layer_control_5e35f831c3a1b2779e511a8ee08b7c31_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_e0fafb3c5de8d51cd131d62fd0ba96a8,
+                    "OpenStreetMap" : tile_layer_c41833297114cbefd1d8f4bbcee1ca2a,
+                    "Terrain" : tile_layer_d8177fcf7982a2f50c5ae7a99650de64,
+                    "Toner" : tile_layer_7d30ad2371d300b0071635b56a02bc8a,
+                    "CartoDB Dark" : tile_layer_59bc00132993da947d97528b26fcfa25,
+                    "CartoDB Light" : tile_layer_8c82d8f9b7ea380ba9f586756a712d28,
+                },
+                overlays :  {
+                    "Cluster 1 - Ifako Ijaiye+2more - Ifako Ijaiye - Ojokoro+7more (14 points)" : feature_group_cb6e01cd450b1a061ea86bc44256d995,
+                    "Cluster 5 - Ifako Ijaiye+1more - Ifako Ijaiye - Ojokoro+3more (10 points)" : feature_group_7a9caa17a6477604cb909e0f49e3c6ab,
+                    "Cluster 4 - Ifako Ijaiye - Ifako Ijaiye - Ogba - College Road+4more (8 points)" : feature_group_2935302119767c5272aa468ad72ed51a,
+                    "Cluster 2 - Agege+1more - Agege - Orile Agege+1more (2 points)" : feature_group_565616733d212def9c882031d9967c93,
+                    "Cluster 3 - Ikeja -  (1 points)" : feature_group_e0625981678c71aa79a1e830edcb5687,
+                },
+            };
+            let layer_control_5e35f831c3a1b2779e511a8ee08b7c31 = L.control.layers(
+                layer_control_5e35f831c3a1b2779e511a8ee08b7c31_layers.base_layers,
+                layer_control_5e35f831c3a1b2779e511a8ee08b7c31_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_c3a2082ac4bd8d8d44e60106e12abe4a);
+
+        
+    
+            var tile_layer_610554d684ecca7154d2dba29014ad2e = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_3f90bccca50de52488ae6d4a4ab87864 = new L.Control.MiniMap(
+                tile_layer_610554d684ecca7154d2dba29014ad2e,
+                {
+  "position": "bottomleft",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_c3a2082ac4bd8d8d44e60106e12abe4a.addControl(mini_map_3f90bccca50de52488ae6d4a4ab87864);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_c3a2082ac4bd8d8d44e60106e12abe4a);
+        
+    
+            var measure_control_daa1e9cb3051e573774a9fc23812353f = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_c3a2082ac4bd8d8d44e60106e12abe4a.addControl(measure_control_daa1e9cb3051e573774a9fc23812353f);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_332c5f003df9679b5fefb2f80e5351f5 = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Move mouse to see coordinates",
+  "lngFirst": false,
+  "numDigits": 4,
+  "prefix": "Coordinates: ",
+}
+            );
+            mouse_position_332c5f003df9679b5fefb2f80e5351f5.options["latFormatter"] =
+                undefined;
+            mouse_position_332c5f003df9679b5fefb2f80e5351f5.options["lngFormatter"] =
+                undefined;
+            map_c3a2082ac4bd8d8d44e60106e12abe4a.addControl(mouse_position_332c5f003df9679b5fefb2f80e5351f5);
+        
+    
+            map_c3a2082ac4bd8d8d44e60106e12abe4a.fitBounds(
+                [[6.6071739207965, 3.2654028000000004], [6.694967699999999, 6.6351881999999]],
+                {}
+            );
+        
+    
+            var marker_1fe4eb5e2b31e36f39632c55b4cfe3c7 = L.marker(
+                [6.6435564, 3.3351218],
+                {
+  "size": 10,
+}
+            ).addTo(map_c3a2082ac4bd8d8d44e60106e12abe4a);
+        
+    
+            var icon_a6b5a4234a6d3d3e34199e2835f29d90 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_1fe4eb5e2b31e36f39632c55b4cfe3c7.bindTooltip(
+                `<div>
+                     OmniHub Ikeja Lagos - Barka-Agro Food Ogba
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1fe4eb5e2b31e36f39632c55b4cfe3c7.setIcon(icon_a6b5a4234a6d3d3e34199e2835f29d90);
+            
+</script>
+</html>

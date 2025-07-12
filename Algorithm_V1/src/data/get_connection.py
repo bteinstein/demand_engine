@@ -1,9 +1,7 @@
 import os
 import pyodbc
 import pandas as pd
-from dotenv import load_dotenv
-
-import folium
+from dotenv import load_dotenv 
 
 # Load environment variables from .env file
 load_dotenv()
