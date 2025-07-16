@@ -1,12 +1,12 @@
 SELECT DISTINCT 
-            fm.Fulfilement_Center_ID AS FCID, 
-            sp.Stock_point_Name AS StockPointName, 
-            sm.StateName, 
+            fm.Fulfilement_Center_ID AS Stock_Point_ID, 
+            sp.Stock_point_Name AS Stock_Point_Name, 
+            sm.StateName as State_Name, 
             cm.StateID AS State_ID,
             lgm.Region,
-            cm.CityName AS LGA, 
+            cm.CityName AS LGA_Name, 
             tm.CityID AS LGA_ID,
-            tm.TownName AS LCDA, 
+            tm.TownName AS LCDA_Name, 
             fm.Location_ID AS LCDA_ID  
 	    FROM  VCONNECTMASTERDWR..FC_Location_Mapping fm WITH (NOLOCK) 
         INNER JOIN  VCONNECTMASTERDWR..Townmaster tm WITH (NOLOCK) ON fm.location_id = tm.Contentid
@@ -20,4 +20,5 @@ SELECT DISTINCT
         -- AND  lgm.CountryID = 1
         AND  (Is_Fulfilement_Center = 1 OR Is_Mfc = 1 OR Is_Mfc = 0)
         AND  sp.Fulfilement_Center_ID = 76
-        AND sp.Stock_point_Name NOT LIKE '%Test%';
+        AND sp.Stock_point_Name NOT LIKE '%Test%' 
+        AND ISNULL(sp.Is_Mfc,0) = 1 AND ISNULL(sp.Status,0) = 1;
