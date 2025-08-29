@@ -1,7 +1,7 @@
 SELECT 
 	sp.Stock_Point_ID as Stock_Point_ID,
 	sp.Stock_point_Name as Stock_Point_Name, 
-	bm.Lattitude, bm.Longitude 
+	bm.Lattitude as latitude, bm.Longitude 
 FROM Stock_Point_Master sp WITH (NOLOCK)  
 INNER JOIN BusinessMaster bm WITH (NOLOCK) ON sp.Stock_Point_ID = bm.Contentid
 WHERE sp.Fulfilement_Center_ID = 76
