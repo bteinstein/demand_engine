@@ -234,7 +234,7 @@ class H3SpatialClustererImproved:
         return territories
 
     ## Phase 2: H3 grid generation
-    def generate_h3_grids(self, territories: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
+    def generate_coverage_h3_cells(self, territories: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
         """
         Phase 2: H3 Grid Generation with Adaptive Resolution
         
@@ -504,7 +504,7 @@ class H3SpatialClustererImproved:
         territories = self.define_territories()
         
         # Phase 2: H3 Grid Generation
-        grid_results = self.generate_h3_grids(territories)
+        grid_results = self.generate_coverage_h3_cells(territories)
         
         # Phase 3: Customer Assignment
         assignments = self.assign_customers_to_clusters(grid_results)
@@ -1039,11 +1039,11 @@ class H3SpatialClustererImproved:
         """
         print("🚀 Starting complete H3 clustering pipeline...")
         
-        # Phase 1: Territory Definition
+        # Phase 1: Territory/Coverage Definition
         territories = self.define_territories()
         
         # Phase 2: H3 Grid Generation
-        grid_results = self.generate_h3_grids(territories)
+        grid_results = self.generate_coverage_h3_cells(territories)
         
         # Phase 3: Customer Assignment
         if run_parrallel:

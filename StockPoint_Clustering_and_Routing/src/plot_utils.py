@@ -5,7 +5,7 @@ import h3 # This needs to be the h3 module that is loaded
 from typing import List, Set # Already there, just for completeness
 import folium
 import json
-from src.get_data import get_geojson_data
+from StockPoint_Clustering_and_Routing.src.data.get_data import get_geojson_data
 import folium
 import h3
 from shapely.geometry import Polygon, MultiPolygon

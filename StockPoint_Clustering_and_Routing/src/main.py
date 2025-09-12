@@ -35,7 +35,7 @@ from src.h3_spatial_system.data.downloader import (
     validate_and_summarize_data,
 )
 
-from src.utils import haversine_vectorized
+from src.utils import haversine_vectorized, get_simplified_direction_vectorized
 from src.h3_spatial_system.storage.FastH3DuckDBManager import FastH3DuckDBManager
 from src.h3_spatial_system.h3_system.generator import (
     H3AddressGenerator,
@@ -206,6 +206,69 @@ def generate_h3_cell_address_and_save2duckdb(
         with h3_duckdb_manager as db: 
             db.upsert_address_data(df_h3_cells_address, batch_size)     
 
+def update_h3_location_ids(state_filter=None, h3_duckdb_path=None):
+    """
+    Update h3_derived_id in h3_cells table with human-readable location identifiers.
+    
+    Args:
+        state_filter (str, optional): Filter by state name. Defaults to None (all states).
+        h3_duckdb_path (str, optional): Path to H3 DuckDB file. Uses config if None.
+    
+    Returns:
+        dict: Update statistics
+    """
+    if h3_duckdb_path is None:
+        h3_duckdb_path = STORAGE_CONFIG['h3_duckdb_path']
+    
+    where_clause = f"WHERE state_name = '{state_filter}'" if state_filter else ""
+    
+    with duckdb.connect(h3_duckdb_path) as conn:
+        # Get count before update
+        before_count = conn.execute(f"SELECT COUNT(*) FROM h3_cells {where_clause}").fetchone()[0]
+        
+        # Create CTE with row numbers and update using it
+        conn.execute(f'''
+            WITH ranked_cells AS (
+                SELECT 
+                    h3_index,
+                    CASE 
+                        WHEN ward_name IS NULL OR lga_name IS NULL OR state_name IS NULL THEN NULL
+                        ELSE country_code || ' | ' || 
+                            TRIM(UPPER(state_name)) || ' | ' || 
+                            --TRIM(UPPER(state_code)) || ' | ' || 
+                            COALESCE(NULLIF(TRIM(UPPER(REPLACE(REPLACE(REPLACE(TRIM(lga_name), ' / ', '/'), 'Unknown', ''), '- ', '-'))), ''), '-') || ' | ' ||
+                            COALESCE(NULLIF(TRIM(UPPER(REPLACE(REPLACE(REPLACE(TRIM(ward_name), ' / ', '/'), 'Unknown', ''), '- ', '-'))), ''), '-') || '-' ||
+                            CAST(ROW_NUMBER() OVER (
+                                PARTITION BY 
+                                    state_name, 
+                                    CASE WHEN lga_name IS NULL THEN NULL ELSE REPLACE(REPLACE(REPLACE(TRIM(lga_name), ' / ', '/'), 'Unknown', ''), '- ', '-') END,
+                                    CASE WHEN ward_name IS NULL THEN NULL ELSE REPLACE(REPLACE(REPLACE(TRIM(ward_name), ' / ', '/'), 'Unknown', ''), '- ', '-') END
+                                ORDER BY h3_index ASC
+                            ) AS TEXT)
+                    END AS new_h3_derived_id
+                FROM h3_cells 
+                {where_clause}
+            )
+            UPDATE h3_cells 
+            SET h3_derived_id = ranked_cells.new_h3_derived_id
+            FROM ranked_cells
+            WHERE h3_cells.h3_index = ranked_cells.h3_index
+        ''')
+        
+        # Get sample results
+        sample_df = conn.execute(f'''
+            SELECT h3_index, state_name, lga_name, ward_name, h3_derived_id
+            FROM h3_cells 
+            {where_clause}
+            ORDER BY h3_index
+            LIMIT 5
+        ''').df()
+        
+        return {
+            'records_updated': before_count,
+            'state_filter': state_filter,
+            'sample_results': sample_df
+        }
 
 def refresh_base_data(refresh_input_data = True,
                       logger: logging.Logger = logging.getLogger(__name__)):
@@ -213,13 +276,15 @@ def refresh_base_data(refresh_input_data = True,
     from pathlib import Path 
     import geopandas as gpd
 
-    from src.get_data import DataFetcher, get_processed_data, get_geojson_data
+    from src.data.get_data import DataFetcher, get_processed_data, get_geojson_data
     from src.data.preprocess_data import preprocess_sp_location_mapping
     
     if refresh_input_data:
         ## Fetch Data from DB
         fetcher = DataFetcher(logger=logger, input_dir=str(RAW_DATA_DIR), sql_dir="_sql")
-        results = fetcher.fetch_all()
+        # results = fetcher.fetch_all()
+        # results = fetcher.fetch_all_parallel()
+        results = fetcher.run_data_fetch()
 
     return results
 
@@ -229,151 +294,11 @@ def preprocess_input_data(logger: logging.Logger = logging.getLogger(__name__)):
     prepare_sp_and_recent_activated_customers(logger)
 
 def load_processed_data(logger: logging.Logger = logging.getLogger(__name__)):
-    from src.get_data import get_processed_data 
+    from src.data.get_data import get_processed_data 
     lgas_gdf, sp_dim_df,  stock_point_lga_map, sp_customers_gdf, recent_customers_gdf  = get_processed_data(logger)
     return lgas_gdf, sp_dim_df,  stock_point_lga_map, sp_customers_gdf, recent_customers_gdf   
             
-def main_run_pipeline_dep(resolution: int = 8, 
-         logger = logger or logging.getLogger(__name__),
-         regenerate_cell_and_metadata: bool = False,
-         generate_new_cell_metadata_and_save2db: bool = False,
-         use_cached_cell_address: bool = True,
-         write_address_to_db = False,
-         refresh_input_data = False,
-         run_pilot = True,
-         save_all_output_to_disk = True,
-         save_all_output_to_db = True
-         ):
     
-    # Start DB 
-    h3_duckdb_manager =FastH3DuckDBManager(db_path=H3_DUCKDB_PATH, resolution=8, batch_size=100_000)
-    
-    # Load geojson paths
-    dict_path_geojson = {
-        k: v["standardize_file_path"] for k, v in ADMIN_DATA_SOURCES.items()
-    }
-    
-    if regenerate_cell_and_metadata:
-        logger.info("🚀 Starting H3 address system generation for Nigeria")
-        generator = H3AddressGenerator(resolution=resolution)
-
-        logger.info("🗺️ Loading administrative boundaries...")
-        generator.load_admin_boundaries(
-            str(dict_path_geojson["states"]),
-            str(dict_path_geojson["lgas"]),
-            str(dict_path_geojson["wards"])
-        )
-        logger.info("✅ Administrative boundaries loaded")
-        
-        # 1. generate or load h3_cells
-        h3_cells = generate_h3_cells(logger = logger,
-                                    resolution = resolution,
-                                    load_from_backup  = True
-                                )  
-        
-        # 2. add cell meta data and save to duckdb
-        if generate_new_cell_metadata_and_save2db: # ETA: 15mins
-            add_cell_meta_and_save_h3_cells_to_duckdb(h3_cells = h3_cells,
-                                                    resolution = resolution,
-                                                    batch_size = 100_000,
-                                                    verify_db = False,
-                                                    logger = logger
-                                                    )     
-
-        # 3. Generate h3 Address
-        generate_h3_cell_address_and_save2duckdb(h3_cells = h3_cells,
-                                                h3_duckdb_manager = h3_duckdb_manager,
-                                                generator = generator,
-                                                resolution = resolution,
-                                                use_cached_cell_address = use_cached_cell_address,
-                                                exclude_blank_address = True,
-                                                write_address_to_db = write_address_to_db,
-                                                batch_size = 100_000,
-                                                logger=logger)
-
-    # 4. Get Base Input Data
-    if refresh_input_data:
-        result_ = refresh_base_data(refresh_input_data = refresh_input_data,
-                      logger = logger)
-
-        # 5. Preprocess Base Input Data
-        preprocess_input_data(logger = logger)
-
-    # 6. load Pre-Processed Base Input Data
-    lgas_gdf, sp_dim_df,  stock_point_lga_map, sp_customers_gdf, recent_customers_gdf = load_processed_data()
-
-    # 7. Clusting and Customer Assignment
-    # Set-Clustering Class
-    if run_pilot:
-        pilot_2_sps = [1647402,	1647372,	1647108,	1646971,	1647109,	1647033,	
-                1646999,	1647391,	1647113,	1647137,	1646991,	1647420,	
-                1647141,	1647050,	1647421,	1647436,	1647380]
-        # Filter data using the pilot_sps
-        sp_dim_df = sp_dim_df[sp_dim_df['stock_point_id'].isin(pilot_2_sps)] 
-        stock_point_lga_map = stock_point_lga_map[stock_point_lga_map['stock_point_id'].isin(pilot_2_sps)] 
-        sp_customers_gdf=sp_customers_gdf[sp_customers_gdf['stock_point_id'].isin(pilot_2_sps)]
-        
-        print('sp_dim_df', sp_dim_df.shape[0])
-        print('stock_point_lga_map', stock_point_lga_map.shape[0])
-        print('sp_customers_gdf', sp_customers_gdf.shape[0])
-        
-    clustererImproved = H3SpatialClustererImproved(
-            logger=logger,
-            lga_gdf=lgas_gdf,
-            sp_dim_df=sp_dim_df,
-            stock_point_lga_map=stock_point_lga_map,
-            sp_customers_gdf = sp_customers_gdf,
-            recent_customers_gdf = recent_customers_gdf,
-            resolution=8
-            )
-
-    CLUSTER_RESULTS_DICT =  clustererImproved.process_all_stock_points(territory_version="v1.2")
-        
-    if save_all_output_to_disk:
-        current_date = datetime.now().strftime('%Y-%m-%d')
-        suffix = "PILOT" if run_pilot else "ALL"
-        clusters_results_dict_file_path = EXPORTS_DIR /  f"{suffix}_SPS_CLUSTER_R{resolution}_{current_date}.pickle"
-
-        # Save Results as pickle file
-        with open(clusters_results_dict_file_path, 'wb') as f:
-            pickle.dump(CLUSTER_RESULTS_DICT, f)    
-    
-    # Extract Results as Dataframe for DB Upsert
-    sp_coverage_df, sp_assignment_df, sp_cluster_summary_df, sp_assignment_summary_df = clustererImproved.extract_coverage_and_assignment_results(CLUSTER_RESULTS_DICT)    
-    
-    # Enhance sp_coverage_df
-    # conn = duckdb.connect(H3_DUCKDB_PATH)
-    with duckdb.connect(H3_DUCKDB_PATH) as conn:
-        print('Enhancing sp_coverage_df')
-        sp_coverage_df_enhanced = conn.execute('''SELECT 
-                        a.stock_point_id,
-                        a.h3_cell ,  
-                        a.h3_resolution, 
-                        c.centroid_lat as cluster_centroid_lat, 
-                        c.centroid_lng as cluster_centroid_lng,
-                        b.latitude as sp_lat, 
-                        b.longitude as sp_lng
-                    FROM sp_coverage_df a
-                    LEFT JOIN  sp_dim_df b ON b.stock_point_id = a.stock_point_id
-                    LEFT JOIN h3_cells c ON c.h3_index = a.h3_cell 
-                ''').df()
-        
-    sp_coverage_df_enhanced['cluster_sp_dist_km'] = haversine_vectorized(
-            sp_coverage_df_enhanced['cluster_centroid_lat'], 
-            sp_coverage_df_enhanced['cluster_centroid_lng'],
-            sp_coverage_df_enhanced['sp_lat'], 
-            sp_coverage_df_enhanced['sp_lng']
-        )
-
-    sp_coverage_df_enhanced = sp_coverage_df_enhanced.drop(columns=['sp_lat','sp_lng'])
-    
-    ## Upsert coverage and assignment to db
-    if save_all_output_to_db:
-        with h3_duckdb_manager as db: 
-            db.truncate_insert_stockpoint_h3_coverage(sp_coverage_df_enhanced)
-            db.upsert_customer_cluster_assignment(sp_assignment_df) #Table Name: customer_stockpoint_cluster_assignment
-            
-            
             
 def main_run_pipeline(
     resolution: int = 8, 
@@ -381,6 +306,7 @@ def main_run_pipeline(
     regenerate_cell_and_metadata: bool = False,
     generate_new_cell_metadata_and_save2db: bool = False,
     use_cached_cell_address: bool = True,
+    flag_update_h3_location_ids: bool = False,
     write_address_to_db: bool = False,
     refresh_input_data: bool = False,
     run_pilot: bool = True,
@@ -467,6 +393,14 @@ def main_run_pipeline(
             logger=logger
         )
     
+    # Improve h3_cell location id
+    if flag_update_h3_location_ids:
+        logger.info("Updating H3 location identifiers")
+        update_stats = update_h3_location_ids(h3_duckdb_path=H3_DUCKDB_PATH)
+        logger.info(f"Updated {update_stats['records_updated']} records")
+        logger.debug(f"Sample results:\n{update_stats['sample_results']}")
+        
+        
     # Refresh input data if needed
     if refresh_input_data:
         logger.info("Refreshing base input data")
@@ -544,6 +478,13 @@ def main_run_pipeline(
             sp_coverage_df_enhanced['sp_lat'], 
             sp_coverage_df_enhanced['sp_lng']
         )
+        
+        sp_coverage_df_enhanced['cluster_sp_direction'] = get_simplified_direction_vectorized(
+            sp_coverage_df_enhanced['sp_lat'], 
+            sp_coverage_df_enhanced['sp_lng'],
+            sp_coverage_df_enhanced['cluster_centroid_lat'], 
+            sp_coverage_df_enhanced['cluster_centroid_lng'],
+        )
         sp_coverage_df_enhanced = sp_coverage_df_enhanced.drop(columns=['sp_lat', 'sp_lng'])
     except Exception as e:
         logger.error(f"Database operation failed: {e}")
@@ -556,8 +497,9 @@ def main_run_pipeline(
     if save_all_output_to_db:
         logger.info("Saving results to database")
         with h3_duckdb_manager as db:
-            db.truncate_insert_stockpoint_h3_coverage(sp_coverage_df_enhanced)
-            db.upsert_customer_cluster_assignment(sp_assignment_df)
+            db.truncate_insert_stockpoint_h3_coverage(sp_coverage_df_enhanced) 
+            db.truncate_insert_customer_cluster_assignment(sp_assignment_df)
+            # db.upsert_customer_cluster_assignment(sp_assignment_df)
     
     # Prepare data for visualization
     logger.info("Preparing data for visualization")

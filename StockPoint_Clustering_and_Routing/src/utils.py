@@ -158,6 +158,87 @@ def safe_runs(func):
         print(e)
   
 
+import numpy as np
+import pandas as pd
+
+def get_simplified_direction_vectorized(lat1, lon1, lat2, lon2, detailed=False):
+    """
+    Vectorized calculation of simplified 8-point or detailed 16-point compass direction.
+    
+    Args:
+        lat1 (np.array): Starting latitudes in degrees.
+        lon1 (np.array): Starting longitudes in degrees.
+        lat2 (np.array): Destination latitudes in degrees.
+        lon2 (np.array): Destination longitudes in degrees.
+        detailed (bool, optional): If True, returns 16-point directions.
+                                  Defaults to False, for 8-point directions.
+
+    Returns:
+        np.array: An array of simplified or detailed direction strings.
+    """
+    # Convert all coordinates to radians for the bearing calculation
+    lat1, lon1, lat2, lon2 = np.radians(lat1), np.radians(lon1), np.radians(lat2), np.radians(lon2)
+
+    # Vectorized bearing formula
+    dlon = lon2 - lon1
+    y = np.sin(dlon) * np.cos(lat2)
+    x = np.cos(lat1) * np.sin(lat2) - np.sin(lat1) * np.cos(lat2) * np.cos(dlon)
+    bearing = np.arctan2(y, x)
+
+    # Convert bearing to degrees and normalize to a 0-360 range
+    bearing_degrees = (np.degrees(bearing) + 360) % 360
+
+    if detailed:
+        # Define the 16 directions and calculate the index
+        directions = np.array([
+            'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+            'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'
+        ])
+        # The // operator performs vectorized floor division
+        idx = (bearing_degrees + 11.25) // 22.5
+        # Use the calculated indices to get the direction string
+        return directions[idx.astype(int) % 16]
+    else:
+        # Define the 8 directions and calculate the index
+        directions = np.array(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
+        # The // operator performs vectorized floor division
+        idx = (bearing_degrees + 22.5) // 45
+        # Use the calculated indices to get the direction string
+        return directions[idx.astype(int) % 8]
+
+
+# # --- Example Usage with a DataFrame ---
+
+# # Create a sample DataFrame
+# data = {
+#     'start_lat': [40.7128, 34.0522, 51.5074, 38.8951],
+#     'start_lon': [-74.0060, -118.2437, -0.1278, -77.0364],
+#     'end_lat': [34.0522, 40.7128, 38.8951, 51.5074],
+#     'end_lon': [-118.2437, -74.0060, -77.0364, -0.1278],
+# }
+# df = pd.DataFrame(data)
+
+# # Call the vectorized function for 8-point direction
+# df['direction_8pt'] = get_simplified_direction_vectorized(
+#     df['start_lat'],
+#     df['start_lon'],
+#     df['end_lat'],
+#     df['end_lon'],
+#     detailed=False
+# )
+
+# # Call the vectorized function for 16-point direction
+# df['direction_16pt'] = get_simplified_direction_vectorized(
+#     df['start_lat'],
+#     df['start_lon'],
+#     df['end_lat'],
+#     df['end_lon'],
+#     detailed=True
+# )
+
+# # Print the result
+# print(df)
+
             
             
             

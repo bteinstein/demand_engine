@@ -61,6 +61,10 @@ INPUT_BASE_DATA_SOURCES = {
                 'sql_path': SQL_DIR / 'sp_active_customers.sql',
                 'local_file_path': RAW_DATA_DIR / 'df_sp_active_customers.parquet'
             },
+            'agent_customer': {
+                'sql_path': SQL_DIR / 'sp_agent_customer.sql',
+                'local_file_path': RAW_DATA_DIR / 'df_agent_customer.parquet'
+            },
         }
 
 

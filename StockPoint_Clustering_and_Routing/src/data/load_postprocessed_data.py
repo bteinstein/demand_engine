@@ -11,7 +11,7 @@ def postprocess_map_data(return_data = True, from_local=False):
     import os
     import glob
     import gzip
-    from config.settings import EXPORTS_DIR, STORAGE_CONFIG, PROCESSED_DATA_DIR
+    from config.settings import EXPORTS_DIR, STORAGE_CONFIG, PROCESSED_DATA_DIR, RAW_DATA_DIR
 
     # Local data loading function
     def load_from_local():
@@ -59,6 +59,10 @@ def postprocess_map_data(return_data = True, from_local=False):
     
     print(f"Using clustering results file: {cluster_results_filepath}")
     
+    # Load agent-customer mapping dimensions
+    path_agent_customer_mapping = RAW_DATA_DIR / 'df_agent_customer.parquet'
+    df_agent_customer_mapping = pd.read_parquet(path_agent_customer_mapping)
+    
     # Load processed stock point dimensions
     processed_sp_dim_filepath = PROCESSED_DATA_DIR / 'processed_sp_dim_df.pickle'
     with open(processed_sp_dim_filepath, 'rb') as f:
@@ -102,12 +106,29 @@ def postprocess_map_data(return_data = True, from_local=False):
                     WHEN assignment_tier = 'manual_review' AND customer_type = 'buying customers' THEN 'Unassigned Active/Buying'
                     WHEN assignment_tier = 'h3_inclusion' AND customer_type = 'recently activated' THEN 'Assigned Recently Activated'
                 ELSE 'Others' END AS assignment_type, 	
-                contact_name, state_name, town_name, city_name, latitude, longitude, kyc_capture_status, customer_status
+                contact_name, state_name, town_name, city_name, latitude, longitude, kyc_capture_status, customer_status,
+                ac.agent_id, ac.agent_name, ac.role_name
             FROM customer_stockpoint_cluster_assignment a
             LEFT JOIN read_parquet('/home/bt/project/demand_engine/StockPoint_Clustering_and_Routing/data/processed/df_processed_customer_dim.parquet') d 
                 ON d.customer_id = a.customer_id     
+            LEFT JOIN df_agent_customer_mapping ac ON a.customer_id = ac.customer_id
         ''').df()
 
+
+    # Agent-MFC
+    with duckdb.connect(H3_DUCKDB_PATH) as conn: 
+        agent_customer_mfc = conn.execute('''
+                                        SELECT
+                                            stock_point_id, agent_id as agent_id, agent_name as agent_name, role_name as role_name, 
+                                            COUNT(DISTINCT customer_id) AS n_customers,
+                                            COUNT(DISTINCT h3_cell_id) AS n_beats,
+                                            (SELECT COUNT (DISTINCT c.customer_id) FROM customer_stockpoint_cluster_assignment_df c 
+                                                WHERE c.agent_id = a.agent_id AND c.stock_point_id = a.stock_point_id 
+                                                    AND c.assignment_type_id IN (1,2)) AS n_active_customers
+                                        FROM customer_stockpoint_cluster_assignment_df a
+                                        GROUP BY stock_point_id, agent_id, agent_name, role_name
+                                        ''').df()
+    
     # Load H3 coverage with metadata
     with duckdb.connect(H3_DUCKDB_PATH) as conn: 
         stockpoint_h3_coverage_with_metadata = conn.execute("""
@@ -124,14 +145,14 @@ def postprocess_map_data(return_data = True, from_local=False):
             SELECT 
                 c.stock_point_id, c.h3_cell as beat, primary_address_id as beat_id,
                 h.state_name, h.lga_name, h.ward_name, h.area_km2, h.confidence_level, h.latlng_json as latlng_coords,  
-                c.cluster_sp_dist_km,
+                c.cluster_sp_dist_km, c.cluster_sp_direction,
                 COALESCE(s.n_total_assigned_customers, 0) AS n_total_assigned_customers, 
                 COALESCE(s.n_assigned_active_customers, 0) AS n_assigned_active_customers, 
                 COALESCE(s.n_assigned_recent_activated_customers, 0) AS n_assigned_recent_activated_customers
             FROM stockpoint_h3_coverage c
             LEFT JOIN CTE_Assignment_Summary s ON c.stock_point_id = s.stock_point_id AND c.h3_cell = s.h3_cell         
             LEFT JOIN h3_cells h ON c.h3_cell = h.h3_index              
-        """).df()
+        """).df()    
     
     # Process H3 coverage data
     stockpoint_h3_coverage_with_metadata = gpd.GeoDataFrame(stockpoint_h3_coverage_with_metadata)
@@ -142,18 +163,18 @@ def postprocess_map_data(return_data = True, from_local=False):
     )
     
     # Save processed data to local directory
-    map_input_dir = EXPORTS_DIR / 'map_input_data'
-    try:
-        print('Saving processed data to local directory...')
-        map_input_dir.mkdir(parents=True, exist_ok=True)
-        
-        data_to_save = {
+    data_to_save = {
             'processed_sp_dim_df': processed_sp_dim_df,
             'stockpoint_h3_coverage_with_metadata': stockpoint_h3_coverage_with_metadata,
             'customer_stockpoint_cluster_assignment_df': customer_stockpoint_cluster_assignment_df,
+            'agent_customer_mfc': agent_customer_mfc,
             'sp_territories_dict': sp_territories_dict
         }
-        
+    
+    map_input_dir = EXPORTS_DIR / 'map_input_data'
+    try:
+        print('Saving processed data to local directory...')
+        map_input_dir.mkdir(parents=True, exist_ok=True)        
         for filename, data in data_to_save.items():
             with gzip.open(map_input_dir / f'{filename}.pkl.gz', 'wb') as f:
                 pickle.dump(data, f)
@@ -163,17 +184,10 @@ def postprocess_map_data(return_data = True, from_local=False):
     
     # Save processed data to local directory
     from pathlib import Path
-    ci_cd_input_dir = Path('/home/bt/project/Insight_and_Discovery/Clustering_And_Routes/data') #EXPORTS_DIR / 'map_input_data'
+    ci_cd_input_dir = Path('/home/bt/project/Insight_and_Discovery/Clustering_And_Routes/app/data') #EXPORTS_DIR / 'map_input_data'
     try:
         print('Saving processed data to cicd directory...')
         ci_cd_input_dir.mkdir(parents=True, exist_ok=True)
-        
-        data_to_save = {
-            'processed_sp_dim_df': processed_sp_dim_df,
-            'stockpoint_h3_coverage_with_metadata': stockpoint_h3_coverage_with_metadata,
-            'customer_stockpoint_cluster_assignment_df': customer_stockpoint_cluster_assignment_df,
-            'sp_territories_dict': sp_territories_dict
-        }
         
         for filename, data in data_to_save.items():
             with gzip.open(ci_cd_input_dir / f'{filename}.pkl.gz', 'wb') as f:
