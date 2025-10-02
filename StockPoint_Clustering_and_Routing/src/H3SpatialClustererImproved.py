@@ -767,13 +767,11 @@ class H3SpatialClustererImproved:
                 'cells_count': len(results.get('grid_results', {}).get(stock_point_id, {}).get('h3_cells', [])) if results else 0,
                 'clipped_cells_count': len(results.get('grid_results', {}).get(stock_point_id, {}).get('clipped_cells', [])) if results else 0,
                 'territory_coverage': results.get('grid_results', {}).get(stock_point_id, {}).get('territory_coverage', []) if results else 0
-
-
             })
         
         exports['territory_summary'] = pd.DataFrame(territory_summary)
         
-         # Territory Cells 
+        # Territory Cells 
         all_sp_territories_coverage_cells = []
         for stock_point_id, territory_data in results['territories'].items():
             df_territory = pd.DataFrame()
